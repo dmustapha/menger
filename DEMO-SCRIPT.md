@@ -26,7 +26,9 @@ evidence the split does any work — either number alone proves nothing. Lead wi
 
 ### Step 1 — [Screen: console `/slots/customer%3Aacme%7Cprimary_region`] — 0:00–0:15
 **Cold open on the running product doing real work.** No logo, no title card. The slot page is
-already loaded: four contenders, three components reported separately on every card.
+already loaded: the contenders, three components reported separately on every card. **Do not state a
+claim count on camera** — ad-hoc POSTs change it. Re-run the drill immediately before rolling and film
+whatever count the slot then shows (FG-009).
 
 Say:
 [SUB] An agent is about to write a fact into another agent's memory.
@@ -74,7 +76,10 @@ curl -sS -X POST http://127.0.0.1:8000/remember -H 'content-type: application/js
   "object":"ap-south-1","sources":["src_blog_echo_a"]}'
 ```
 
-Hold on the response: **`"verdict":"BLOCK"` · `"status":"REFUSED"` · `"recorded":true` · `"margin":-0.8153`**.
+Hold on the response: **`"verdict":"BLOCK"` · `"status":"REFUSED"` · `"recorded":true`** and the
+**negative `margin`**. Do **not** script a specific margin value — it is a function of recency decay on
+the incumbent and drifts with wall time (two POSTs hours apart returned `-0.8153` and `-0.8142`).
+Point at the minus sign, never at a memorised figure.
 Then refresh the slot page. The incumbent `clm_0007 = eu-west-1` is **byte-identical** — same claim id,
 same object, same `asserted_at`. The refused claim sits in the slot **marked REFUSED, not at the top**.
 

@@ -178,7 +178,10 @@ blended into a single opaque number:
 The response surfaces `path_weight` raw beside `reliability` so the hop-count trap is
 auditable from the response body alone.
 
-Verdicts compare the two scores against an epsilon band:
+Verdicts compare the two scores against an epsilon band. The running server publishes
+`epsilon 0.05` and `lambda 0.0080` per hour on `GET /health`; those are the values the engine
+was exercised at, and the server is the source you should read them from rather than this
+page.
 
 - **ALLOW** (`status: ADMITTED`): the incoming claim wins by more than epsilon.
 - **BLOCK** (`status: REFUSED`): the incumbent wins by more than epsilon. The write is
@@ -288,8 +291,11 @@ reader cannot see. Run it explicitly, as above. The reasoning is in
 ```bash
 cd frontend
 npm install
-npm run dev          # http://localhost:3000
+npm run dev -- -p 3100   # http://localhost:3100
 ```
+
+Port 3100, not 3000. The `gh-falkor` container publishes its own browser UI on 3000, so the
+console collides with it if you take the Next.js default.
 
 The console reads the engine over the eight HTTP routes and holds no copy of epsilon or
 lambda. The engine is the whole product; the console is a window onto it.

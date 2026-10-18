@@ -1,12 +1,23 @@
 {
   "version": 3,
-  "status": "running",
+  "status": "complete_with_scope_change",
   "skill": "design_forge",
   "working_dir": "/Users/MAC/graph-hacks",
   "project": "MENGER",
-  "currentPhase": "formalize",
+  "currentPhase": "refine",
   "startedAt": "2026-10-18T14:20:00+01:00",
-  "updatedAt": "2026-10-18T17:45:00+01:00",
+  "updatedAt": "2026-10-18T18:44:05+01:00",
+
+  "scope_change": {
+    "id": "SC-DF-001",
+    "authority": "Dami, in-chat, 2026-10-18 ~17:30: \"dont worry about beaty. make sure the product works(the ui works perfectly with the product integrated\"",
+    "nature": "CHANGE-ORDER from the principal, NOT a timebox self-cut (PIPELINE-COMMON §9, WA-PS-273 honored).",
+    "effect": "Aesthetic refinement set aside; the run pivoted to proving the console works end-to-end against the live MENGER engine. refine-1/2/3 completed; refine-4 and Phase 3 logo_forge NOT run.",
+    "gatesExpectedRed": [
+      "utils/render-quality-gate.sh — .design-render-375.json absent and persona critique iterations:0 on a judged frontend. This RED is CORRECT; do not waive it, do not fabricate the record.",
+      "utils/design-library-hygiene-gate.sh — brand.json.logoPath is null because logo_forge never ran."
+    ]
+  },
 
   "decisions": {
     "tier": "B",
@@ -28,6 +39,13 @@
       "action": "briefRead: false — DOCUMENTED ABSENCE, not a silent skip.",
       "evidence": "ls ~/.claude/skills/hackathon-briefs/ → 19 briefs, none for graph-hacks / WeMakeDevs / FalkorDB. Substituted the in-repo corpus (LEDGER.md, docs/ORCHESTRATION-PROTOCOL.md, CONTRACT.md, USER-ONBOARDING.md, ROUTE-ARCHITECTURE.md, FEATURE-OBSERVABLES.md) as the governing brief.",
       "loggedTo": "PULSE.md ### design_forge"
+    },
+    {
+      "id": "DEV-DF-003",
+      "rule": "Phase 2 refine-4 persona critique + render-quality record (MP-004 / D-DES-2, declared non-waivable on a judged frontend); Phase 3 logo_forge.",
+      "action": "NOT RUN. Set aside by SC-DF-001.",
+      "authority": "Dami's change-order. A skill may not waive D-DES-2; the principal may re-scope the run. The corresponding gates are left to RED truthfully rather than satisfied with invented evidence.",
+      "loggedTo": "PULSE.md ### design_forge → \"Not Done\"; INTEGRATION-VERIFICATION.md §8"
     }
   ],
 
@@ -50,31 +68,80 @@
     ]
   },
 
+  "phase_ledger": [
+    {
+      "phase": "formalize",
+      "status": "complete",
+      "evidence": "/Users/MAC/graph-hacks/DESIGN_SYSTEM.md (818 lines, sha256 0ca1a213, 6/6 sections) + /Users/MAC/graph-hacks/brand.json (96 lines, sha256 f967ab18)",
+      "recompute": "cd /Users/MAC/graph-hacks && shasum -a 256 DESIGN_SYSTEM.md brand.json && cd frontend && npm run test:design"
+    },
+    {
+      "phase": "refine",
+      "status": "partial",
+      "evidence": "refine-1/2/3 DONE: `npx tsc --noEmit` exit 0, `npm run build` 10 routes / 102 kB shared First Load JS, /Users/MAC/graph-hacks/.craft-law.json exit_code 0 verdict pass (CONSUMED, not re-authored). refine-4 persona critique NOT RUN (DEV-DF-003). Replaced in scope by /Users/MAC/graph-hacks/INTEGRATION-VERIFICATION.md (228 lines, sha256 87c49456) — nine routes driven in a real browser against the live engine, one defect found and fixed.",
+      "recompute": "cd /Users/MAC/graph-hacks/frontend && npx tsc --noEmit && npm run test:design && npm run build; python3 -c \"import json;print(json.load(open('/Users/MAC/graph-hacks/.craft-law.json'))['exit_code'])\""
+    },
+    {
+      "phase": "logo_forge",
+      "status": "not_run",
+      "evidence": "/Users/MAC/graph-hacks/brand.json line 95 → \"logoPath\": null. No public/logo*.svg exists. Set aside by SC-DF-001 / DEV-DF-003; no provider was attempted, so logo_provider stays null rather than claiming svg_fallback.",
+      "recompute": "grep -n logoPath /Users/MAC/graph-hacks/brand.json && ls /Users/MAC/graph-hacks/frontend/public/"
+    }
+  ],
+
   "formalize": {
     "complete": true,
     "designApplied": true,
     "briefRead": false,
     "briefReadReason": "DEV-DF-002 — no graph-hacks brief exists. In-repo governing corpus read in full and hashed above.",
-    "testsEmitted": 21,
+    "testsEmitted": 28,
     "testFiles": [
       "frontend/design-tests/contract-honesty.design.test.mjs",
       "frontend/design-tests/tokens.design.test.mjs"
     ],
     "testCommand": "cd /Users/MAC/graph-hacks/frontend && npm run test:design",
-    "testResult": { "pass": 21, "fail": 0 },
+    "testResult": { "pass": 28, "fail": 0 },
     "artifacts": [
-      { "path": "/Users/MAC/graph-hacks/DESIGN_SYSTEM.md", "lines": 340, "sha256_8": "23a9f6e2", "sections": ["Identity", "Tokens", "Status Legend", "Craft", "Primitives", "Motion"] },
-      { "path": "/Users/MAC/graph-hacks/brand.json", "lines": 47, "sha256_8": "9f6ecad3" }
+      { "path": "/Users/MAC/graph-hacks/DESIGN_SYSTEM.md", "lines": 818, "sha256_8": "0ca1a213", "sections": ["Identity", "Tokens", "Status Legend", "Craft", "Primitives", "Motion"] },
+      { "path": "/Users/MAC/graph-hacks/brand.json", "lines": 96, "sha256_8": "f967ab18" }
     ],
     "routesBuilt": [
       "/", "/remember", "/slots", "/slots/[key]", "/slots/[key]/graph",
       "/receipts/[id]", "/receipts/[id]/replay", "/review", "/proof"
     ],
-    "buildVerified": { "tsc": "exit 0", "next_build": "exit 0, 8/8 static pages" }
+    "buildVerified": { "tsc": "exit 0", "next_build": "exit 0, 10 routes, 102 kB shared First Load JS" }
   },
 
-  "refine": { "complete": false },
-  "logo_forge": { "complete": false },
+  "refine": {
+    "complete": false,
+    "partial": true,
+    "seniorDevPass": true,
+    "tokenAlignment": true,
+    "craftAudit": {
+      "pass": true,
+      "source": ".craft-law.json CONSUMED (RS-DESIGN WI-1) — not re-authored by design_forge",
+      "exit_code": 0,
+      "verdict": "pass",
+      "violations": []
+    },
+    "personaCritique": { "ran": false, "iterations": 0, "reason": "SC-DF-001 / DEV-DF-003" },
+    "renderQuality375": { "ran": false, "artifact": ".design-render-375.json", "present": false, "reason": "SC-DF-001 / DEV-DF-003" },
+    "integrationVerification": {
+      "ran": true,
+      "artifact": "/Users/MAC/graph-hacks/INTEGRATION-VERIFICATION.md",
+      "lines": 228,
+      "sha256_8": "87c49456",
+      "routesWalked": 9,
+      "consoleErrors": 1,
+      "consoleErrorsNote": "the single error is the deliberate 404 on /slots/nope%7Cmissing",
+      "defectsFound": 1,
+      "defectsFixed": 1,
+      "defect": "MarginBand rendered a ranking gap (`top_margin`, always positive) in the engine's decision language, so every contested slot drew a green ALLOW marker captioned \"the incoming claim displaces the incumbent\" — including customer:acme|primary_region, whose last verdict was BLOCK. Fixed by a context:\"decision\"|\"ranking\" split in src/components/scores.tsx plus the two ranking call sites.",
+      "defectPinnedBy": "frontend/design-tests/contract-honesty.design.test.mjs — 2 new tests; the first was PROVEN to fail by temporarily reverting one call site, then restored to green."
+    }
+  },
+
+  "logo_forge": { "complete": false, "ran": false, "reason": "SC-DF-001 / DEV-DF-003" },
   "logo_provider": null,
 
   "claims": [
@@ -90,16 +157,35 @@
     },
     {
       "claim": "The console renders correctly against a live MENGER engine.",
+      "state": "VERIFIED",
+      "evidence": "INTEGRATION-VERIFICATION.md §1–§4. GET /health 200, 6/6 boot assertions PASS, ε 0.05 λ 0.008 read from the server. All nine routes driven in a real browser against a production build on :3100; both POSTs (/remember, /receipts/{id}/replay) succeeded FROM THE BROWSER.",
+      "recompute": "curl -s http://localhost:8000/health | python3 -m json.tool && cd /Users/MAC/graph-hacks/frontend && npm run build && npx next start -p 3100"
+    },
+    {
+      "claim": "The headline product beat works through the UI, not only through the API.",
+      "state": "VERIFIED",
+      "evidence": "Filed customer:acme|primary_region = ap-south-1 citing src_blog_echo_a + src_blog_echo_b (two citations of one document) via the /remember form: BLOCK, independence 1, recorded true, clm_0066, receipt rcpt_0006, margin −0.8157. \"Two citations are not two sources\" is demonstrated by the product.",
+      "recompute": "INTEGRATION-VERIFICATION.md §4 → \"The headline beat works through the UI\"; re-file the same payload at http://localhost:3100/remember"
+    },
+    {
+      "claim": "The console is visually critiqued and carries a logo.",
       "state": "NOT_CLAIMED",
-      "reason": "The engine on :8000 has not been verified up from this chat. No live-API claim is permitted until integration is confirmed.",
-      "recompute": "curl -sS http://localhost:8000/health"
+      "reason": "refine-4 and logo_forge were set aside by SC-DF-001. No persona critique, no .design-render-375.json, logoPath null. Nothing in this run should be read as closing them.",
+      "recompute": "ls /Users/MAC/graph-hacks/.design-render-375.json /Users/MAC/graph-hacks/frontend/public/logo.svg"
     }
+  ],
+
+  "blockers_closed_for_downstream": [
+    "DS-C7 (CORS preflight) — closed as a NON-ISSUE by behaviour: the engine answers allow-headers: content-type, allow-methods: GET, POST, max-age: 600. The frozen contract under-documents the implementation; no amendment requested.",
+    "CL-F-009 RULING 2's open question — ANSWERED. Storage IS collapsed (app/cypher.py:252 → :FLOW {kind:'CITED'}, hence count(:DERIVED_FROM)=0); app/api.py::_wire_edge_type re-expands kind='DERIVED' → the string \"DERIVED_FROM\" on the wire to preserve the frozen edges[].type shape. Build's log and the observed payload AGREE — two layers, not a contradiction. The console reads `type` and renders 2 dashed against 24 solid.",
+    "UNKNOWN_SOURCE field convention — the engine returns the bare field name (field: \"sources\"), not CONTRACT.md's positional sources[1]. The console renders either."
   ],
 
   "constraints_honored": [
     "CONTRACT.md not amended — read-only to this chat; freeze verified by hash.",
     "epsilon / lambda / boot control values never written to source — enforced by design test 1.",
     "No commit, no push.",
-    "gh-falkor container not stopped, restarted or removed (F-11)."
+    "gh-falkor container not stopped, restarted or removed (F-11). The foreign uvicorn on :8000 was not touched either.",
+    "The console was served on :3100 because gh-falkor already publishes :3000 — port ownership checked before anything was started."
   ]
 }

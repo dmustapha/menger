@@ -1,5 +1,6 @@
 {
-  "status": "complete",
+  "status": "complete_with_blockers",
+  "status_note": "An independent distinct-model review (sonnet, code-reviewer, did not produce these artifacts) returned FAIL with 2 BLOCKERs. Both were fixed rather than waived. Status is NOT bare 'complete': the reviewer's point that a NOT_EVALUATED load-bearing gate cannot sit under a COMPLETE verdict is correct, and the cold-stranger evaluation remains PARTIAL. Dami's call on whether that blocks the demo take.",
   "working_dir": "/Users/MAC/graph-hacks",
   "project_name": "MENGER",
   "hackathon": "Graph Hacks: WeMakeDevs x FalkorDB",
@@ -13,7 +14,7 @@
     "missing": [".livetest-state.json", ".deploy-state.json"],
     "why_missing": "This pipeline is manually driven with no conductor (LEDGER R2). livetest was folded into deploy, and neither phase has written a state file yet. The skill's REQUIRED-input rule would BLOCK here.",
     "substituting_evidence": "The live-path exercise was run directly instead of read from a state file: tests/drill.sh executed end-to-end against the live engine at 18:39 WAT, 9/9 steps PASS, including step 9's BLOCK witness. /health boot checks pass live. Console verified rendering real engine data in real Chrome.",
-    "cold_stranger_gate": "NOT_EVALUATED - no .livetest-state.json exists, so coldStranger carries no FAIL-BLOCKER. This is an absence of evidence, not a pass. Flagged to Dami.",
+    "cold_stranger_gate": "PARTIAL - evaluated directly in real Chrome rather than read from a missing state file. EVIDENCE FOR: the stranger-facing surfaces do carry the G1->G2 two-number comparison. The slot detail page renders the refused claim (independence 1) beside the untouched incumbent (independence 2) on adjacent cards, so a stranger who sees a refusal also sees what it lost to. /remember explains the node split in the provenance field itself ('two citations sharing one origin count as one chain, not two'), lists agent and source ids harvested live from the corpus so a stranger can actually fill the form, and its ruling panel names all three verdicts before any submit. RESIDUAL GAP: no cold stranger was walked through an actual submit-to-refusal round trip in the UI, and there is no deployed public URL - everything is 127.0.0.1. This is an honest PARTIAL, not a pass.",
     "surfaced_to_user": true
   },
 
@@ -153,6 +154,36 @@
     "port_3000_is": "FalkorDB Browser (gh-falkor container UI) - NOT the MENGER console",
     "drill_last_run": "2026-10-18T18:39 WAT, 9/9 PASS",
     "health_boot_checks": "passed, epsilon 0.05 lambda 0.008, corpus 40 agents / 150 sources / 65 claims / 21 slots"
+  },
+
+  "take_review": {
+    "independent": true,
+    "reviewer_model": "sonnet (code-reviewer) - distinct from the producing session",
+    "reviewer_session": "agent a56189e9069760c55",
+    "verdict": "FAIL",
+    "re_derived_independently": "Reviewer did not trust the state file: re-ran /health, probed all 5 console routes, fired its own hero POST, re-grepped banned wording, and re-added the timing arithmetic.",
+    "blockers": [
+      { "id": "B1", "finding": "DEMO-SCRIPT.md hardcoded margin -0.8153; reviewer's own POST returned -0.8142. Margin drifts with recency decay, so a presenter would zoom in on a figure that will not appear.",
+        "resolution": "FIXED - the specific value was removed from the director's note. The script now points at the negative sign and explicitly forbids scripting a margin figure, citing both observed values." },
+      { "id": "B2", "finding": "cold_stranger_gate was NOT_EVALUATED while status said complete - a load-bearing gate marked absent cannot sit under a COMPLETE verdict.",
+        "resolution": "PARTIALLY FIXED - the gate was actually evaluated in real Chrome instead of waived, and the two-number G1->G2 comparison was confirmed present on the stranger-facing surfaces. Residual gap (no UI round trip, no public URL) is recorded, and status was downgraded to complete_with_blockers. Dami rules on whether the residual blocks the take." }
+    ],
+    "warnings": [
+      { "id": "W3", "finding": "'four contenders' is fragile - reviewer's own POST made it five.",
+        "resolution": "FIXED - the count was removed from the director's note and a re-run-the-drill instruction was added." },
+      { "id": "W4", "finding": "footguns_acknowledged is false under a COMPLETE verdict.",
+        "resolution": "EXPLAINED - the block condition is (critical > 0 AND acknowledged == false). Open CRITICAL is 0 because both CRITICALs are dispositioned fixed with proof, so the flag is not load-bearing here. Left false because Dami has not personally signed the footgun table, and setting it true myself would be self-acknowledgement." }
+    ],
+    "reviewer_confirmed_good": "Engine live with all boot checks passing; all 5 console routes HTTP 200; hero POST returns BLOCK/REFUSED/recorded/receipt_id with clm_0007 byte-identical and still ranked first; every [SUB] narration line independently grep-verified free of banned wording; both CRITICAL dispositions carry verifiable proof rather than assertions.",
+    "re_review_obligation": "The two fixes above were made AFTER the FAIL verdict and have not themselves been re-reviewed. A re-review is owed before the take is treated as gate-clean."
+  },
+
+  "executable_gate": {
+    "script": "/Users/MAC/pipeline-2b-worktree/utils/demo-rehearsal-gate.sh",
+    "ran": true,
+    "verdict": "PASS",
+    "exit_code": 0,
+    "caveat": "The gate passed on the same artifacts the independent reviewer FAILED. The gate checks structural completeness - every step ran_live with proof, every hazard dispositioned - and cannot see a drifting hardcoded number or an unevaluated upstream gate. Recorded because a green gate certifies the absence of a defect class, never the quality of the take."
   },
 
   "phase_ledger": [
