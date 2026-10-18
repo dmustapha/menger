@@ -142,7 +142,14 @@ function SlotDocket({ data }: { data: SlotDetail }) {
               distance to report.
             </p>
           ) : (
-            <MarginBand margin={data.top_margin} epsilon={data.epsilon} size="lg" />
+            // `top_margin` is the gap between rank #1 and rank #2, not a verdict the
+            // engine entered — see MarginBand's contract note.
+            <MarginBand
+              margin={data.top_margin}
+              epsilon={data.epsilon}
+              size="lg"
+              context="ranking"
+            />
           )}
         </Panel>
       </section>

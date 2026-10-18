@@ -264,7 +264,13 @@ function MoneyShot() {
             distance between two claims, and there is no second one here.
           </p>
         ) : (
-          <MarginBand margin={detail.top_margin} epsilon={detail.epsilon} size="lg" />
+          // ranking gap, not an adjudicated margin — see MarginBand's contract note.
+          <MarginBand
+            margin={detail.top_margin}
+            epsilon={detail.epsilon}
+            size="lg"
+            context="ranking"
+          />
         )}
         <div className="mt-4 flex flex-wrap gap-2.5">
           <ButtonLink href={`/slots/${encodeURIComponent(detail.slot_key)}/graph`} tone="primary">

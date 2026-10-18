@@ -17,7 +17,7 @@ CLM-14.b   PASS         expected=4 actual=4
 CLM-15     PASS         expected=0 actual=0
 CLM-11     PASS         expected=0 actual=0
 CLM-12     PASS         expected=0 actual=0
-CLM-10.1   MEASURED     copy_wall=143.2ms ping_baseline=40.6ms
-CLM-10.2   MEASURED     copy_wall=103.9ms ping_baseline=41.7ms
-CLM-10.3   MEASURED     copy_wall=106.8ms ping_baseline=39.3ms
-CLM-10.f   PASS         expected=584 actual=584
+CLM-10.1   MEASURED     copy_wall=136.6ms ping_baseline=54.3ms
+CLM-10.2   MEASURED     copy_wall=64.1ms ping_baseline=42.9ms
+CLM-10.3   MEASURED     copy_wall=87.8ms ping_baseline=45.7ms
+CLM-10.f   PASS         expected=586 actual=586

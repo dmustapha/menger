@@ -1,0 +1,174 @@
+{
+  "status": "complete",
+  "working_dir": "/Users/MAC/graph-hacks",
+  "project_name": "MENGER",
+  "hackathon": "Graph Hacks: WeMakeDevs x FalkorDB",
+  "autonomous_mode": false,
+  "run_profile": "SPRINT",
+  "timestamp": "2026-10-18T18:57:00+01:00",
+
+  "invocation_note": "demo_rehearsal is marked SKIP in LEDGER.md Decision #8 (judging is artifact-only; no live demo, no judging call). Dami explicitly overrode that skip in-chat: 'first start with demo rehearsal'. User instruction takes precedence over the in-repo decision. Run as a real rehearsal, not a formality.",
+
+  "required_input_waiver": {
+    "missing": [".livetest-state.json", ".deploy-state.json"],
+    "why_missing": "This pipeline is manually driven with no conductor (LEDGER R2). livetest was folded into deploy, and neither phase has written a state file yet. The skill's REQUIRED-input rule would BLOCK here.",
+    "substituting_evidence": "The live-path exercise was run directly instead of read from a state file: tests/drill.sh executed end-to-end against the live engine at 18:39 WAT, 9/9 steps PASS, including step 9's BLOCK witness. /health boot checks pass live. Console verified rendering real engine data in real Chrome.",
+    "cold_stranger_gate": "NOT_EVALUATED - no .livetest-state.json exists, so coldStranger carries no FAIL-BLOCKER. This is an absence of evidence, not a pass. Flagged to Dami.",
+    "surfaced_to_user": true
+  },
+
+  "footguns_critical": 2,
+  "footguns_critical_open": 0,
+  "footguns_high": 4,
+  "footguns_low": 3,
+  "footguns_open": 0,
+  "footguns_acknowledged": false,
+  "footguns_path": "/Users/MAC/graph-hacks/DEMO-FOOTGUNS.md",
+  "demo_script_path": "/Users/MAC/graph-hacks/DEMO-SCRIPT.md",
+
+  "hazards": [
+    { "id": "FG-001", "severity": "CRITICAL", "cause": "service-not-running", "disposition": "fixed",
+      "proof": "Console was not running; :3000 is FalkorDB Browser. Started console on :3001 (PID 9304). 5/5 routes HTTP 200; two live Chrome screenshots show real engine data (clm_0065 REFUSED independence 1 beside clm_0007 independence 2)." },
+    { "id": "FG-002", "severity": "HIGH", "cause": "wrong-host-silent", "disposition": "accepted",
+      "reason": "Console API base defaults to http://localhost:8000 (src/lib/api.ts:20). The foreign IPv6 listener from DEV-004 is gone - [::1]:8000 refuses, only Python 90866 on 127.0.0.1:8000. A proper fix needs a NEXT_PUBLIC_MENGER_API rebuild; not worth the deadline risk. Guarded by a documented pre-flight check." },
+    { "id": "FG-003", "severity": "HIGH", "cause": "unverifiable-claim", "disposition": "accepted",
+      "reason": "41ms/11ms measures the engine on a different graph, not MENGER. Excluded from every narration line." },
+    { "id": "FG-004", "severity": "HIGH", "cause": "unverifiable-claim", "disposition": "accepted",
+      "reason": "Roster dataset has no backing artifact (CL-F-008). Corpus counts are read live from /health instead." },
+    { "id": "FG-005", "severity": "CRITICAL", "cause": "wording-violation", "disposition": "fixed",
+      "proof": "Script says 'removing the graph algorithms' (DEMO-SCRIPT.md:124). grep confirms zero occurrences of the banned phrasing in any [SUB] narration line." },
+    { "id": "FG-006", "severity": "HIGH", "cause": "wording-violation", "disposition": "fixed",
+      "proof": "grep -niE 'procedure|detects conflict|truth' returns hits only inside the prohibition table, never in narration." },
+    { "id": "FG-007", "severity": "HIGH", "cause": "unverified-pipeline", "disposition": "accepted",
+      "reason": "clean-room.sh exits 2 INCONCLUSIVE and CI has never executed. Script claims only the live drill, never CI." },
+    { "id": "FG-008", "severity": "LOW", "cause": "wording-violation", "disposition": "accepted",
+      "reason": "lambda is PINNED not calibrated; script says 'pinned' and reads epsilon/lambda from /health." },
+    { "id": "FG-009", "severity": "LOW", "cause": "stale-state", "disposition": "accepted",
+      "reason": "drill.sh step 0 re-seeds and renumbers claims; script runs the drill before rolling and fires only a single POST on camera." },
+    { "id": "FG-010", "severity": "LOW", "cause": "foreign-surface", "disposition": "accepted",
+      "reason": "Single-tab framing note in Pre-Recording Setup keeps :3000 off camera." }
+  ],
+
+  "steps": [
+    { "step": 1, "screen": "console /slots/customer:acme|primary_region", "ran_live": true, "outcome": "PASS",
+      "evidence": "Chrome screenshot ss_9191kgcab - 4 contenders, three components separate, eps=0.05 lambda=0.008 read from response" },
+    { "step": 2, "screen": "console /proof", "ran_live": true, "outcome": "PASS",
+      "evidence": "Chrome screenshot ss_6382q4zrb - node_split_echo expected 1 actual 1 PASS, node_split_independent expected 2 actual 2 PASS, page labels its live half explicitly" },
+    { "step": 3, "screen": "console /slots/{key}/graph", "ran_live": true, "outcome": "PASS",
+      "evidence": "drill.sh step 8 PASS - subgraph has nodes and at least one witness set" },
+    { "step": 4, "screen": "terminal - the hero BLOCK", "ran_live": true, "outcome": "PASS",
+      "evidence": "Live POST at 17:39:34Z returned verdict BLOCK, status REFUSED, recorded true, margin -0.8153, claim_id clm_0065, incoming independence 1 vs incumbent clm_0007 independence 2. drill.sh step 9 PASS: incumbent byte-identical across the write." },
+    { "step": 5, "screen": "console /receipts/{id} + replay", "ran_live": true, "outcome": "PASS",
+      "evidence": "drill.sh steps 6-7 PASS - GRAPH.RO_QUERY on every statement, components un-blended, independence witness present, replay matches_original with RECENCY_DECAY-only divergence" },
+    { "step": 6, "screen": "console /review", "ran_live": true, "outcome": "PASS",
+      "evidence": "drill.sh steps 4-5 PASS - UNDECIDED opened rev_0001, margin 0.0246 within epsilon 0.05" },
+    { "step": 7, "screen": "console /proof lower half - the boundary", "ran_live": true, "outcome": "PASS",
+      "evidence": "Chrome screenshot ss_6382q4zrb - page separates the live half from the standing argument by construction" }
+  ],
+
+  "wow_moments_total": 4,
+  "wow_moments_verified": 4,
+  "wow_moments_degraded": 0,
+  "wow_moments_broken": 0,
+  "wow_moments": [
+    { "name": "the 1-versus-2 node-split pair", "status": "WOW-VERIFIED", "note": "on screen at /proof with PASS badges; this is the narrative lead" },
+    { "name": "the real BLOCK into an occupied slot", "status": "WOW-VERIFIED", "note": "live POST, incumbent byte-identical afterwards" },
+    { "name": "receipt + replay", "status": "WOW-VERIFIED", "note": "verbatim parameterised Cypher, reproduces" },
+    { "name": "UNDECIDED lands in the review queue", "status": "WOW-VERIFIED", "note": "nothing silently lost" }
+  ],
+
+  "audio_strategy": "separate",
+  "pacing_mode": "gap",
+  "audio_strategy_rationale": "Quiet-room and microphone checks cannot be confirmed without the user present. 'separate' is the safe lock: capture the screen silently, add narration in post. No take is lost to room noise.",
+
+  "recordings": [
+    { "scene_id": "scene1_coldopen", "file_path": "video/scene1_coldopen.mp4", "resolution": "1920x1080", "expected_duration_s": 15, "audio_strategy": "separate" },
+    { "scene_id": "scene2_proof", "file_path": "video/scene2_proof.mp4", "resolution": "1920x1080", "expected_duration_s": 27, "audio_strategy": "separate" },
+    { "scene_id": "scene3_graph", "file_path": "video/scene3_graph.mp4", "resolution": "1920x1080", "expected_duration_s": 18, "audio_strategy": "separate" },
+    { "scene_id": "scene4_block", "file_path": "video/scene4_block.mp4", "resolution": "1920x1080", "expected_duration_s": 42, "audio_strategy": "separate" },
+    { "scene_id": "scene5_receipt", "file_path": "video/scene5_receipt.mp4", "resolution": "1920x1080", "expected_duration_s": 30, "audio_strategy": "separate" },
+    { "scene_id": "scene6_review", "file_path": "video/scene6_review.mp4", "resolution": "1920x1080", "expected_duration_s": 20, "audio_strategy": "separate" },
+    { "scene_id": "scene7_boundary", "file_path": "video/scene7_boundary.mp4", "resolution": "1920x1080", "expected_duration_s": 18, "audio_strategy": "separate" }
+  ],
+  "planned_total_duration_s": 170,
+  "duration_ceiling_s": 180,
+
+  "narration_chunks": {
+    "scene1_coldopen": [
+      "An agent is about to write a fact into another agent's memory.",
+      "This is the slot it wants to write to, and it is already contested.",
+      "Independence, reliability and recency - reported separately, never blended."
+    ],
+    "scene2_proof": [
+      "The probe failed first. That is the honest version of this story.",
+      "Run max-flow naively on the echo graph and it returns two -",
+      "two citations that look like two independent sources.",
+      "They are not. They funnel through one shared origin.",
+      "Splitting every source node into an in-half and an out-half returns one.",
+      "One versus two is the only evidence the split does any work.",
+      "Both controls run before the service agrees to answer anything."
+    ],
+    "scene3_graph": [
+      "The split is not hidden - it is the mechanism.",
+      "Max-flow over this graph counts vertex-disjoint chains,",
+      "which is Menger's theorem doing the work a heuristic would fake."
+    ],
+    "scene4_block": [
+      "A single low-trust blog, echoed, tries to overwrite the region.",
+      "Independence one, against the incumbent's two.",
+      "The verdict is BLOCK. The status is REFUSED.",
+      "And it is still recorded - a refusal is an auditable event, not a silent drop.",
+      "The incumbent is untouched. Same claim, same value, same timestamp.",
+      "A gate that returns the string BLOCK while quietly promoting the loser",
+      "is strictly worse than no gate, because the receipt would say the right thing."
+    ],
+    "scene5_receipt": [
+      "Every verdict ships a receipt.",
+      "This is the exact text that ran - a single parameterised Cypher query,",
+      "through the read-only command, with the independence witness attached.",
+      "Replay re-executes it and diffs the result. It reproduces.",
+      "Recency drifts, because time moves. Nothing else does."
+    ],
+    "scene6_review": [
+      "When the margin falls inside epsilon, the graph refuses to pretend.",
+      "The write is not allowed and not blocked - it is queued for a human.",
+      "Epsilon is zero point zero five, published by the engine, not by this console."
+    ],
+    "scene7_boundary": [
+      "What this does not do: it does not decide which claim is correct.",
+      "It is admission control. The score is ordinal - a rank, never a probability.",
+      "It has no latency, throughput or accuracy numbers, because none were measured.",
+      "And removing the graph algorithms does not degrade the product.",
+      "It removes the output entirely."
+    ]
+  },
+
+  "live_environment": {
+    "engine": "http://127.0.0.1:8000",
+    "engine_pid": 90866,
+    "console": "http://127.0.0.1:3001",
+    "console_pid": 9304,
+    "console_owned_by_this_session": true,
+    "console_kill_note": "Started by demo_rehearsal for filming. Long-running BY DESIGN until the demo take is captured. Kill: kill 9304",
+    "port_3000_is": "FalkorDB Browser (gh-falkor container UI) - NOT the MENGER console",
+    "drill_last_run": "2026-10-18T18:39 WAT, 9/9 PASS",
+    "health_boot_checks": "passed, epsilon 0.05 lambda 0.008, corpus 40 agents / 150 sources / 65 claims / 21 slots"
+  },
+
+  "phase_ledger": [
+    { "phase": "footgun_inventory", "started_at": "2026-10-18T18:41:00+01:00", "completed_at": "2026-10-18T18:52:00+01:00",
+      "evidence": "DEMO-FOOTGUNS.md written with 10 footguns (2 CRITICAL, 4 HIGH, 3 LOW + FG-010), every row carrying a cause tag and a disposition; 0 open. FG-001 discovered live: :3000 serves FalkorDB Browser, console was not running at all." },
+    { "phase": "wow_verification", "started_at": "2026-10-18T18:39:00+01:00", "completed_at": "2026-10-18T18:50:00+01:00",
+      "evidence": "4/4 WOW-VERIFIED against the live stack. drill.sh 9/9 PASS at 18:39 WAT; two real-Chrome screenshots (ss_9191kgcab slot detail, ss_6382q4zrb proof page) show real engine data, not fixtures." },
+    { "phase": "recording_env_checklist", "started_at": "2026-10-18T18:50:00+01:00", "completed_at": "2026-10-18T18:52:00+01:00",
+      "evidence": "audio_strategy locked to 'separate' -> pacing_mode 'gap'; quiet-room/mic checks not confirmable without the user, so the silent-capture path was chosen deliberately rather than assumed." },
+    { "phase": "pre_recording_checklist", "started_at": "2026-10-18T18:52:00+01:00", "completed_at": "2026-10-18T18:54:00+01:00",
+      "evidence": "7-item setup block in DEMO-SCRIPT.md including the FG-002 pre-flight host guard and the 1920x1080 OffthreadVideo constraint." },
+    { "phase": "script_generation", "started_at": "2026-10-18T18:52:00+01:00", "completed_at": "2026-10-18T18:56:00+01:00",
+      "evidence": "DEMO-SCRIPT.md: 7 steps, 170s planned against a 180s ceiling, 33 [SUB] chunks. grep proves zero banned terms in narration and 'removing the graph algorithms' present at line 124." },
+    { "phase": "post_recording_deliverables", "started_at": "2026-10-18T18:56:00+01:00", "completed_at": "2026-10-18T18:57:00+01:00",
+      "evidence": "7 recording entries with scene_id/file_path/resolution/expected_duration_s/audio_strategy, plus narration_chunks keyed per scene parsed from the [SUB] lines." },
+    { "phase": "state_write", "started_at": "2026-10-18T18:57:00+01:00", "completed_at": "2026-10-18T18:57:00+01:00",
+      "evidence": "/Users/MAC/graph-hacks/.demo-rehearsal-state.json written with steps[] all ran_live:true, hazards[] all dispositioned, run_profile SPRINT, and the required_input_waiver surfaced rather than silently passed." }
+  ]
+}

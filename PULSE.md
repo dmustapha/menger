@@ -684,3 +684,123 @@ The load-bearing ones:
 - **`package`:** λ is `0.0080/hour` and ε is `0.05`, and both must be read from `/health` in any
   copy that quotes them. Do **not** write "calibrated" — AF-18. And do not quote the
   384/267/71/17/33/18 roster dataset: it has no retained backing artifact (CL-F-008).
+
+---
+
+## [phase:design_forge] status=complete_with_scope_change
+
+**Run window:** 2026-10-18 ~15:40–17:40 WAT. Working dir `/Users/MAC/graph-hacks`.
+**Scope change, mid-run, from Dami:** *"dont worry about beauty. make sure the product works
+(the ui works perfectly with the product integrated)"*. This is a change-order, not a
+timebox rationalisation (PIPELINE-COMMON §9): the aesthetic tail of the pipeline was set
+aside **by instruction** in favour of proving integration. What was dropped is named in
+"Not Done" below and is not reported as finished.
+
+### What Landed
+
+- **Phase 1 `formalize` — complete.** `DESIGN_SYSTEM.md` (6 sections) + `brand.json`
+  extracted from the built console, every value traceable to code. 26 dreyth design tests
+  emitted under `frontend/design-tests/`.
+- **Phase 1.5 amplifier — complete, all three stages.** `peer_verify_adopts` rc 0, 18/23
+  adopted points landed, **1 LIP-SERVICE ADOPT escalation**. All 5 not-landed findings
+  triaged in `ESCALATION-design.md`: 2 refuted with evidence (`strong-3`, `bold-4` —
+  verifier read absence-from-the-diff as absence-from-the-tree; the file is on disk at
+  8390 B with 12 passing tests), 3 fixed (`strong-5`, `diff-5` both halves), 1 deferred to
+  `logo_forge` (`diff-4`), 1 standing as Dami's aesthetic call (`diff-1`).
+  `amp_summary` claimed to write that escalation file and a PULSE row and wrote neither —
+  both were authored by hand rather than dropped.
+- **`.craft-law.json` — present, `exit_code: 0`, `verdict: pass`,** CF-1..CF-7 all ran,
+  0 violations, 0 exemptions. Produced by running the canonical producer
+  `utils/craft-lint.sh`, **not** hand-authored — the verdict is derived from an exit code
+  (LAW#2). Note the skill expects design_forge to *consume* an artifact `ui-revamp`
+  produced; `ui-revamp` never ran here (no upstream design phase, CL-F-006), so the
+  producer was located and run rather than the artifact faked green.
+- **Integration verification — the new priority, and the substantial result.** Full record
+  in **`INTEGRATION-VERIFICATION.md`**. Nine routes driven in a real browser against the
+  live engine; the write gate exercised through the form; one real defect found and fixed.
+
+### Blockers Closed for Downstream
+
+- **`DS-C7` (CORS preflight) is CLOSED as a non-issue.** The engine answers the preflight in
+  full — `access-control-allow-headers: content-type`, `allow-methods: GET, POST`,
+  `max-age: 600`. Confirmed by behaviour, not by reading source: both POSTs succeeded
+  **from the browser**. The frozen contract under-documents what the engine implements,
+  which is the safe direction of drift. No amendment requested; `CONTRACT.md` untouched.
+- **`CL-F-009 RULING 2`'s open question is ANSWERED — and the collapse and the wire shape
+  are two different layers, not a contradiction.** Storage IS collapsed exactly as RULING 2
+  required (`app/cypher.py:252` → `CREATE (so)-[:FLOW {cap:1.0, nl:0.0, kind:'CITED'}]->(c)`,
+  hence build's `count(:DERIVED_FROM)=0` at VF-7), because `algo.maxFlow` takes exactly one
+  `relationshipTypes` entry. On the wire, `app/api.py::_wire_edge_type` re-expands
+  `kind='DERIVED'` → the string `"DERIVED_FROM"` to preserve the frozen `edges[].type`
+  shape — so `/slots/{key}/graph` carries no `kind`, and the observed `{FLOW: 14,
+  DERIVED_FROM: 2}` on `type` **agrees with** build's log rather than contradicting it.
+  The console's `kind`-then-`type` fallback falls through to `type`, which is the correct
+  field, and renders the distinction: exactly 2 dashed edges against 24 solid. The feared
+  all-solid collapse does not occur.
+  **No question remains outstanding to the engine chat on this point.**
+- **`UNKNOWN_SOURCE` field convention — answered by observation.** The engine returns the
+  bare field name (`field: "sources"`), not the positional form (`sources[1]`) in
+  CONTRACT.md's example. The console renders either. No change needed.
+- **DEV-003 stands but is harmless.** `gh-falkor` publishes `:3000`, so the console was
+  served on **`:3100`**. The container was treated as read-only throughout (F-11) — never
+  stopped, restarted or removed. Port ownership was checked before anything was touched.
+
+### The Defect Worth Carrying Forward
+
+`MarginBand` rendered a **ranking gap** in the engine's **decision** language. `top_margin`
+(the distance between a slot's rank #1 and #2) is always positive, so the decision branch
+always won: every contested slot drew a green ALLOW marker and captioned itself *"the
+incoming claim displaces the incumbent"* — on `customer:acme|primary_region`, whose last
+recorded verdict was **BLOCK**, and where no claim is being adjudicated at all. Exactly the
+class of over-claim CONTRACT.md §0 exists to prevent.
+
+Fixed by giving the component a `context: "decision" | "ranking"` split; in ranking context
+it reads "lead over #2", wears no verdict colour, and states that it is a gap and not a
+verdict. Pinned by **two new tests**, and the first was **proven to bite** by temporarily
+reverting a call site and watching it fail before restoring green.
+
+**Lesson for any downstream surface:** a quantity's *name* is not its *meaning*. Two things
+called "margin" arrive from this API and only one of them carries a verdict.
+
+### Verified State
+
+```
+GET /health                 → ok, 6/6 boot assertions PASS, ε 0.05, λ 0.008
+npx tsc --noEmit            → exit 0
+npm run test:design         → 28 tests, 28 pass, 0 fail
+npm run build               → 10 routes, 102 kB shared First Load JS
+.craft-law.json             → exit_code 0, verdict pass
+console errors, 9-route walk→ 1, the deliberate 404
+```
+
+**No commit, no push.** `CONTRACT.md` not amended. ε and λ are read from `/health` on every
+surface that quotes them; neither is written into the console source.
+
+### Not Done — deprioritised by the change-order, NOT completed
+
+- Phase 2 `refine-4` **persona critique** — the 3 parallel agents and the zero-context CTA
+  agent never ran. CTA findability is therefore **unmeasured**.
+- **`.design-render-375.json`** was never written. The 375px render was observed clean
+  (`overflow_x: false`) via CDP viewport emulation on `/` and `/proof`, but the
+  render-quality record itself does not exist, so `utils/render-quality-gate.sh` will red.
+- Phase 3 **`logo_forge` never ran**; `brand.json.logoPath` is still `null`. The
+  `design-library-hygiene-gate.sh` will red on this, correctly.
+- `ESCALATION-design.md` `diff-1` (accent on controls vs the UNDECIDED chip) stands as a
+  **defended decision**, resolved by chroma separation rather than by removing the accent.
+  Aesthetics are Dami's call and he may overrule it.
+
+### For Next Skill
+
+- **`verify_milestone`:** the live-engine claim is now **VERIFIED**, not NOT_CLAIMED, and
+  `INTEGRATION-VERIFICATION.md` carries the Recompute commands for every figure in it.
+  DS-C7 can be struck from the blocker list. Do **not** mark design_forge fully complete:
+  three of its gates (render-quality, library-hygiene, persona-critique) will red, and they
+  red *correctly* — the work was set aside by instruction, not finished.
+- **`demo`:** the hero beat is proven to work through the UI, not just through curl.
+  Filing `customer:acme | primary_region = ap-south-1` with `src_blog_echo_a` +
+  `src_blog_echo_b` returns **BLOCK, independence 1, receipt rcpt_0006** — two citations of
+  one document counted once. Then open that receipt and hit replay: it says **REPRODUCED**,
+  9 statements re-run live. That is the whole pitch in two clicks.
+- **`master-chat`:** the console is served from a production build on **`:3100`**, not
+  `:3000` — `gh-falkor` holds `:3000`. Any demo script, README or submission URL must say
+  3100.

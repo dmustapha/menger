@@ -164,3 +164,37 @@ test("no cached verdict can be rendered under a live header", () => {
     "the error state must carry data: null",
   );
 });
+
+test("a ranking gap is never rendered in the engine's decision language", () => {
+  // `top_margin` is the distance between a slot's rank #1 and rank #2. It is always
+  // positive and nothing is being adjudicated by it. The signed margin the engine
+  // enters against an incoming claim is a different quantity whose sign IS the verdict.
+  // Rendering the first with the second's prose made every contested slot read as an
+  // ALLOW — including slots whose last recorded verdict was BLOCK.
+  for (const f of files) {
+    const text = stripComments(f.text);
+    for (const m of text.matchAll(/<MarginBand\b[\s\S]*?\/>/g)) {
+      const call = m[0];
+      if (!/top_margin/.test(call)) continue;
+      assert.match(
+        call,
+        /context=\{?["']ranking["']\}?/,
+        `${f.rel} passes top_margin to <MarginBand> without context="ranking", so a ranking ` +
+          `gap would be captioned as an adjudicated verdict`,
+      );
+    }
+  }
+});
+
+test("MarginBand's decision prose is reachable only from the decision context", () => {
+  const scores = read(join(SRC, "components", "scores.tsx"));
+  assert.match(scores, /context\?:\s*"decision"\s*\|\s*"ranking"/, "the two margins must be distinguished by type");
+  // The claim that an incoming claim displaced an incumbent must sit behind the
+  // decision branch, never in prose shared with the ranking view.
+  const idx = scores.indexOf("displaces the incumbent");
+  assert.ok(idx > 0, "the decision caption must still exist");
+  assert.ok(
+    scores.lastIndexOf("ranking", idx) > 0,
+    "the displacement claim must be guarded by the ranking/decision split",
+  );
+});

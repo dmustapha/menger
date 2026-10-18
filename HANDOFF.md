@@ -1,0 +1,173 @@
+# HANDOFF
+
+The one page a judge or a teammate opens to reproduce MENGER from a cold clone.
+
+---
+
+## Target commit
+
+```bash
+git clone https://github.com/dmustapha/menger && cd menger
+git checkout main
+```
+
+`main` is the submitted tip. Take it rather than a fixed SHA, because the submission
+documentation (`README.md`, `docs/CYPHER-QUERIES.md`, `submission/`) lands on top of the
+engine commit.
+
+**`327da93`** is the commit at which the engine evidence in
+[`evidence/claims.txt`](evidence/claims.txt) was recorded: *"MENGER — admission-control gate
+on agent memory (Graph Hacks, FalkorDB)"*. Everything in `app/`, `tests/` and `scripts/` is
+unchanged from that commit, so the verification below re-derives identically at either
+revision. Commits after it are documentation and the submission bundle.
+
+This closes closure-ledger row **CL-F-007** (HANDOFF.md needs a commit SHA).
+
+---
+
+## Fresh-clone verify
+
+Four commands from a cold clone. No keys, no network, no external API.
+
+```bash
+docker run -d --name gh-falkor -p 6379:6379 -p 3000:3000 falkordb/falkordb:v4.22.1
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+python3 -m app.seed
+bash scripts/verify.sh
+```
+
+Expected output, verbatim tail:
+
+```
+verify OK — gate green (offline + integration; live tier excluded by design)
+```
+
+`scripts/verify.sh` is the single release gate, reused byte-identical in local dev and CI.
+It runs five steps:
+
+| Step | Expected |
+|---|---|
+| syntax, every module compiles | OK |
+| no cardinal-probability vocabulary on the scoring surface | `0` hits |
+| no overreach vocabulary anywhere in the engine | `0` hits |
+| offline unit tier, `tests/unit/arbiter_math.test.sh` | **14/14** |
+| claims re-derivation, `scripts/verify-claims.sh all` | **21 rows, all PASS** |
+
+The claims tail ends with:
+
+```
+verify-claims OK — every re-derived number matches CLAIMS.md
+evidence written to evidence/claims.txt
+```
+
+The two rows that carry the argument, and the only two worth checking by hand:
+
+```
+CLM-1      PASS         expected=1 actual=1      # echo chamber scores 1
+CLM-2      PASS         expected=2 actual=2      # two vertex-disjoint origins score 2
+```
+
+### The end-to-end drill
+
+Excluded from the gate on purpose, because it needs a listening API and a gate that silently
+started a server would pass for reasons the reader cannot see.
+
+```bash
+python3 -m uvicorn app.api:app --port 8000 &
+bash tests/drill.sh          # 9 steps, all OK
+bash tests/boot_drill.sh     # boot assertions T-1..T-4 pass
+```
+
+Step 9 is the one to watch. A losing write into an occupied slot returns `verdict BLOCK`
+with `status REFUSED`, `recorded true` and a non-null `receipt_id`, then the slot is re-read
+and the incumbent is proven unchanged, with `asserted_at` byte-identical across the write.
+
+### Boot is itself a check
+
+```bash
+curl -sS http://127.0.0.1:8000/health | python3 -m json.tool
+```
+
+`"ok": true` with every `boot_checks` entry `"pass": true`. On a mismatch the API returns
+**503 BOOT_ASSERTION_FAILED** rather than serving a wrong number. Read `epsilon` and
+`lambda` from here, never from a document.
+
+---
+
+## Demo walkthrough
+
+The reader-facing path is the **Verify in 60s** and **Complete local setup** sections of
+[`README.md`](README.md). Follow those; they are not duplicated here.
+
+Shortest route to seeing the product behave:
+
+1. `bash scripts/verify.sh`, and watch CLM-1 return `1` and CLM-2 return `2`. That pair is the
+   node split doing its work.
+2. Start the API, then `bash tests/drill.sh`, and watch step 9 refuse a write and leave the
+   incumbent untouched.
+3. `GET /receipts/{id}` on the receipt step 9 printed. Read the verbatim Cypher that
+   produced the verdict.
+4. `GET /slots/{key}/graph`, the provenance subgraph with the split pairs visible as
+   themselves.
+
+---
+
+## Do-not-modify (freeze list)
+
+These are load-bearing and frozen for review. Changing any of them invalidates the recorded
+proof.
+
+| Path | Why it is frozen |
+|---|---|
+| `app/cypher.py` | Every statement MENGER executes. The two `CALL algo.*` statements are the product. The `weightProp` spelling on line 77 is probe-pinned: `weightProperty` and `costProperty` silently return a hop count with no error. The inline `[VERIFIED ...]` markers are the evidence trail, not commentary. |
+| `app/config.py` | The only home for every tunable. `BOOT_*_EXPECTED` are the boot assertion constants. `LAMBDA_PER_HOUR = 0.0080` is **pinned by evidence, not calibrated**: re-seed the trusts, never re-tune lambda. |
+| `app/bootcheck.py` | Assertions T-1..T-4. The refusal to serve on mismatch is the safety property. |
+| `app/seed.py` | Deterministic (`SEED_RNG = 20261018`, frozen instant `2026-10-18T14:30:00Z`). Re-seeding with a different RNG invalidates every expected value in `CLAIMS.md`. |
+| `CLAIMS.md` + `scripts/verify-claims.sh` | The proof surface. The table and the script must move together or the gate is lying. |
+| `evidence/claims.txt` | The committed transcript. Regenerated by the script, never edited by hand. |
+| `CONTRACT.md` | **FROZEN v1.0.** Eight routes. Amendments are not a solo act. |
+| `docs/CYPHER-QUERIES.md` | The separately-listed submission artifact. Statements are quoted from `app/cypher.py`; the two must not drift. |
+
+### Two specific traps for anyone editing
+
+1. **Do not "tidy" `relationshipTypes:['FLOW']` into a list of kinds.** `algo.maxFlow`
+   accepts exactly one entry and errors on a second. Max-flow does not decompose over an
+   edge-type partition, so calling it per-kind and combining is unsound. That constraint is
+   why `:FLOW` carries a `kind` property at all.
+2. **Do not remove the node split to "simplify" the graph.** Unit-capacity max-flow over
+   edges counts edge-disjoint paths; the headline claim needs vertex-disjoint. The
+   `SourceIn`/`SourceOut` pair joined by a `cap:1.0` edge is what converts one into the
+   other. Remove it and CLM-1 silently starts returning the citation count instead of `1`,
+   with no error anywhere.
+
+---
+
+## Honest state at handoff
+
+Do not report these as green, because they are not.
+
+- **CI has never executed.** No workflow run exists. `scripts/verify.sh` is CI-ready and
+  green locally, but the claim "CI passes" is unproven.
+- **`scripts/clean-room.sh` exits `2 INCONCLUSIVE`.** It was written to prove a from-scratch
+  reproduction and has not produced a verdict.
+- **The counterfactual replay was not built.** `/x/counterfactual` in `app/api.py` sits
+  behind a dead import guard; `app/counterfactual.py` does not exist. It was scope-gated as
+  a stretch and never started.
+- **No hosted deployment.** Local setup only, which the submission rules permit.
+
+Full three-tier breakdown: [`submission/HONESTY-LEDGER.md`](submission/HONESTY-LEDGER.md).
+The eight deviations from plan: [`BUILD-REPORT.md`](BUILD-REPORT.md).
+
+---
+
+## Session hygiene
+
+The engine container is named `gh-falkor` and is pinned to `falkordb/falkordb:v4.22.1`. Stop
+it when you are finished:
+
+```bash
+docker stop gh-falkor && docker rm gh-falkor
+```
+
+The named volume `falkordb_data` survives `stop` and `rm`. Remove it with
+`docker volume rm falkordb_data` for a genuinely cold start, then re-run `python3 -m app.seed`.

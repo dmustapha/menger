@@ -115,15 +115,30 @@ export function OrdinalScore({
  * The margin is only legible against epsilon, and epsilon only ever arrives from
  * the server payload. There is no default, no placeholder and no literal — a missing
  * epsilon renders as a missing epsilon.
+ *
+ * Two different quantities reach this band and they do not mean the same thing:
+ *
+ *   `decision` — the signed margin the engine entered against an incoming claim
+ *                (`/remember`, `/receipts/{id}`, `/review`). Its sign IS the verdict:
+ *                above +ε admits, below −ε refuses, inside the band queues for review.
+ *   `ranking`  — `top_margin`, the distance between the slot's rank #1 and rank #2
+ *                (`/slots/{key}`, and the landing page's contested-slot panel). It is
+ *                a gap, never signed, and nothing is being adjudicated by it.
+ *
+ * Reading a ranking gap in decision language is how this band claimed "the incoming
+ * claim displaces the incumbent" on a slot whose last verdict was BLOCK: `top_margin`
+ * is always positive, so decision prose made every contested slot read as an ALLOW.
  */
 export function MarginBand({
   margin,
   epsilon,
   size = "sm",
+  context = "decision",
 }: {
   margin: number;
   epsilon: number | null | undefined;
   size?: "sm" | "lg";
+  context?: "decision" | "ranking";
 }) {
   if (epsilon === null || epsilon === undefined) {
     return (
@@ -134,6 +149,7 @@ export function MarginBand({
     );
   }
 
+  const ranking = context === "ranking";
   const inBand = Math.abs(margin) <= epsilon;
   const scale = Math.max(Math.abs(margin), epsilon * 3);
   const pct = (v: number) => 50 + (v / (scale * 2)) * 100;
@@ -144,7 +160,9 @@ export function MarginBand({
   return (
     <div className="w-full">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-micro uppercase tracking-[0.1em] text-paper-faint">margin</span>
+        <span className="text-micro uppercase tracking-[0.1em] text-paper-faint">
+          {ranking ? "lead over #2" : "margin"}
+        </span>
         <span className={`figure tabular-nums ${size === "lg" ? "text-lead" : "text-fine"}`}>
           {margin > 0 ? "+" : ""}
           {margin.toFixed(4)}
@@ -164,7 +182,9 @@ export function MarginBand({
         />
         <div
           className={`absolute inset-y-1 w-0.5 rounded-full ${
-            inBand ? "bg-undecided" : margin > 0 ? "bg-allow" : "bg-block"
+            // A ranking gap never wears a verdict colour — there is no verdict in it.
+            // Inside ε it is still worth flagging: the slot is too close to separate.
+            inBand ? "bg-undecided" : ranking ? "bg-paper-dim" : margin > 0 ? "bg-allow" : "bg-block"
           }`}
           style={{ left: `${marker}%` }}
           aria-hidden="true"
@@ -173,12 +193,17 @@ export function MarginBand({
 
       <p className="mt-1.5 text-micro text-paper-faint">
         ε = <span className="figure text-paper-dim">{epsilon}</span>, published by the engine at{" "}
-        <span className="font-mono">GET /health</span> and echoed on this decision.{" "}
-        {inBand
-          ? "|margin| ≤ ε, so the write is queued for review rather than decided."
-          : margin > 0
-            ? "margin > +ε, so the incoming claim displaces the incumbent."
-            : "margin < −ε, so the incoming claim is refused."}
+        <span className="font-mono">GET /health</span>
+        {ranking ? "." : " and echoed on this decision."}{" "}
+        {ranking
+          ? inBand
+            ? "The top two claims are separated by less than ε, so nothing here is settled — a write against this slot would be queued for review rather than decided."
+            : "This is the standing gap between the top two claims, not a verdict. No claim is being adjudicated on this screen; the gap only says how far the leader sits ahead of its nearest rival."
+          : inBand
+            ? "|margin| ≤ ε, so the write is queued for review rather than decided."
+            : margin > 0
+              ? "margin > +ε, so the incoming claim displaces the incumbent."
+              : "margin < −ε, so the incoming claim is refused."}
       </p>
     </div>
   );

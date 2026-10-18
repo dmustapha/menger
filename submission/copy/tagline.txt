@@ -1,0 +1,1 @@
+The graph itself decides whether an agent's memory write gets in.
