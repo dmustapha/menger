@@ -1,0 +1,39 @@
+# CI — the same gate that runs locally, byte-identical: `bash scripts/verify.sh`.
+# Offline tier only. The live tier (tests/*.live.sh) is deliberately NOT run here.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+
+    # The engine pin is load-bearing (AF-9): :latest is not a valid substitute.
+    services:
+      falkordb:
+        image: falkordb/falkordb:v4.22.1
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: install
+        run: pip install -r requirements.txt
+
+      - name: seed the synthetic corpus
+        run: python -m app.seed
+        env:
+          MENGER_REDIS_URL: redis://localhost:6379
+
+      - name: the one gate — identical to local
+        run: bash scripts/verify.sh
+        env:
+          MENGER_REDIS_URL: redis://localhost:6379
+          MENGER_CONTAINER: ""   # no docker exec in CI; the verifier falls back to the client

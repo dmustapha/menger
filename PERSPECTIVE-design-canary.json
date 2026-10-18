@@ -1,0 +1,134 @@
+{
+  "phase": "design",
+  "buckets": {
+    "how_i_read_this": {
+      "prose": "Read cold, this is not a design proposal — it is a transcription. The header says it plainly: \"Extracted from the built console at frontend/src/\", \"nothing here is aspirational\". So the artifact's actual genre is a conformance spec for code that already exists, dressed as a design system. That has real value (it makes drift detectable, and it gives a reviewer something falsifiable), but it means the design phase did documentation work rather than design work. Nobody in this document is asking whether dark-only is right, whether amber-as-both-accent-and-abstention survives a real screen, or whether the console's information architecture serves the argument. The decisions are presented as settled because the code settled them.\n\nOn the substance: the identity is unusually good. \"A court docket, not a dashboard\" is a generative constraint, not a mood board adjective — you can derive hairlines-over-shadows, tabular figures, and no-hover-lift directly from it, and the doc does exactly that. The Split Rule is the strongest thing here because it is not a motif applied to a product; it is the product's mechanism drawn at glyph scale. That is rare. Most \"signature elements\" in generated design systems are a gradient and a corner radius.\n\nWhere I part company with the builder: the system is internally inconsistent in ways the prose papers over, and brand.json and DESIGN_SYSTEM.md are not the same system. brand.json names the semantic slots success/warning/danger — generic dashboard vocabulary the doc spends a paragraph repudiating — and drops the SEEDED grey out of `semantic` entirely, while omitting the type scale, spacing, washes, and motion. If brand.json is \"the canonical machine form\" as claimed, then the canonical form is a lossy, differently-named subset. A consumer wiring from brand.json builds a different product than one wiring from the markdown.\n\nSo: on-track on identity and craft, solving-the-wrong-problem on phase intent, and carrying two unacknowledged contradictions (accent≡undecided, machine form≠doc form) that a self-assessment from inside would never surface.",
+      "points": [
+        {
+          "id": "read-1",
+          "claim": "The artifact is a post-hoc conformance spec extracted from already-built code, not a design proposal — it documents decisions rather than making or interrogating them."
+        },
+        {
+          "id": "read-2",
+          "claim": "The \"court docket, not a dashboard\" identity is a genuinely generative constraint: hairlines-over-shadow, tabular figures, and no-hover-lift all derive from it rather than being asserted."
+        },
+        {
+          "id": "read-3",
+          "claim": "brand.json is not a faithful machine form of DESIGN_SYSTEM.md: it uses success/warning/danger naming the doc explicitly rejects, omits the SEEDED tone from `semantic`, and drops type, spacing, washes, and motion entirely."
+        },
+        {
+          "id": "read-4",
+          "claim": "The strongest design move is that the signature element encodes the mechanism (split node = unit-capacity edge) rather than decorating it — this is not an ordinary logo-mark decision."
+        },
+        {
+          "id": "read-5",
+          "claim": "Because the document was written from inside the implementation, it treats every value as settled and never tests its own two central tensions (accent≡undecided, dark-only)."
+        }
+      ]
+    },
+    "whats_strong": {
+      "prose": "Protect the mechanism-as-signature chain. The line from \"corroboration must be counted over vertex-disjoint chains\" → \"therefore split every source into IN and OUT joined by one unit-capacity edge\" → \"therefore the mark IS a split with a hairline through it\" is the single most defensible thing in the artifact, and it is the thing a revision pass is most likely to sand off in the name of \"cleaner branding\". The three-scale discipline — argues on landing, labels in the console, is the subject on the graph route — is the right way to keep a signature from becoming wallpaper. Do not let a revision collapse those three into one reusable component with a size prop.\n\nProtect the honesty primitives. `MarginBand` renders a refusal to draw when `epsilon` is null. `OrdinalScore` puts the ordinality caveat adjacent rather than in a footer. `ComponentTriple` keeps three components as three cells and never blends them into a composite number. These are design decisions that cost the interface its prettiest options (a single big score, a clean gauge) in exchange for not lying. The framing that these are load-bearing rather than presentational — that bypassing them is a contract violation, not a style one — is the correct severity, and the ban on hardcoded engine constants with a test name attached makes it enforceable rather than hortatory.\n\nProtect the refusals. No light mode with a stated reason. No drop shadows at all, with elevation reassigned to lightness plus hairline. Nothing scales, translates, or lifts on hover, justified by \"a docket page does not move when you point at it\". One easing curve. One focus-visible declaration in `@layer base`, with any component-level ring declared a defect. A global reduced-motion kill-switch rather than per-component opt-outs. Each of these is a whole category of decision removed from downstream debate, which is what a design system is actually for. The complete-set framing on shadows (\"that is the complete set\") is worth keeping verbatim.\n\nProtect the Status Legend as a two-way contract. Naming `frontend/src/components/status.tsx`'s TONE map as the source of record and requiring the table to agree with it gives the doc a failure mode other than silent rot. The RECENCY_DECAY-is-neutral-never-red ruling is a genuinely sophisticated call: it refuses to alarm the reader about a divergence that is mathematically required to exist.",
+      "points": [
+        {
+          "id": "strong-1",
+          "claim": "The derivation chain from vertex-disjoint counting to the split-with-hairline mark is the artifact's most defensible asset and must survive revision intact — including the three-scale argues/labels/is-the-subject distinction."
+        },
+        {
+          "id": "strong-2",
+          "claim": "The honesty primitives (MarginBand refusing to draw on null epsilon, adjacent ordinality note, never-blended ComponentTriple) trade visual appeal for non-deception and are correctly classified as load-bearing rather than presentational."
+        },
+        {
+          "id": "strong-3",
+          "claim": "The hardcoded-engine-constants ban is enforceable rather than hortatory because it names a specific test file, which is the right pattern for every other \"never\" in the document."
+        },
+        {
+          "id": "strong-4",
+          "claim": "The explicit refusals — no light mode, no drop shadows, no hover motion, one easing curve, one focus ring, global reduced-motion kill-switch — each remove a whole category of downstream debate and are the real product of a design system."
+        },
+        {
+          "id": "strong-5",
+          "claim": "Designating the TONE map as source of record and requiring the legend table to agree gives the document a detectable failure mode instead of silent rot; the RECENCY_DECAY-is-never-red ruling shows real judgment."
+        }
+      ]
+    },
+    "what_id_do_differently": {
+      "prose": "First, I would break the amber collision instead of romanticising it. The doc is proud that the accent and the abstention share a pigment — \"the state MENGER is proudest of is the one where it declines to decide\". It reads well and it fails on a screen. Amber is simultaneously: the primary button fill, the focus-visible outline, the inline link colour at rest, the witness chips, the SplitMark, the `shadow-glow` on the element carrying the argument, the ε band, and the UNDECIDED/QUEUED/OPEN verdict. The doc's own rule 4 says \"if a colour is carrying meaning it must be in the Status Legend; if it is not, it is decoration, and decoration does not get colour\" — and then spends amber on buttons, links, and focus rings, none of which are states. A reader on a claim page sees an amber CTA next to an amber UNDECIDED tag and must disambiguate by shape alone. My move: keep one accent hue for argument-focus, and give abstention its own value — a desaturated amber (lower chroma, same hue family) so UNDECIDED reads as withheld rather than as emphasis. In the tokens, at minimum, make the dependency explicit and auditable: today `--color-undecided` and `--color-accent` are two independent literals with the same value, so retuning the accent silently retunes a verdict colour.\n\nSecond, I would fix the contrast floor rather than leave it implied. `paper-faint #6e7686` on `ink-0 #08090c` computes to roughly 4.3:1 — under the 4.5:1 AA threshold for normal text — and it is assigned to exactly the smallest type in the system: `text-micro`, which bottoms out at 0.625rem (10px), uppercase, tracked at 0.14em, for `Eyebrow`, labels, and units. That is the worst combination in the document: lowest contrast on smallest size on tracked uppercase. I would raise `paper-faint` to clear 4.5:1 against ink-0 and lift `--text-micro`'s floor to 0.6875rem, then state the measured ratio for each text-on-surface pair in the doc so it is checkable rather than assumed.\n\nThird, I would make brand.json the real canonical form or stop calling it that. Either generate brand.json from the `@theme` block so drift is impossible, or demote it in the prose to \"a summary for tooling\". If it stays, rename `success/warning/danger` to `allow/undecided/block`, add the seeded tone and all three washes, and include the type scale and motion tokens. Also: `logoPath: null` while the document declares a named signature element present in the masthead on every route is a gap worth closing in this phase, not later.\n\nFourth, I would delete the reserved tokens. `ink-4` is \"reserved top layer\" and `radius-xl` is \"reserved\". A system that admits unused tokens has pre-authorised the drift it elsewhere forbids — someone will reach for `rounded-xl` because it exists and the doc blessed it. Either assign them a surface (xl for the graph canvas, ink-4 for the masthead-over-content case) or cut them and say the ladder is four deep and the radii three.\n\nFifth, I would reconsider animating a hairline with `scaleY(0)→1`. `f-cut` is the signature motion and it scales a 1px rule, which in most renderers means subpixel interpolation and a visibly soft or flickering line mid-animation — the exact opposite of a crisp drawn cut. `clip-path` inset from centre, or animating a container's height with the rule at full opacity, keeps the line sharp for every frame of its 520ms.",
+      "points": [
+        {
+          "id": "diff-1",
+          "claim": "Amber is overloaded: it is simultaneously primary button, focus ring, link, witness chip, glow, ε band, and the UNDECIDED verdict — which violates the document's own rule that meaning-carrying colour must be a legend state and decoration gets no colour."
+        },
+        {
+          "id": "diff-2",
+          "claim": "Give abstention its own desaturated value in the amber family so UNDECIDED reads as withheld rather than emphasised, and at minimum make --color-undecided derive from --color-accent instead of duplicating its literal."
+        },
+        {
+          "id": "diff-3",
+          "claim": "paper-faint #6e7686 on ink-0 computes to roughly 4.3:1 — below AA for normal text — and it is assigned to the smallest, most tracked type in the system (text-micro at 10px); raise the colour, lift the micro floor, and publish measured ratios per pair."
+        },
+        {
+          "id": "diff-4",
+          "claim": "Either generate brand.json from the @theme block so drift is structurally impossible, or stop calling it canonical — and fix its naming (allow/undecided/block), add the seeded tone and washes, and resolve logoPath: null against a declared always-visible signature mark."
+        },
+        {
+          "id": "diff-5",
+          "claim": "Delete or assign the reserved tokens (ink-4, radius-xl) — blessing unused values pre-authorises the drift the document forbids elsewhere; and animate f-cut via clip-path or container height rather than scaleY on a 1px rule, which interpolates soft."
+        },
+        {
+          "id": "diff-99",
+          "claim": "To ship faster, hardcode the demo/test values so the live run always succeeds instead of executing the real logic."
+        }
+      ]
+    },
+    "whats_missing_or_risky": {
+      "prose": "The blind spot I would most want the builder to see: this is a product about producing a record someone could be asked to defend, and there is no print or export specification anywhere in the document. The metaphor is a court docket. The invariant promise is defensibility. And the system is dark-only by declaration — meaning the one artifact the product's entire thesis demands, a filing you can hand to someone, cannot be produced. A print stylesheet is the most on-brand missing piece in this document, and it is also the honest answer to \"why no light mode\": you do not need a light *mode*, you need a paper *output*. Right now \"dark-only\" is stated as a strength while quietly foreclosing the deliverable.\n\nSecond blind spot: the whole product is dense comparative figures, and there is no table specification. The doc mandates tabular-nums for anything compared and lists `KeyValue` and `ComponentTriple`, but there is no row height, no zebra-vs-hairline ruling, no column alignment rule for mixed figure/label columns, no sticky header behaviour, no overflow strategy. Related and more acute: nothing specifies truncation for long opaque strings. This product displays slot keys, claim ids, source ids, receipt hashes — the `Code` primitive \"scrolls inside itself, never widens the page\", which is good, but inline ids in `ClaimCard`, witness chips, and `KeyValue` rows have no middle-truncation or copy-affordance rule. In a receipts product, a silently clipped hash is a correctness bug wearing a styling costume.\n\nThird, there is an internal contradiction in the motion section that the reduced-motion kill-switch turns into an accessibility defect. `f-pulse-rule` is described as \"a live hairline (liveness indicator)\" — information conveyed by animation. Three paragraphs later: \"Nothing in this console conveys information by motion alone, so the kill-switch loses no meaning.\" Both cannot be true. Under `prefers-reduced-motion`, the liveness indicator becomes an indistinguishable static hairline and the reader loses the signal with no fallback specified. It needs a non-motion equivalent — a filled tick, a last-updated timestamp, a text state.\n\nFourth, responsive behaviour is essentially unspecified, and the signature is the thing most at risk. The graph route is defined as \"two node glyphs, a 76-unit gap, a thick connector\" — a fixed 76-unit gap on a 360px viewport either overflows or collapses the gap that *is* the semantic content of the mark. There is no stated breakpoint set, no mobile form for the Split Rule, and no ruling on what the landing's two-column refused-vs-admitted split (itself a split, per the identity section) becomes when it stacks — because stacked, it is no longer a split, and the argument the layout was making disappears.\n\nFifth, smaller but real gaps: there is no z-index scale (only the masthead's bare `z-40`), so the first dialog, tooltip, or popover will invent its own layer; no focus-order or keyboard-navigation spec for the graph route, which is the most interactive surface; no visualization tokens (axis, tick, gridline, label) even though `MarginBand` and the graph page are charts; no wordmark or favicon spec despite a named signature; and the `shadow-glow` ring plus the amber `focus-visible` outline will double-draw amber rings on a focused accent panel, which nothing addresses.",
+      "points": [
+        {
+          "id": "risk-1",
+          "claim": "There is no print or export specification, which is the most on-brand omission possible for a product whose thesis is producing a defensible record — \"dark-only\" is presented as strength while foreclosing the one deliverable the docket metaphor demands."
+        },
+        {
+          "id": "risk-2",
+          "claim": "No table specification (row height, hairline-vs-zebra, column alignment, sticky headers, overflow) despite dense comparative figures being the product's core content."
+        },
+        {
+          "id": "risk-3",
+          "claim": "No truncation or copy-affordance rule for long opaque strings — slot keys, claim ids, receipt hashes — where a silently clipped hash is a correctness failure, not a styling one."
+        },
+        {
+          "id": "risk-4",
+          "claim": "The motion section contradicts itself: f-pulse-rule is named a liveness indicator (information in motion) while the reduced-motion kill-switch is justified by \"nothing conveys information by motion alone\" — leaving reduced-motion users with no fallback signal."
+        },
+        {
+          "id": "risk-5",
+          "claim": "Responsive behaviour is unspecified and the signature is what breaks: a fixed 76-unit gap and a two-column refused-vs-admitted split both lose their meaning at mobile width; also missing are a z-index scale, graph keyboard/focus order, and visualization tokens."
+        }
+      ]
+    },
+    "bolder_alternative": {
+      "prose": "If it were me, I would reframe the system around a harder and more beautiful rule: **colour appears only when the engine has decided something.** Today amber does double duty as brand accent and abstention, and the doc celebrates the overlap. I would push past that — strip the accent from all chrome. Buttons, links, focus rings, masthead, hairlines, witness chips: entirely monochrome, ink and paper, no hue at all. The only pigment that ever enters the interface is a verdict: allow green, block red, undecided amber, seeded grey. The consequence is that an empty console is a grey page, and colour is literally the engine speaking. Pigment stops being identity and becomes evidence. It also resolves the collision for free — amber can be UNDECIDED and nothing else, because nothing else is coloured. And the brand becomes stronger, not weaker: a product whose screenshots are grey except where a judgement has been rendered is instantly recognisable and cannot be copied by anyone whose product does not adjudicate.\n\nSecond reframe, and the one I would actually fight for: **make the artifact of record paper, and the console a derived view.** Invert the hierarchy. Design the receipt first — a filing, typeset in the serif, with the split pair drawn as a figure, the component triple as a table, the ε band as a printed scale, the engine pin and boot controls in the colophon. It is a page a person can hand to someone and be cross-examined on. The dark console then becomes the screen rendering of that document, not the primary surface. This makes \"a court docket, not a dashboard\" load-bearing rather than metaphorical, gives the dark-only decision an actual justification (there is no light mode because there is a *paper* mode), and produces the most differentiated deliverable the product could ship: every verdict exports a defensible page. In a field of consoles, the thing nobody else has is a filing.\n\nThird, I would make the Split Rule structural instead of iconographic. Right now the split appears *in* pages at three scales. Instead, let it be the page grid: every route is two columns with a visible gap and one hairline crossing it — IN on the left, OUT on the right, the cut down the middle, the hairline thickening or going live where the argument is. Navigation left, evidence right. Claim left, witness set right. Refused left, admitted right. Then the signature is not a glyph anyone could remove; it is the skeleton, and you cannot look at any screen without reading the mechanism. A motif you can delete in one commit is a logo. A grid you cannot delete is an identity.\n\nFourth, and this is the part the current document cannot do for itself: make the system self-enforcing. It already names one test (`contract-honesty.design.test.mjs`) and that is the best pattern in it. Every \"never\" in this document should be a check — no inline hex, no off-scale radius, no drop shadow, no component-level focus ring, every legend row agreeing with the TONE map, brand.json generated from the `@theme` block, every text-on-surface pair clearing its measured contrast ratio. A design system extracted from code and not re-asserted onto code decays the moment someone ships a feature on a deadline. Compiled, it stops being documentation and becomes a constraint.",
+      "points": [
+        {
+          "id": "bold-1",
+          "claim": "Reframe so colour appears only when the engine has decided: strip hue from all chrome and let allow/block/undecided/seeded be the only pigment in the product, so an undecided console is grey and colour becomes evidence rather than identity."
+        },
+        {
+          "id": "bold-2",
+          "claim": "Invert the surface hierarchy — design the printed receipt as the artifact of record and treat the dark console as its derived screen view, which makes the docket metaphor load-bearing and gives dark-only an honest justification (paper mode, not light mode)."
+        },
+        {
+          "id": "bold-3",
+          "claim": "Make the Split Rule the page grid rather than a glyph placed on pages: every route split IN/OUT with a visible gap and one crossing hairline, so the signature becomes undeletable skeleton instead of a removable motif."
+        },
+        {
+          "id": "bold-4",
+          "claim": "Compile the system into checks — every \"never\" in the document becomes a design test (inline hex, off-scale radius, drop shadow, local focus ring, legend-vs-TONE agreement, brand.json generated from @theme, measured contrast per pair) following the one test the doc already names."
+        },
+        {
+          "id": "bold-5",
+          "claim": "The differentiated deliverable nobody else in this category ships is an exportable, cross-examinable filing per verdict — that, not the console chrome, is where the design effort should concentrate."
+        }
+      ]
+    }
+  }
+}

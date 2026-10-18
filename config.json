@@ -1,0 +1,115 @@
+{
+  "hackathon_name": "Graph Hacks: Context for AI Agents (WeMakeDevs x FalkorDB)",
+  "url": "https://www.wemakedevs.org/hackathons/falkordb",
+  "platform": "custom (wemakedevs.org)",
+  "deadline": "2026-10-18T23:59:00+05:30",
+  "deadline_local_wat": "2026-10-18T19:29:00+01:00",
+  "prize_pool_usd": 20000,
+  "roster_audit": {
+    "discovered": true,
+    "entrants_scanned": 384,
+    "path": "/Users/MAC/graph-hacks/research/research-brief.md#competitor-roster",
+    "not_discoverable_reason": null,
+    "method": "GitHub repo search, repos created >= 2026-10-14 mentioning FalkorDB; 267 with explicit hackathon markers",
+    "sole_track_commitment": { "track_01": 71, "track_02": 17, "track_03": 33 },
+    "both_deploy_and_video": 18,
+    "reddit": "UNSEARCHED - blocked to search user-agent; NOT cleared"
+  },
+  "tracks": [
+    "Agents That Act on Connected Data",
+    "Agent Memory and Coordination",
+    "Company Brain"
+  ],
+  "chain": null,
+  "team_size_max": 4,
+  "submission_requirements": [
+    "Public source-code repository URL",
+    "README with setup instructions AND the graph data model",
+    "The Cypher queries / graph algorithms the product depends on, documented explicitly as a separate listed artifact",
+    "Demo video of the working product (no max published; organizer guidance elsewhere = 3 min max)",
+    "Live deployment URL (preferred) or complete local setup instructions",
+    "Track designation - multiple tracks allowed, every track entered must be named at submission",
+    "AI-assistance disclosure in README"
+  ],
+  "required_integrations": ["FalkorDB (must be the primary graph database and load-bearing)"],
+  "products": ["FalkorDB", "GraphRAG-SDK", "FalkorDB MCP Server", "FalkorDB Browser UI"],
+  "docs_url": "https://docs.falkordb.com/",
+  "toolkit_url": "https://github.com/FalkorDB/GraphRAG-SDK",
+  "telegram": null,
+  "discord": "https://discord.com/invite/Y2mMT9VdMy",
+  "registration_form": "https://www.wemakedevs.org/hackathons/falkordb",
+  "submission_form": "https://www.wemakedevs.org/hackathons/falkordb/submit",
+  "demoFormat": "recorded",
+  "demo_video_requirements": {
+    "max_seconds": 180,
+    "formats": [],
+    "platform": "YouTube (unlisted or public) - inferred from sibling-edition organizer guidance",
+    "content_notes": "No max length published for Graph Hacks specifically. Kunal Kushwaha's First Commit guidance: demo video 3 min max, YouTube unlisted/public, live demo must require no signup/account. [B2]"
+  },
+  "submission_form_fields": [],
+  "submission_form_fields_status": "UNEXTRACTED - login-gated SPA, returns only 'Pulling up this hackathon' to WebFetch. Must be read in real Chrome.",
+  "disqualifiers": [
+    "FalkorDB not load-bearing - 'if the product still works once FalkorDB is taken out, the graph is decoration rather than the thing the product runs on' [A1]",
+    "Graph used only to visualize - 'The graph must perform essential functions, not merely visualize data' [A1]",
+    "Pre-existing code - main coding and design work must begin after 2026-10-15 [A1]",
+    "Private/login-protected/paywalled/personal/restricted data loaded into the graph [A1]",
+    "Undisclosed AI assistance; fully AI-generated work with no real understanding may be rejected [A1]",
+    "Inability to explain the graph model, the queries, and the architecture [A1]"
+  ],
+  "workshops": [],
+  "sponsor_bounties": [
+    { "name": "Blog post bonus", "prize": "AirPods 5", "winners": "1 (siblings sometimes award more)", "mechanism": "link field in the main submission form (inferred from TrueForge pattern)", "notes": "Dev.to is the de-facto venue. House standard: 1000-1500 words, hook-first, real code, verified claims, screenshots, what broke. [B2]" }
+  ],
+  "sidetracks": [],
+  "network": { "chain": null, "chain_id": null, "rpc": null, "testnet_name": null, "faucet_url": null, "deploy_requirement": null },
+  "judging_criteria": [
+    { "name": "Potential Impact", "weight_pct": 16.7, "derived": true },
+    { "name": "Creativity & Innovation", "weight_pct": 16.7, "derived": true },
+    { "name": "Technical Excellence", "weight_pct": 16.7, "derived": true },
+    { "name": "Best Use of FalkorDB", "weight_pct": 16.7, "derived": true },
+    { "name": "User Experience", "weight_pct": 16.7, "derived": true },
+    { "name": "Presentation Quality", "weight_pct": 16.7, "derived": true }
+  ],
+  "judging_criteria_provenance": "DERIVED. Graph Hacks publishes NO rubric and /judges is a hard 404 [A1 negative]. These six slots are the verbatim WeMakeDevs house template, identical word-for-word across Agents of SigNoz, The Hangover Part AI (Cognee), and 2 Fast 2 MCP (Archestra), with slot 4 swapped to the sponsor name [B2]. TrueForge is the only edition to state weighting: '6 equally weighted' [B2]. Treat as [D4] applied to Graph Hacks.",
+  "judging_process": {
+    "live_demo": false,
+    "verbatim": "Judges score what you submit and nothing else. There is no live demo and no call. [B2 - First Commit rules, house process]",
+    "implication": "The README + demo video + submission-form prose ARE the product. Nothing is recoverable in a call."
+  },
+  "judges": [],
+  "judges_status": "NOT PUBLISHED. /hackathons/falkordb/judges returns 404 [A1 negative]. Likely panel inferred as FalkorDB engineers + WeMakeDevs staff, matching the single-sponsor monthly-edition pattern (2 Fast 2 MCP named only the two sponsor engineers) [D4].",
+  "likely_panel": [
+    { "name": "Guy Korland", "role": "CEO & Co-Founder, FalkorDB", "cares_about": "Agent memory as a retrieval-architecture problem; authored 'Your Agent's Memory Problem Is a Retrieval Architecture Problem' (2026-08-15)", "tag": "A1" },
+    { "name": "Roi Lipman", "role": "CTO & Co-Founder (originated RedisGraph lineage)", "cares_about": "Real graph algorithms - byline on 'Shortest path at any distance: Dijkstra, A*, and CCH in FalkorDB' (2026-10-12)", "tag": "A1" },
+    { "name": "Avi Avni", "role": "Chief Architect & Co-Founder", "cares_about": "Engine internals; byline on FalkorDB 6.0 and the Rust rewrite", "tag": "A1" },
+    { "name": "Liz Zhang", "role": "FalkorDB", "cares_about": "Authored the Oct 16 agent-memory post that landed on day 2 of the hackathon", "tag": "A1" },
+    { "name": "Kunal Kushwaha", "role": "Founder, WeMakeDevs", "cares_about": "'a small problem solved well beats a big one solved vaguely'; 'clean and obvious beats clever and confusing'; 'whether it works - not perfect, not polished, just working'; 'Write detailed answers. Short one-liners make it hard for us to see what you built.'", "tag": "B2" }
+  ],
+  "prizes": [
+    { "track": "Agents That Act on Connected Data", "amount_usd": null, "notes": "iPhone 18 Pro" },
+    { "track": "Agent Memory and Coordination", "amount_usd": null, "notes": "PS5 + GTA VI" },
+    { "track": "Company Brain", "amount_usd": null, "notes": "M6 Mac Mini" },
+    { "track": "Blog bonus", "amount_usd": null, "notes": "AirPods 5" },
+    { "track": "Top 50", "amount_usd": null, "notes": "T-shirts" }
+  ],
+  "builder_profile": {
+    "skills": ["TypeScript/Next.js", "Python", "agent runtimes", "Solidity/Foundry", "graph modelling", "frontend craft"],
+    "tools": ["Claude Code", "Docker/Colima", "Oracle Always-Free VM (persistent, already hosts LEASH backend)", "claude-in-chrome", "Vercel"],
+    "preferences": ["simplicity first", "root-cause not patches", "prove it works before claiming done", "real-Chrome evidence", "no flat/default design"]
+  },
+  "event_class": "sponsor_track",
+  "judge_reading": "Almost certainly FalkorDB's own engineers plus a WeMakeDevs staffer - the single-sponsor monthly-edition pattern. This panel wrote the agent-memory thesis (Korland, Zhang) and the graph-algorithms posts (Lipman, with Tim Davis of SuiteSparse as advisor). They reward real traversal/algorithm work and latency numbers, and will instantly read CRUD-over-a-graph as decoration. Winning precedent across sibling editions is a narrow, named, real-world workflow with a closed loop and a human approval gate, describable in one concrete sentence.",
+  "sponsor_vintage": [
+    { "primitive": "Agent memory stack (working/episodic/semantic/procedural) - 'Memory should be the SSD'", "shipped": "2026-10", "source": "falkordb.com/blog/agent-memory-for-long-running-agents/ (2026-10-16, day 2 of the hackathon)" },
+    { "primitive": "CCH index + A* + Dijkstra pathfinding", "shipped": "2026-10", "source": "falkordb.com/blog 2026-10-12 (Gomez & Lipman)" },
+    { "primitive": "FalkorDB 6.0 (Rust engine)", "shipped": "2026-09", "source": "falkordb.com/blog 2026-09-29 - WARNING: :latest is still v4.22.1, verified via MODULE LIST" },
+    { "primitive": "agent-memory-bench (open source)", "shipped": "2026-10", "source": "falkordb.com/blog 2026-10-16" },
+    { "primitive": "Graphiti FalkorDB backend + FalkorDBLite embedded", "shipped": "2026-09", "source": "getzep/graphiti issue #1240; docs.falkordb.com/agentic-memory/graphiti" }
+  ],
+  "track_02_alignment_note": "Track 02's own description ('Episodic, semantic, and procedural memory') is lifted verbatim from Korland's/Zhang's published memory-stack taxonomy. Track 02 is the sponsor's home turf AND the least-crowded track (17 sole-commit repos vs 71 for Track 01).",
+  "pinned_runtime": {
+    "image": "falkordb/falkordb:v4.22.1",
+    "reason": ":latest resolves to v4.22.1 (graph module ver 42201, verified live via MODULE LIST) despite 6.0.0 release notes claiming latest -> 6.0. GraphRAG-SDK is openly broken on 6.0.x (issue #344, 30s circuit-breaker lockout). algo.AStar and CCH exist only in 4.x.",
+    "persistence": "docker run -v falkordb_data:/var/lib/falkordb/data ... ; image declares NO VOLUME; dir=/var/lib/falkordb/data, dbfilename=dump.rdb, save='3600 1 300 100 60 10000', appendonly=no. Survives restart, NOT rm."
+  }
+}

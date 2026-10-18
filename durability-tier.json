@@ -1,0 +1,19 @@
+{
+  "persistenceClass": "stateful",
+  "judgingWindowHours": 168,
+  "platform": "render",
+  "plan": "starter + persistent disk",
+  "ephemeralFs": false,
+  "sleepsOnIdle": false,
+  "persistentStore": "disk",
+  "costMonthlyUsd": 8,
+  "spendApproved": false,
+  "consciousChoice": true,
+  "keepWarm": null,
+  "decidedBy": "forge",
+  "decidedAt": "2026-10-18T14:25:00+01:00",
+  "justification": "MENGER is STATEFUL, and the thing that makes it stateful is the headline claim itself. Every verdict persists a DOCKET :Receipt and every UNDECIDED persists a :Review node; the product's differentiator is that a judge can GET /receipts/{id} and POST /receipts/{id}/replay a decision made days earlier. If the filesystem wipes on idle spin-down or redeploy, the receipts a judge replays are gone and the headline capability fails live, mid-judging — which is precisely the LEASH DL-14 vector (free-tier spin-down wiped the demo fs inside the judging window). Therefore: non-ephemeral fs + a persistent disk for the FalkorDB dump + no spin-to-zero. A keep-warm heartbeat is explicitly NOT an acceptable substitute here: it defeats idle sleep only, and would still lose the graph on any crash or redeploy. Re-seedability from seed.py does NOT downgrade this to stateless either — re-seeding restores the synthetic corpus but destroys the admitted claims, review queue and receipts generated during judging, i.e. exactly the audit trail being evaluated.",
+  "windowSizingNote": "168h is a DERIVED estimate, not a published figure. Judging on this hackathon is artifact-only (AF-10) with no live demo and no call, and the criteria themselves are unpublished (intel VF-I3), so the window is the submission deadline (2026-10-18 19:29 WAT) plus a conservative one-week results period. Sized long deliberately: the asymmetry is $8 against losing the replay capability mid-evaluation.",
+  "spendGate": "spendApproved is FALSE and must be set by Dami. The forge leg is the TIER DECISION (cost-A: a decision, not a spend); actual paid provisioning is gated at `deploy` behind this flag. The deploy leg will BLOCK until it is approved — that block is intended, not a defect.",
+  "owner": "deploy (DS-12, DS-15)"
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "sec-gate/1",
+  "produced_by": "hackathon-build",
+  "legs_applicable": ["web_api"],
+  "legs_na": {
+    "onchain": "MENGER holds no keys and signs nothing (INV-22). No contracts, no wallet, no signer.",
+    "client_secrets": "No client. No build-time secret injection surface."
+  },
+  "findings": [
+    {
+      "id": "SEC-1",
+      "leg": "web_api",
+      "check": "authz / IDOR on receipt and review reads",
+      "result": "NOT_DEFENDED",
+      "detail": "There is no authentication or authorization of any kind. Every endpoint is open and agent_id is an unauthenticated caller assertion. Any caller can read any receipt_id or review_id. This is recorded as a named exclusion in SECURITY.md, not as a passing check.",
+      "severity": "accepted_for_scope"
+    },
+    {
+      "id": "SEC-2",
+      "leg": "web_api",
+      "check": "secret in client / in repo",
+      "result": "PASS",
+      "detail": "No keys, no credentials, no .env consumed by the engine. Corpus is synthetic and in-repo."
+    },
+    {
+      "id": "SEC-3",
+      "leg": "web_api",
+      "check": "replay safety",
+      "result": "PASS_BY_DESIGN",
+      "detail": "POST /receipts/{id}/replay is a deliberate, idempotent re-execution of recorded read statements through GRAPH.RO_QUERY. It cannot write. Divergence is reported, not suppressed."
+    },
+    {
+      "id": "SEC-4",
+      "leg": "web_api",
+      "check": "injection via request fields",
+      "result": "PASS",
+      "detail": "Every value is a bound parameter; statements are module constants in app/cypher.py. No request field is interpolated into a query string."
+    },
+    {
+      "id": "SEC-5",
+      "leg": "web_api",
+      "check": "rate limiting",
+      "result": "NOT_IMPLEMENTED",
+      "detail": "429 RATE_LIMITED is defined in the error table and reserved. Enforcement is absent. Named in SECURITY.md.",
+      "severity": "accepted_for_scope"
+    },
+    {
+      "id": "SEC-6",
+      "leg": "web_api",
+      "check": "transport",
+      "result": "NOT_DEFENDED",
+      "detail": "Plain HTTP on 127.0.0.1 with CORS *. Acceptable for a local demonstration, unacceptable for anything reachable. Named in SECURITY.md.",
+      "severity": "accepted_for_scope"
+    }
+  ],
+  "verdict": "PASS_WITH_NAMED_EXCLUSIONS",
+  "note": "No finding here is dismissed. The three NOT_DEFENDED/NOT_IMPLEMENTED rows are the same rows SECURITY.md lists under 'Not defended against' — the gate's output and the shipped doc agree by construction."
+}

@@ -1,0 +1,96 @@
+{
+  "$comment": "Generated-by-hand from frontend/src/app/globals.css @theme and verified against it by frontend/design-tests/tokens.design.test.mjs. The test is the generator's stand-in: if this file and the CSS disagree, the suite fails. Semantic slots are named for MENGER's own verdict tokens, not for generic dashboard severities — there is no 'success' in a product whose proudest state is a refusal to decide.",
+  "name": "MENGER",
+  "tagline": "Admission control for agent memory.",
+  "colorMode": "dark-only",
+  "brandColor": "#e8a33d",
+  "accent": "#e8a33d",
+  "ink": ["#08090c", "#0e1014", "#14171d", "#1b1f27", "#242a35"],
+  "text": {
+    "paper": "#e8eaf0",
+    "paper-dim": "#a3abba",
+    "paper-faint": "#8a919f"
+  },
+  "rule": { "rule": "#232833", "rule-strong": "#343b49" },
+  "semantic": {
+    "allow": "#49d49a",
+    "block": "#f35e63",
+    "undecided": "#c9a46f",
+    "seeded": "#8791a2"
+  },
+  "washes": {
+    "accent-wash": "#2a2014",
+    "allow-wash": "#10231c",
+    "block-wash": "#2a1417",
+    "undecided-wash": "#2a2014",
+    "seeded-wash": "#191d25"
+  },
+  "fonts": {
+    "display": "Instrument Serif",
+    "body": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "type": {
+    "micro": "clamp(0.6875rem, 0.66rem + 0.1vw, 0.75rem)",
+    "fine": "clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem)",
+    "base": "clamp(0.875rem, 0.84rem + 0.18vw, 0.9375rem)",
+    "lead": "clamp(1rem, 0.95rem + 0.3vw, 1.125rem)",
+    "title": "clamp(1.375rem, 1.1rem + 1.2vw, 2rem)",
+    "headline": "clamp(1.875rem, 1.3rem + 2.6vw, 3.25rem)",
+    "figure": "clamp(2.75rem, 1.8rem + 4.4vw, 5rem)"
+  },
+  "spacing": { "base": "0.25rem", "note": "4px unit; every gap is a multiple of it" },
+  "radii": { "sm": 2, "md": 4, "lg": 8, "note": "three rungs, no xl — a declared-but-unassigned 12px radius was removed rather than left reserved; a token nothing uses is a scale that lies about its own range" },
+  "shadowPhilosophy": "pure-glow",
+  "motion": {
+    "easing": "cubic-bezier(0.2, 0, 0, 1)",
+    "durations": { "quick": "140ms", "base": "220ms", "slow": "520ms" },
+    "keyframes": ["f-rise", "f-cut"],
+    "noInfiniteLoops": true,
+    "reducedMotion": "global kill-switch in globals.css; no per-component opt-out"
+  },
+  "contrast": {
+    "standard": "WCAG AA 4.5:1",
+    "floorSurface": "ink-4 (#242a35), the lightest surface any text sits on",
+    "measured": {
+      "paper": 11.98,
+      "paper-dim": 6.24,
+      "paper-faint": 4.55,
+      "accent": 6.68,
+      "allow": 7.66,
+      "block": 4.52,
+      "undecided": 6.19,
+      "seeded": 4.53
+    }
+  },
+  "signatureElement": "The Split Rule — every source drawn as an IN half and an OUT half separated by a visible gap and joined by one hairline, the unit-capacity edge that makes independence a count of vertex-disjoint chains.",
+  "signatureObject": {
+    "name": "The Split Rule",
+    "thesis": "The product's whole claim is that corroboration must be counted over vertex-disjoint chains, and the only thing that makes that true is splitting every source into two nodes joined by a single unit-capacity edge. Drawing that cut IS drawing the mechanism, so the signature is not a motif applied to the product — it is the product at glyph scale.",
+    "scales": ["argument", "label", "subject"],
+    "substitutable": false,
+    "perSurface": {
+      "landing": "ARGUMENT scale. The split at hero size: the SplitMark in the wordmark and CTA with the cut animating open once, and the refused claim set against the admitted claim as two columns that are themselves a split — same citation count, different provenance, different number.",
+      "console": "LABEL scale. A 12-16px inline SplitMark beside independence figures and split-pair links, plus the si:/so: pair rendered as two chips with the cut between them. It never animates. In the console the mark labels; it never argues. Console is deliberately not the landing form.",
+      "graph": "SUBJECT scale. On /slots/[key]/graph the split is not the component at all — it is drawn full-size from live payload nodes and edges, with the cap label read from the data. Substituting the glyph here would be drawing a picture of evidence instead of the evidence."
+    }
+  },
+  "invariantPhrase": "Two citations are not two sources.",
+  "statusLegend": [
+    { "color": "#49d49a", "token": "ALLOW", "meaning": "the write was admitted; margin exceeds +epsilon" },
+    { "color": "#49d49a", "token": "ADMITTED", "meaning": "this claim currently holds the slot" },
+    { "color": "#49d49a", "token": "PASS", "meaning": "the boot control reproduced its expected value" },
+    { "color": "#f35e63", "token": "BLOCK", "meaning": "the write was refused; margin falls below -epsilon" },
+    { "color": "#f35e63", "token": "REFUSED", "meaning": "refused, and recorded - the claim is kept, not dropped" },
+    { "color": "#f35e63", "token": "FAIL", "meaning": "the boot control did not reproduce; the engine returns 503 BOOT_ASSERTION_FAILED" },
+    { "color": "#c9a46f", "token": "UNDECIDED", "meaning": "inside the epsilon band; queued for review rather than decided" },
+    { "color": "#c9a46f", "token": "QUEUED", "meaning": "waiting in the review queue" },
+    { "color": "#c9a46f", "token": "OPEN", "meaning": "the review is still open; /review is read-only in v1.0" },
+    { "color": "#8791a2", "token": "SEEDED", "meaning": "from the synthetic corpus; never adjudicated" },
+    { "color": "#8791a2", "token": "RESOLVED", "meaning": "the review is closed" },
+    { "color": "#8791a2", "token": "RECENCY_DECAY", "meaning": "a replay divergence that is expected and benign - recency is a function of age, so it must move" },
+    { "color": "#f35e63", "token": "GRAPH_MUTATED", "meaning": "a real divergence: the graph changed under the receipt" },
+    { "color": "#f35e63", "token": "ENGINE_DIFF", "meaning": "a real divergence: a different engine answered the replay" }
+  ],
+  "logoPath": null
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "gate": "MD-7",
+    "artifact": "/Users/MAC/graph-hacks/PLAN.md",
+    "subject": "3450bc362507988f",
+    "question": "The capability parts derive NO keyword-privileged surface (exposure starvation: keyword derivation cannot prove the build is unprivileged — synonyms, padding, disjoint filler, or function-word clauses all starve it the same way). Shared-measure signal on this §7 (the judge's starting evidence, not the escalation gate): [NEAR-DUPLICATE: '__empty__' ~ '__empty__' (Jaccard >= 0.6)]. Is this build genuinely unprivileged with nothing per-surface to enumerate (PASS), or a privileged build whose §7 dodges per-surface scrutiny (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "MD-7",
+    "artifact": "/Users/MAC/graph-hacks/PLAN.md",
+    "subject": "73281f9d3ffbabb6",
+    "question": "The capability parts derive NO keyword-privileged surface (exposure starvation: keyword derivation cannot prove the build is unprivileged — synonyms, padding, disjoint filler, or function-word clauses all starve it the same way). Shared-measure signal on this §7 (the judge's starting evidence, not the escalation gate): [ESCALATE: 6 matched clauses are borderline-sparse (<=4 distinct content tokens) — a shell gate cannot tell a terse-but-real threat model from padded gibberish; route to the judge]. Is this build genuinely unprivileged with nothing per-surface to enumerate (PASS), or a privileged build whose §7 dodges per-surface scrutiny (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "MD-7",
+    "artifact": "/Users/MAC/graph-hacks/PLAN.md",
+    "subject": "3f625c116e8abbf1",
+    "question": "The capability parts derive NO keyword-privileged surface (exposure starvation: keyword derivation cannot prove the build is unprivileged — synonyms, padding, disjoint filler, or function-word clauses all starve it the same way). Shared-measure signal on this §7 (the judge's starting evidence, not the escalation gate): [ESCALATE: 6 matched clauses are borderline-sparse (<=4 distinct content tokens) — a shell gate cannot tell a terse-but-real threat model from padded gibberish; route to the judge]. Is this build genuinely unprivileged with nothing per-surface to enumerate (PASS), or a privileged build whose §7 dodges per-surface scrutiny (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "MD-7",
+    "artifact": "/Users/MAC/graph-hacks/PLAN.md",
+    "subject": "1c6a425a327871e9",
+    "question": "The capability parts derive NO keyword-privileged surface (exposure starvation: keyword derivation cannot prove the build is unprivileged — synonyms, padding, disjoint filler, or function-word clauses all starve it the same way). Shared-measure signal on this §7 (the judge's starting evidence, not the escalation gate): [NEAR-DUPLICATE: '__empty__' ~ '__empty__' (Jaccard >= 0.6)]. Is this build genuinely unprivileged with nothing per-surface to enumerate (PASS), or a privileged build whose §7 dodges per-surface scrutiny (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "results-section-14",
+    "artifact": "/Users/MAC/graph-hacks/FORGE-RESULTS.md",
+    "subject": "e72b37326e48e9f0",
+    "question": "The honest-gaps body is substantive-looking but the shell cannot prove it names a REAL, specific gap (vs. vacuous prose that merely sounds gap-like). Does this gaps section name a genuine, concrete NOT-done/deferred/unverified item (PASS), or is it prose that only resembles a gap list without naming a real gap (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "results-section-14",
+    "artifact": "/Users/MAC/graph-hacks/forge-RESULTS.md",
+    "subject": "536fa7e06cd113de",
+    "question": "The honest-gaps body is substantive-looking but the shell cannot prove it names a REAL, specific gap (vs. vacuous prose that merely sounds gap-like). Does this gaps section name a genuine, concrete NOT-done/deferred/unverified item (PASS), or is it prose that only resembles a gap list without naming a real gap (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "results-section-14",
+    "artifact": "/Users/MAC/graph-hacks/FORGE-RESULTS.md",
+    "subject": "536fa7e06cd113de",
+    "question": "The honest-gaps body is substantive-looking but the shell cannot prove it names a REAL, specific gap (vs. vacuous prose that merely sounds gap-like). Does this gaps section name a genuine, concrete NOT-done/deferred/unverified item (PASS), or is it prose that only resembles a gap list without naming a real gap (FAIL)?",
+    "status": "required"
+  },
+  {
+    "gate": "results-section-14",
+    "artifact": "/Users/MAC/graph-hacks/FORGE-RESULTS.md",
+    "subject": "7c5ccd1357333eff",
+    "question": "The honest-gaps body is substantive-looking but the shell cannot prove it names a REAL, specific gap (vs. vacuous prose that merely sounds gap-like). Does this gaps section name a genuine, concrete NOT-done/deferred/unverified item (PASS), or is it prose that only resembles a gap list without naming a real gap (FAIL)?",
+    "status": "required"
+  }
+]

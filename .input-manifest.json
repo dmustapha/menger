@@ -1,0 +1,93 @@
+{
+  "version": "1.0",
+  "emittedBy": "forge",
+  "emittedAt": "2026-10-18T15:05:00+01:00",
+  "project": "MENGER",
+  "note": "Every input MENGER's build/deploy depends on, with the phase that must have resolved it. No .env.example exists yet: the engine takes ZERO credentials (FalkorDB is local, unauthenticated, container-local). The credential rows below are deploy-side only and are declared here so no phase blocks mid-run on an ungated input (R1).",
+  "inputs": [
+    {
+      "id": "FALKORDB_URL",
+      "tier": "required",
+      "status": "resolved",
+      "what": "FalkorDB connection URI for the engine",
+      "resolvedValue": "redis://localhost:6379 against container gh-falkor, image falkordb/falkordb:v4.22.1 (AF-9)",
+      "resolvedBy": "intel",
+      "evidence": "PULSE AF-9; container gh-falkor running and probed live by warroom/fact_check"
+    },
+    {
+      "id": "FALKORDB_GRAPH_NAME",
+      "tier": "required",
+      "status": "resolved",
+      "what": "Graph key the engine reads/writes",
+      "resolvedValue": "menger",
+      "resolvedBy": "forge",
+      "evidence": "CONTRACT.md; PLAN.md data/policy model"
+    },
+    {
+      "id": "falkordb_python_client",
+      "tier": "required",
+      "status": "resolved",
+      "what": "Read path MUST use GRAPH.RO_QUERY; only the Python client exposes it (TS client lacks it, FalkorDB issue #408). This is the containment boundary for generated Cypher.",
+      "resolvedValue": "falkordb-py",
+      "resolvedBy": "warroom",
+      "evidence": "PULSE AF-8 — RO_QUERY containment VERIFIED server-side (CREATE rejected, MATCH allowed)"
+    },
+    {
+      "id": "seed_dataset",
+      "tier": "required",
+      "status": "unresolved",
+      "what": "Synthetic seeded provenance corpus, committed in-repo (no private data, fresh only)",
+      "owner": "build",
+      "evidence": "PLAN.md data/policy model specifies the shape; the file itself is build's to emit"
+    },
+    {
+      "id": "boot_assertion_constants",
+      "tier": "required",
+      "status": "resolved",
+      "what": "The three published boot assertions GET /health must match or 503",
+      "resolvedValue": "node_split_echo=1, node_split_independent=2, sp_path_weight=0.21072",
+      "resolvedBy": "warroom",
+      "evidence": "PULSE AF-3 / AF-6 / AF-16 — measured live, not derived"
+    },
+    {
+      "id": "EPSILON_BAND",
+      "tier": "required",
+      "status": "unresolved",
+      "what": "Verdict epsilon band; a server constant published by /health and echoed per decision. The console MUST NOT hardcode it (DS-8 / R-4).",
+      "owner": "build",
+      "evidence": "PULSE AF-17"
+    },
+    {
+      "id": "RECENCY_LAMBDA",
+      "tier": "required",
+      "status": "unresolved",
+      "what": "Decay constant for recency = exp(-lambda * age_hours); server constant, published by /health",
+      "owner": "build",
+      "evidence": "PULSE AF-17"
+    },
+    {
+      "id": "RENDER_API_KEY",
+      "tier": "deferred-until-deploy",
+      "status": "unresolved",
+      "what": "Platform credential for the chosen durable tier (render, starter + persistent disk)",
+      "owner": "deploy",
+      "evidence": "durability-tier.json; spendApproved is FALSE and is Dami's call at deploy (cost-A)"
+    },
+    {
+      "id": "PUBLIC_BASE_URL",
+      "tier": "deferred-until-deploy",
+      "status": "unresolved",
+      "what": "Reachable live URL (DS-12) the README, video and submission form all cite",
+      "owner": "deploy",
+      "evidence": "PLAN.md Skill-Ownership Map row live_deploy -> deploy-to-github"
+    },
+    {
+      "id": "submission_form_session",
+      "tier": "deferred-until-verify_preflight",
+      "status": "unresolved",
+      "what": "Logged-in session for the Graph Hacks submission SPA. Login-gated; must be read in real Chrome (browser is a singleton).",
+      "owner": "verify_preflight",
+      "evidence": "dispatch constraint; PLAN.md Skill-Ownership Map final row"
+    }
+  ]
+}

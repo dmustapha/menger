@@ -1,0 +1,5 @@
+{"v":1,"event_id":"eefb53b353a71d3a718a32d125dc6a8d","ts":1792341041,"reviewer":"claude","phase":"positioning","event":"review","verdict":"AGREE","resolved":false,"reviewer_model":"claude-sonnet-4-6","build_model":"claude-opus-5"}
+{"v":1,"event_id":"62ff245c826ee91719de4f5f014f9472","ts":1792341139,"reviewer":"claude","phase":"thesis-2","event":"review","verdict":"DISAGREE","resolved":false,"reviewer_model":"claude-sonnet-4-6","build_model":"claude-opus-5"}
+{"v":1,"event_id":"c661f9c75230e94ee9ca85092799d325","ts":1792341311,"reviewer":"claude","phase":"thesis-2","event":"review","verdict":"DISAGREE","resolved":false,"reviewer_model":"claude-sonnet-4-6","build_model":"claude-opus-5"}
+{"v":1,"event_id":"bdcf06f2cac3bf6a42a7ef3e68c3ed5c","ts":1792341396,"reviewer":"claude","phase":"thesis-2","event":"review","verdict":"DISAGREE","resolved":false,"reviewer_model":"claude-sonnet-4-6","build_model":"claude-opus-5"}
+{"v":1,"event_id":"8d80856e8c9f2194393262c2018c963e","ts":1792341681,"reviewer":"claude","phase":"thesis-2","event":"review","verdict":"DISAGREE","resolved":false,"reviewer_model":"claude-sonnet-4-6","build_model":"opus"}

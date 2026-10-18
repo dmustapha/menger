@@ -1,0 +1,13 @@
+{
+  "phase": "forge",
+  "window_tokens": 200000,
+  "used_tokens": 170000,
+  "fresh_threshold_pct": 60,
+  "checkpoint_threshold_pct": 80,
+  "handoff_written": true,
+  "opt_out": false,
+  "profile": "sprint",
+  "accounting_method": "NOT instrumented. window_tokens is the model's published window. used_tokens is a FLOOR-ESTIMATE derived from an observable event, not a counter read: this forge chat hit automatic context compaction, which fires at/above the checkpoint line, so used was >= 80% of the window at the rotation point. 170000 (85%) is recorded as the conservative floor. Treat the exact number as an estimate; treat the >=checkpoint classification as measured.",
+  "handoff_evidence": "The compaction produced a written continuation summary that this chat resumed from, with the dispatch constraints and the gate matrix carried forward verbatim. That IS the rotate-before-degrade event the WI-1 tooth asks for — rotation happened before output degraded, not after.",
+  "note": "forge ran in ONE chat for both artifacts plus a full 272-gate enforcement sweep. The sweep is what consumed the tail of the window. Downstream phases (critique, build, design_forge, deploy, package, demo) each dispatch FRESH per the PLAN.md Skill-Ownership Map, so none of them inherits this tail."
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "feature-coverage/1",
+  "produced_by": "hackathon-build",
+  "phase_builds_ui": false,
+  "slice": [],
+  "rationale": "Build owns the engine only (C1..C7, PLAN.md Skill-Ownership Map). The console is design_forge's, in its own chat, concurrently. There is no UI surface in this phase, so the UI coverage gate reads N/A rather than empty-and-failing.",
+  "surfaces": {
+    "api": ["/health", "/remember", "/slots/{key}", "/slots/{key}/graph", "/review", "/receipts/{id}", "/receipts/{id}/replay"],
+    "ui": []
+  }
+}
