@@ -1,0 +1,181 @@
+{
+  "status": "complete",
+  "working_dir": "/Users/MAC/graph-hacks",
+  "project_name": "MENGER",
+  "hackathon": "Graph Hacks (WeMakeDevs x FalkorDB)",
+  "autonomous_mode": false,
+  "run_profile": "SPRINT",
+  "timestamp": "2026-10-18T19:22:00+01:00",
+  "demoFormat": "recorded",
+  "prereq_waivers": [
+    {
+      "phase": "livetest",
+      "reason": "no .livetest-state.json in repo; substituted by tests/drill.sh 9/9 PASS run live at 18:39 and again at 18:55 WAT",
+      "by": "user"
+    },
+    {
+      "phase": "deploy",
+      "reason": "no .deploy-state.json; engine runs locally at 127.0.0.1:8000 and was recorded live",
+      "by": "user"
+    }
+  ],
+  "output": {
+    "video": "video/demo.mp4",
+    "duration_seconds": 171.309,
+    "ceiling_seconds": 180,
+    "resolution": "1920x1080",
+    "fps": 30,
+    "codecs": "h264 + aac",
+    "size_mb": 14,
+    "scene_cuts": "video/cut/",
+    "raw_captures": "video/raw/",
+    "narration": "video/audio/"
+  },
+  "audio": {
+    "strategy": "separate",
+    "pacing_mode": "gap",
+    "tts_provider": "gemini",
+    "tts_model": "gemini-2.5-flash-preview-tts",
+    "voice": "Charon",
+    "rationale": "user ruling 2026-10-18: Gemini TTS, not live narration",
+    "fit_method": "each silent capture time-fitted to its own narration (+0.6s tail), so no line is clipped and no scene sits dead"
+  },
+  "winningElements": {
+    "mode": "raw",
+    "coldOpen": true,
+    "proofOnScreen": {
+      "present": true,
+      "atSeconds": 19
+    },
+    "negativePath": {
+      "present": true,
+      "sceneRef": "Scene 4: a losing write into occupied slot customer:acme|primary_region is REFUSED and the incumbent clm_0007='eu-west-1' is unchanged",
+      "naReason": ""
+    },
+    "moneyArtifact": "the REFUSED incoming claim (independence 1) rendered beside the untouched incumbent clm_0007 (independence 2), with receipt rcpt_0006",
+    "watermark": {
+      "applicable": false,
+      "present": false
+    },
+    "notPromiseClose": true,
+    "headlineSource": "live engine /health and /slots \u2014 no number in the narration that the engine did not emit"
+  },
+  "rehearsal_seam": {
+    "rehearsal_consumed": true,
+    "re_derived_scene_plan": false,
+    "no_recordings": false,
+    "no_recordings_fallback": "escalate",
+    "keep_separate_decision": "recorded: rehearsal stayed a separate phase; demo consumed DEMO-SCRIPT.md, DEMO-FOOTGUNS.md and .demo-rehearsal-state.json without re-planning",
+    "recordings_produced_by_demo": true,
+    "recordings_note": "rehearsal planned 7 recordings but none existed on disk; demo captured them with Playwright at 1920x1080 against the live engine rather than degrading to screenshots",
+    "compliance": {
+      "ran": true,
+      "length_band_ok": true,
+      "uncut_segment_ok": true,
+      "pii_scan_ok": true,
+      "pii_note": "corpus is synthetic and seeded in-repo; no private data on camera"
+    },
+    "take_review": {
+      "independent": true,
+      "reviewer_session": "code-reviewer subagent on sonnet (producer ran on opus)",
+      "verdict": "approved_after_fix",
+      "first_verdict": "rejected",
+      "blocker": "scene 6 was a loading skeleton for its full 17s \u2014 captured during the window when the console build was serving a stale chunk",
+      "resolution": "console rebuilt and restarted; scene 6 re-captured with an explicit wait that fails the take if the skeleton copy is still on screen; queue rev_0001 now renders (margin +0.0259)",
+      "accepted_warning": "the standalone label BLOCK is less prominent on screen than the REFUSED badge; narration distinguishes verdict from status and REFUSED is legible \u2014 accepted, not re-shot"
+    }
+  },
+  "footguns": [
+    {
+      "description": "console was not running; :3000 is FalkorDB Browser",
+      "severity": "CRITICAL",
+      "workaround": "filmed :3001 only"
+    },
+    {
+      "description": "api.ts bakes http://localhost:8000 at build time; macOS/Chromium resolve localhost to ::1 first",
+      "severity": "HIGH",
+      "workaround": "FIXED AT ROOT \u2014 rebuilt with NEXT_PUBLIC_MENGER_API=http://127.0.0.1:8000"
+    },
+    {
+      "description": "41ms cold / 11ms warm is the engine on another graph, not MENGER",
+      "severity": "HIGH",
+      "workaround": "absent from narration"
+    },
+    {
+      "description": "roster dataset figures have no backing artifact",
+      "severity": "HIGH",
+      "workaround": "absent from narration"
+    },
+    {
+      "description": "'removing FalkorDB' mis-frames the claim",
+      "severity": "CRITICAL",
+      "workaround": "narration says 'removing the graph algorithms' verbatim"
+    },
+    {
+      "description": "'procedure' / 'detects conflicts' / 'truth' are banned",
+      "severity": "HIGH",
+      "workaround": "scanned clean by the independent reviewer"
+    },
+    {
+      "description": "CI never executed; clean-room exits 2",
+      "severity": "HIGH",
+      "workaround": "no CI claim in narration"
+    },
+    {
+      "description": "lambda is pinned, not calibrated",
+      "severity": "LOW",
+      "workaround": "not spoken"
+    },
+    {
+      "description": "drill step 0 re-seeds and renumbers claims",
+      "severity": "LOW",
+      "workaround": "drill run to completion before capture; only the single hero write fired on camera"
+    },
+    {
+      "description": "other UIs read as MENGER",
+      "severity": "LOW",
+      "workaround": "single context per scene, :3001 only \u2014 reviewer confirmed across 13 frames"
+    }
+  ],
+  "verification": {
+    "duration_under_ceiling": true,
+    "resolution_ok": true,
+    "audio_stream_present": true,
+    "hero_beat_real": true,
+    "hero_beat_evidence": "POST through the console's own write surface returned REFUSED; incumbent clm_0007='eu-west-1' byte-identical afterwards; receipt rcpt_0006 replays",
+    "banned_wording_clean": true,
+    "foreign_surface_clean": true,
+    "broken_panel_clean": true,
+    "independent_review": "approved_after_fix"
+  },
+  "phase_ledger": [
+    {
+      "phase": "prereq_gate",
+      "evidence": "standalone run; PRD.md + live engine present; livetest/deploy state files absent -> user-waived, substituted by the live drill"
+    },
+    {
+      "phase": "footgun_detection",
+      "evidence": "SKIPPED: demo-rehearsal output consumed"
+    },
+    {
+      "phase": "app_analysis",
+      "evidence": "7 recordings expected, 0 present on disk; escalated rather than degrading to screenshots, then captured all 7 live at 1920x1080"
+    },
+    {
+      "phase": "preprocessing",
+      "evidence": "DEMO-SCRIPT.md [SUB] lines lifted verbatim into video/tts.mjs; no scene plan re-derived"
+    },
+    {
+      "phase": "dispatch",
+      "evidence": "no Remotion dispatch \u2014 raw mode: Playwright capture + Gemini TTS + ffmpeg fit/concat"
+    },
+    {
+      "phase": "verification",
+      "evidence": "ffprobe 171.309s 1920x1080 30fps h264+aac; independent sonnet reviewer rejected on scene 6, re-captured, now approved"
+    },
+    {
+      "phase": "exit_decision",
+      "evidence": "demo.mp4 shipped at 171.3s against a 180s ceiling"
+    }
+  ]
+}

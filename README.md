@@ -6,6 +6,21 @@ verdict ships with a replayable receipt.
 
 **Track 02: Agent Memory and Coordination** (sole track).
 
+## Live
+
+| | |
+|---|---|
+| **Console** | https://menger-console.vercel.app |
+| **API** | https://api.leash.ink/menger — try `/menger/health` |
+
+Both are live against a real FalkorDB `v4.22.1` instance holding the seeded corpus. The `/proof`
+page re-reads `GET /health` on every page load rather than rendering a build-time snapshot, so if
+the engine is down that page says so instead of showing stale numbers.
+
+The API is **co-located on a shared box behind a shared reverse proxy** with an unrelated project,
+which is why it answers under that hostname. The engine, the database and the code are MENGER's
+own. Local setup below reproduces everything without either URL.
+
 ---
 
 ## The one thing to understand

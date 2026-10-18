@@ -963,3 +963,56 @@ drifting hardcoded number or an unevaluated upstream gate**. Absence of a defect
   README or form field that says 3000 for the console is wrong.
 - Read `epsilon` and `lambda` from `GET /health`. A prior audit found lambda carrying three
   different values across this project's own documents.
+
+---
+
+## demo — 2026-10-18 ~19:25 WAT
+
+**Shipped:** `video/demo.mp4` — **171.3s** against a 180s ceiling, 1920x1080, 30fps, h264+aac, 14 MB.
+Raw mode (no Remotion, no title card): Playwright capture of the live console → Gemini TTS → ffmpeg fit/concat.
+
+**Audio.** `separate` / `pacing_mode: gap`, **Gemini TTS** (`gemini-2.5-flash-preview-tts`, voice Charon)
+per Dami's ruling. Each silent capture is time-fitted to its own narration (+0.6s tail), so no line is
+clipped and no scene sits dead. Narration is the DEMO-SCRIPT `[SUB]` lines verbatim.
+
+**The hero beat is real.** A losing write (`agt_scraper_3`, `ap-south-1`, single echoed source
+`src_blog_echo_a`) went into the occupied slot `customer:acme|primary_region` **through the console's own
+write surface**, not a terminal. Verdict REFUSED, incoming independence **1** against the incumbent's
+**2**, receipt `rcpt_0006`, and `clm_0007 = 'eu-west-1'` byte-identical afterwards. The drill ran 9/9 PASS
+immediately before capture.
+
+**Deviation from the rehearsal script (recorded, not silent):** Step 4 was planned as a terminal beside the
+console. Playwright cannot film a terminal, and the product has its own `/remember` surface — so the hero
+write fires through the product. This is a stronger frame, not a weaker one: the refusal is rendered by the
+thing being judged.
+
+**Two live failures, both fixed at the root rather than worked around:**
+1. **FG-002 fired for real.** The console bundle bakes `http://localhost:8000` at build time; headless
+   Chromium resolves `localhost` to `::1` first, so the write form never hydrated — it sat on
+   "Asking the engine whether it will accept a write…". Rebuilt with
+   `NEXT_PUBLIC_MENGER_API=http://127.0.0.1:8000`. **FG-002 is now closed, not accepted.**
+2. **Stale build.** `next start` was serving HTML referencing a chunk hash absent from `.next` (400, then
+   404). Console rebuilt and restarted on **:3001**.
+
+**Independent review (sonnet; producer was opus) REJECTED the first take.** Blocker: scene 6 was a loading
+skeleton for its entire 17s — captured inside the stale-build window, and the narration talked about a
+review queue over two empty boxes. Re-captured with an explicit wait that fails the take if the skeleton
+copy is still on screen; `rev_0001` now renders with margin `+0.0259`. Reviewer also confirmed, across 13
+frames: duration OK, no banned wording, no unverifiable claims, no `:3000` surface, no spoken margin figure.
+**Accepted warning:** the standalone label `BLOCK` is less prominent on screen than the `REFUSED` badge.
+Narration distinguishes verdict from status and `REFUSED` is legible — accepted, not re-shot.
+
+### Blockers for Downstream
+| # | Issue | Owner |
+|---|---|---|
+| 1 | `.livetest-state.json` and `.deploy-state.json` still do not exist. The demo ran on a user waiver with the live drill as substitute. Any phase that reads them will block. | package |
+| 2 | CI has still never executed (`clean-room.sh` exits 2). Nothing in the video claims it — nothing downstream may either. | package |
+| 3 | The console must be served from the **new** build (`NEXT_PUBLIC_MENGER_API=http://127.0.0.1:8000`) on **:3001**. The old `.next` served 400/404 chunks. | package |
+
+### Assumptions
+- Gemini TTS output is final; no human voice pass was recorded. **WILL-BREAK** if a submission rule requires a human narrator.
+- `video/demo.mp4` is the only deliverable cut. No social clip was produced — out of time, not out of scope.
+
+### For Next Skill
+Ship `video/demo.mp4` as-is. Do **not** regenerate narration: the wording passed an independent banned-term
+scan, and re-rolling it re-opens FG-005/FG-006.

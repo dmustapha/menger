@@ -214,7 +214,9 @@ DONE    package      status=complete_except_video · 19:20 · the README is the 
                            user instruction missed. Read on exit instead, which caught two real
                            defects late: the README told readers to run the console on :3000
                            (gh-falkor holds it; it is **:3100**), and six open DS rows.
-                         **No demo video, no screenshots.** find -name "*.mp4" → nothing. The one
+                         **CLOSED 19:25 WAT — `video/demo.mp4`, 171.3s, 1920x1080, real BLOCK
+                           as the climax; independent sonnet review approved after one re-shoot.**
+                         ~~No demo video, no screenshots.~~ find -name "*.mp4" → nothing. The one
                            blocking item for the form. No URL invented to fill the row.
                          HANDOFF points at `main`, not at SHA 327da93 — a commit cannot contain
                            its own SHA. 327da93 is named as the *evidence* commit; app/, tests/,
@@ -261,7 +263,7 @@ gate in front of them.
 | 17:50 | verify_milestone + stretch go/no-go | |
 | 18:15 | deploy IN FULL (+ livetest folded) | |
 | 18:40 | package IN FULL (README + Cypher artifact) | HANDOFF.md SHA closes CL-F-007 here |
-| 19:00 | demo IN FULL (≤180s video) | |
+| 19:00 | demo IN FULL (≤180s video) | **DONE 19:25 — 171.3s, `video/demo.mp4`** |
 | 19:20 | verify_preflight → submit | |
 | **19:29** | **DEADLINE** | hard |
 
