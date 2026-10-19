@@ -17,3 +17,54 @@ dist/
 
 # OS
 .DS_Store
+
+# Build info
+tsconfig.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# Pipeline state (internal, not judge-facing)
+.forge-state.json
+.warroom-state.json
+.critique-state.json
+.demo-state.json
+.demo-rehearsal-state.json
+.design-forge-state.json
+.closure-ledger.json
+.gate-verdict.json
+.law12-feasibility.json
+.conductor-state.json
+.input-manifest.json
+.semantic-review-request.json
+*-state.json
+PULSE.md
+pipeline-log.md
+
+# Demo video working files (final cut lives on YouTube, not in-repo)
+video/
+
+# Internal pipeline docs (not judge-facing)
+warroom/
+CRITIQUE-REPORT.md
+FORGE-RESULTS.md
+docs/CHAT-KICKOFF-forge.md
+docs/FORGE-REDO-BRIEF.md
+SUBMISSION_STATUS.md
+
+# Internal planning/design docs
+*-design.md
+PERSPECTIVE-*.md
+REASONING-AUDIT-design.md
+PLAN.md
+PRD.md
+KICKOFF.md
+LEDGER.md
+DEMO-FOOTGUNS.md
+DEMO-SCRIPT.md
+FEATURE-OBSERVABLES.md
+INTEGRATION-VERIFICATION.md
+ROUTE-ARCHITECTURE.md
+USER-ONBOARDING.md
+docs/ORCHESTRATION-PROTOCOL.md
+submission/SUBMISSION-GUIDE.md
+research/
+docs/prompts/

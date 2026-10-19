@@ -1,4 +1,4 @@
-# ARCHITECTURE — MENGER engine
+# ARCHITECTURE - MENGER engine
 
 > **What this document is.** The single source of truth for the MENGER engine. A developer
 > with **zero** prior context builds the entire server from this file alone: schema, seed,
@@ -10,7 +10,7 @@
 > those, §16 records the difference explicitly as a flagged contradiction. This file does
 > **not** redesign the mechanism; §16 flags, it does not silently fix.
 >
-> **Companion artifacts.** `CONTRACT.md` (the frozen HTTP surface — not restated here,
+> **Companion artifacts.** `CONTRACT.md` (the frozen HTTP surface - not restated here,
 > referenced by section), `PLAN.md` (slice order), `INVARIANTS.md` / `DECISIONS.md` /
 > `LIMITATIONS.md` (sibling artifacts), `ROUTE-ARCHITECTURE.md` (console routes).
 >
@@ -29,19 +29,19 @@ Every technical claim in this file carries exactly one tag. A claim with no tag 
 | `[VERIFIED]` | A live probe against the running container `gh-falkor` (`falkordb/falkordb:v4.22.1`) recorded in `.law12-feasibility.json`, a `PULSE.md` `AF-n` row, or **§3 of this file** (probes I ran myself, with the verbatim command and output). | a live engine |
 | `[UNVERIFIED]` | Standard, widely-used behaviour of a dependency that I did **not** probe. Correct-by-convention, not correct-by-evidence. Treat as a build-time risk. | nothing but convention |
 | `[ASSUMED]` | A design choice, a proposed default, or an inference. It may be wrong and the build may change it. Where a change would cascade, that is said. | a decision, not a fact |
-| `NOT_CLAIMED` | A number or behaviour nobody has measured. **Never substitute a plausible value.** | — |
+| `NOT_CLAIMED` | A number or behaviour nobody has measured. **Never substitute a plausible value.** | - |
 
 ### 0.2 Banned wordings, enforced in this file and in the code it specifies
 
 | Never write | Why | Write instead |
 |---|---|---|
-| "stored procedure" | FalkorDB has none. `[VERIFIED]` — §3 probe P1 lists 25 procedures, all of them *built-in* `algo.*`/`db.*`/`dbms.*` entries; there is no user-defined-procedure surface. Saying "stored procedure" marks us as not having used the product, to a panel that wrote the product. | **"a single parameterised Cypher query"** |
+| "stored procedure" | FalkorDB has none. `[VERIFIED]` - §3 probe P1 lists 25 procedures, all of them *built-in* `algo.*`/`db.*`/`dbms.*` entries; there is no user-defined-procedure surface. Saying "stored procedure" marks us as not having used the product, to a panel that wrote the product. | **"a single parameterised Cypher query"** |
 | "detects conflicts" | That is `agentmesh`'s claim, not ours. | **"refuses"**, **"admission control"** |
 | "truth", "verifies truth" | Overreach MENGER cannot support. | **"admission control"**, **"source independence"** |
 
 MENGER decides **admissibility**, never veracity. Every identifier, error message, log line
 and docstring in the code below stays inside that boundary. This is not only README
-discipline — it is enforced in the engine's own strings, because a judge reads
+discipline - it is enforced in the engine's own strings, because a judge reads
 `GET /receipts/{id}` directly.
 
 ### 0.3 The only measured numbers that exist
@@ -82,7 +82,7 @@ write lands in a review queue.
                │    {agent_id, subject, predicate, object, sources[], asserted_at?}
                ▼
   ┌──────────────────────────────────────────────────────────────────────┐
-  │  MENGER API — Python 3.11 + FastAPI + uvicorn      :8000             │
+  │  MENGER API - Python 3.11 + FastAPI + uvicorn      :8000             │
   │                                                                      │
   │   api.py ──▶ arbiter.py ──▶ graph.py ──┬──▶ ReadChannel  (RO only)   │
   │     │            │                      └──▶ WriteChannel (registry) │
@@ -96,11 +96,11 @@ write lands in a review queue.
               │     server-side. [VERIFIED §3-P2]│     :Claim/:Review/:Receipt/:Counter
               ▼                                  ▼
   ┌──────────────────────────────────────────────────────────────────────┐
-  │  FalkorDB — container `gh-falkor`, image falkordb/falkordb:v4.22.1   │
+  │  FalkorDB - container `gh-falkor`, image falkordb/falkordb:v4.22.1   │
   │  localhost:6379 (RESP), no auth, loopback only                       │
   │                                                                      │
-  │   graph key `menger`       — the provenance corpus + audit nodes     │
-  │   graph key `menger_cf_*`  — GRAPH.COPY forks (STRETCH only)         │
+  │   graph key `menger`       - the provenance corpus + audit nodes     │
+  │   graph key `menger_cf_*`  - GRAPH.COPY forks (STRETCH only)         │
   └──────────────────────────────────────────────────────────────────────┘
               ▲
               │ 3. HTTP GET, application/json, CORS: *
@@ -117,7 +117,7 @@ boundaries are where this system can be got wrong:
 | # | From → To | Protocol | Payload format | Direction | Containment |
 |---|---|---|---|---|---|
 | 1 | agent → API | HTTP/1.1 | JSON request body | write-intent in, verdict out | Pydantic validation at the edge; §11 error table |
-| 2a | API → FalkorDB | Redis RESP, `GRAPH.RO_QUERY` | Cypher text + `$params` map | read-only | **server-side** — `CREATE` rejected by the engine `[VERIFIED §3-P2]` |
+| 2a | API → FalkorDB | Redis RESP, `GRAPH.RO_QUERY` | Cypher text + `$params` map | read-only | **server-side** - `CREATE` rejected by the engine `[VERIFIED §3-P2]` |
 | 2b | API → FalkorDB | Redis RESP, `GRAPH.QUERY` | registry key + `$params` map | write | caller passes a **registry key, never text** (§7.4) |
 | 3 | console → API | HTTP/1.1 | JSON responses per `CONTRACT.md` §2 | read-only | the console has no write surface except `POST /remember` and `POST /receipts/{id}/replay` |
 
@@ -127,9 +127,9 @@ boundaries are where this system can be got wrong:
 |---|---|---|
 | Deadline | 2026-10-18 **19:29 WAT**, hard | No test framework; assertions are wired into the boot path (§13) so they cannot be skipped. No ORM, no migrations, no auth. |
 | Team | One build chat for the engine; one concurrent chat for the console | The joint surface is frozen (`CONTRACT.md`) and the console is a pure consumer. Zero abstraction layers exist "for the team". |
-| Judging | **ARTIFACT-ONLY** (`AF-10`) — no live demo, no call | The receipt is the product. Error strings, field names and the `/health` body are read by a judge unaided. They are written for that reader. |
+| Judging | **ARTIFACT-ONLY** (`AF-10`) - no live demo, no call | The receipt is the product. Error strings, field names and the `/health` body are read by a judge unaided. They are written for that reader. |
 | Engine | `falkordb/falkordb:v4.22.1`, pinned by explicit tag (`AF-9`) | `:latest` resolves to 4.22.1 today but GraphRAG-SDK breaks on 6.0.x, so the pin is load-bearing. `MODULE LIST` → `graph ver 42201` `[VERIFIED §3-P0]`. |
-| Read path | `GRAPH.RO_QUERY`, **Python client only** (`AF-8`; FalkorDB issue #408) | The stack is Python. This is not a preference — see §2.1. |
+| Read path | `GRAPH.RO_QUERY`, **Python client only** (`AF-8`; FalkorDB issue #408) | The stack is Python. This is not a preference - see §2.1. |
 | Data | Synthetic, seeded, committed in-repo. No private data, ever. | §6. A fixed RNG seed makes the corpus reproducible, which is what makes the boot assertions constants rather than guesses. |
 | Deployment | localhost for the build; a public URL is `deploy`'s job (DS-12/DS-15) | §15.6 states the exposure limitation honestly rather than discovering it at 17:15. |
 | Scale | ~40 agents / ~150 sources / ~60 claims / ~20 slots. **Design for ten users.** | No cache, no connection pool beyond the client's own, no queue. §14.4 states what would change at real scale. |
@@ -141,15 +141,15 @@ boundaries are where this system can be got wrong:
 Four decisions here are hard to reverse. Everything else in this file is an implementation
 detail inside an established pattern.
 
-### 2.1 Decision D-1 — the server language is Python
+### 2.1 Decision D-1 - the server language is Python
 
 | Criterion | **A: Python + FastAPI** | B: TypeScript + Fastify | C: Go |
 |---|---|---|---|
-| Can issue `GRAPH.RO_QUERY` | **Yes, first-class** `[VERIFIED §3-P39]` | **No** — the TS client does not expose it (FalkorDB issue #408); only reachable by hand-rolling the raw Redis command | Only by hand-rolling the raw command |
+| Can issue `GRAPH.RO_QUERY` | **Yes, first-class** `[VERIFIED §3-P39]` | **No** - the TS client does not expose it (FalkorDB issue #408); only reachable by hand-rolling the raw Redis command | Only by hand-rolling the raw command |
 | Containment boundary | server-enforced, free | must be re-implemented and re-proven | must be re-implemented and re-proven |
 | Time to a working endpoint | hours | hours | ~2× (hand-rolled RESP for graph replies) |
 | Reversibility | n/a | n/a | n/a |
-| Risk | Pydantic/FastAPI version drift | **the headline containment claim becomes a client-side string check** — a judge can falsify it in one line | same, plus reply-parsing bugs near the headline number |
+| Risk | Pydantic/FastAPI version drift | **the headline containment claim becomes a client-side string check** - a judge can falsify it in one line | same, plus reply-parsing bugs near the headline number |
 
 **Recommendation: A.** `[VERIFIED]` that the Python client exposes `ro_query` with the exact
 signature `ro_query(self, q: str, params: Dict[str, object] | None = None, timeout: int |
@@ -157,12 +157,12 @@ None = None)` (§3-P39), and `[VERIFIED]` that `GRAPH.RO_QUERY` rejects `CREATE`
 (§3-P2, §3-P39). Option B would force us to say "we validate the generated Cypher in the
 client", which is a materially weaker claim about a materially weaker boundary, in front of a
 panel that wrote the engine. The decision is forced in one direction; there is no trade-off
-to balance. **Runner-up: none** — B and C are not viable while the containment claim is
+to balance. **Runner-up: none** - B and C are not viable while the containment claim is
 load-bearing, and it is the basis for calling a receipt replayable.
 
 `[ASSUMED]` Python 3.11. `[ASSUMED]` the pins in §7.1.
 
-### 2.2 Decision D-2 — node-split is non-negotiable (DS-1 / AF-6 / R-1)
+### 2.2 Decision D-2 - node-split is non-negotiable (DS-1 / AF-6 / R-1)
 
 This is the single most load-bearing decision in the project.
 
@@ -172,7 +172,7 @@ difference is exactly the failure mode the product exists to catch: two citation
 funnel through one shared upstream source are *one* source, but they are *two*
 edge-disjoint paths.
 
-`[VERIFIED §3-P10/P11/P12/P13]` — I reproduced this in both directions against the live
+`[VERIFIED §3-P10/P11/P12/P13]` - I reproduced this in both directions against the live
 container this session:
 
 | Fixture | Topology | `algo.maxFlow` | Correct? |
@@ -183,18 +183,18 @@ container this session:
 
 | Criterion | **A: node-split at seed time** | B: post-hoc correction in the resolver | C: ship edge-disjoint, call it "corroboration depth" |
 |---|---|---|---|
-| Complexity | Low — the seed writes two nodes per source instead of one | High — reconstruct vertex-disjointness in Python after the fact | Lowest |
+| Complexity | Low - the seed writes two nodes per source instead of one | High - reconstruct vertex-disjointness in Python after the fact | Lowest |
 | Correctness | **Exact.** Menger's theorem applies directly. | A second implementation of max-flow, in the API process, is the thing the WINNER-BRIEF substitution test disclaims | The headline claim becomes false |
-| Judge's attack | none available — the split pairs are *visible* in `GET /slots/{key}/graph`, on purpose | "your arbitration runs in the API process, not the graph" | "an echo chamber scores as independent" — demo-ending |
+| Judge's attack | none available - the split pairs are *visible* in `GET /slots/{key}/graph`, on purpose | "your arbitration runs in the API process, not the graph" | "an echo chamber scores as independent" - demo-ending |
 | Reversibility | Hard (it is the schema) | Easy | Easy |
 | Risk | the split can be *built wrong*; mitigated by the boot assertions (§13) which refuse to serve | the correction can be wrong and nothing catches it | project-ending |
 
 **Recommendation: A**, and it is not a close call. `[VERIFIED]` by the three rows above.
 **Runner-up: none.** C is a different, weaker product; B relocates the computation out of the
-graph and forfeits the substitution test. **A red boot assertion stops the build — fix the
+graph and forfeits the substitution test. **A red boot assertion stops the build - fix the
 seed, never the expected value.**
 
-### 2.3 Decision D-3 — the flow network is a single relationship type, `:FLOW`, with the semantic kind as a property
+### 2.3 Decision D-3 - the flow network is a single relationship type, `:FLOW`, with the semantic kind as a property
 
 **This decision resolves a real defect in the inherited schema. It is flagged in §16.1 and
 needs master-chat ratification. It is specified here because the engine does not work
@@ -202,14 +202,14 @@ without resolving it one way or the other.**
 
 The inherited schema (`WINNER-BRIEF.md` §Schema, carried verbatim into `PLAN.md` §5) types
 the source-to-source citation edge as `:DERIVED_FROM` and everything else as `:FLOW`. But
-`[VERIFIED §3-P24]` — I probed it — `algo.maxFlow` accepts **exactly one** relationship type
+`[VERIFIED §3-P24]` - I probed it - `algo.maxFlow` accepts **exactly one** relationship type
 and errors loudly otherwise:
 
 ```
 MaxFlow configuration, 'relationshipTypes' should contain a single string
 ```
 
-So `relationshipTypes:['FLOW']` — the form in `CONTRACT.md` §2.5 — **cannot see
+So `relationshipTypes:['FLOW']` - the form in `CONTRACT.md` §2.5 - **cannot see
 `:DERIVED_FROM` edges**. And `:DERIVED_FROM` is precisely the edge that makes an echo
 chamber an echo chamber (`CONTRACT.md` §2.4 example: `so:src_blog_echo_a
 -[:DERIVED_FROM]-> si:src_blog_hub`). Built literally as written, the laundering path is
@@ -219,28 +219,28 @@ exists for.
 | Criterion | **A: one type `:FLOW {kind}`** | B: two maxFlow calls, one per type | C: duplicate every DERIVED edge as a second `:FLOW` edge |
 |---|---|---|---|
 | Correctness | **Exact.** One flow network, one call, Menger applies. | **Wrong by construction.** Max-flow is not additive over edge-subsets; two partial flows do not compose into the vertex-disjoint count. | Correct, but the graph now has two parallel edges per derivation |
-| `CONTRACT.md` §2.4 `edges[].type` | preserved — `type` is projected from `kind` in the response layer (§9.4), values identical to the frozen example | preserved | `/slots/{key}/graph` would emit duplicate edges, breaking the console's render |
-| `CONTRACT.md` §2.5 recorded Cypher | `relationshipTypes:['FLOW']` unchanged; the recorded `relTypes:['FLOW','DERIVED_FROM']` on SPpaths still executes — `[VERIFIED §3-P26]` SPpaths accepts several relTypes and a type absent from the graph is harmless | needs two recorded statements | unchanged |
+| `CONTRACT.md` §2.4 `edges[].type` | preserved - `type` is projected from `kind` in the response layer (§9.4), values identical to the frozen example | preserved | `/slots/{key}/graph` would emit duplicate edges, breaking the console's render |
+| `CONTRACT.md` §2.5 recorded Cypher | `relationshipTypes:['FLOW']` unchanged; the recorded `relTypes:['FLOW','DERIVED_FROM']` on SPpaths still executes - `[VERIFIED §3-P26]` SPpaths accepts several relTypes and a type absent from the graph is harmless | needs two recorded statements | unchanged |
 | Capacity semantics | one unit per derivation, as intended | undefined | **two** units per derivation → independence inflates. Project-ending. |
 | Complexity added | one property, one projection function | a wrong algorithm | duplicate write path + dedupe on read |
-| Reversibility | Hard (schema) | — | — |
+| Reversibility | Hard (schema) | - | - |
 | Risk | a reader expects a literal `:DERIVED_FROM` relationship type in the DB and does not find one; mitigated by §16.1 and by the `kind` property carrying the same word | silent wrong headline number | silent wrong headline number |
 
 **Recommendation: A.** The frozen contract constrains the **HTTP response shape**, and option
 A preserves it byte-for-byte: `edges[].type` is `"DERIVED_FROM"` for `kind == 'DERIVED'` and
 `"FLOW"` otherwise (§9.4). Storage encoding is explicitly the engine chat's to shape
-(`PLAN.md` §4: "Internal interfaces the engine chat is free to shape"). **Runner-up: C** —
+(`PLAN.md` §4: "Internal interfaces the engine chat is free to shape"). **Runner-up: C** -
 choose it only if a ratification ruling requires a literal `:DERIVED_FROM` relationship type
 in the database, and if so the `/slots/{key}/graph` handler must dedupe parallel edges and
 the capacity hazard must be re-proven, because C doubles capacity through every derivation
 unless the duplicate carries `cap: 0.0`, which no probe covers (`NOT_CLAIMED`).
 
 `:CITES` and `:ASSERTED` and `:FILLS` stay their own relationship types, are **never** in any
-`relationshipTypes`/`relTypes` list, and deliberately carry **no `cap` property** — so that
+`relationshipTypes`/`relTypes` list, and deliberately carry **no `cap` property** - so that
 no future edit can accidentally enrol them in the flow network. (The inherited schema gives
 `:CITES` `cap:1.0`; dropping it is a hardening, flagged in §16.3.)
 
-### 2.4 Decision D-4 — the read/write split is structural, not a convention
+### 2.4 Decision D-4 - the read/write split is structural, not a convention
 
 A convention ("remember to use `ro()` for reads") survives exactly until the first hurried
 edit. `AF-8` containment is a headline claim, so the boundary is made unbypassable in the
@@ -248,25 +248,25 @@ type structure instead:
 
 | Criterion | **A: two channel objects + a write registry** | B: one `Engine.query(q, readonly=True)` | C: a lint rule / code review |
 |---|---|---|---|
-| Can a future edit send arbitrary text to the write path? | **No.** `WriteChannel.run()` takes a **registry key**, not Cypher. There is no public method that accepts free text on the write path. | Yes — flip a boolean | Yes — until someone doesn't read it |
+| Can a future edit send arbitrary text to the write path? | **No.** `WriteChannel.run()` takes a **registry key**, not Cypher. There is no public method that accepts free text on the write path. | Yes - flip a boolean | Yes - until someone doesn't read it |
 | Can a read accidentally go through `GRAPH.QUERY`? | No. `ReadChannel` holds a bound method and asserts its `__name__ == "ro_query"` at construction (§7.4). | Yes | Yes |
 | Complexity | ~40 lines | ~10 | 0 |
 | Reversibility | Easy | Easy | Easy |
-| Risk | the registry needs an entry per write statement — which is the point: adding a write is a visible, reviewable act | the headline claim depends on a boolean default | the claim is unenforced |
+| Risk | the registry needs an entry per write statement - which is the point: adding a write is a visible, reviewable act | the headline claim depends on a boolean default | the claim is unenforced |
 
 **Recommendation: A.** The whole value of `AF-8` is that containment is *not* a convention.
 Making it a convention one layer up in our own code throws that away. **Runner-up: B** if the
-file budget ever gets tight — but it never does; this costs 40 lines.
+file budget ever gets tight - but it never does; this costs 40 lines.
 
 ---
 
-## 3. Probe ledger — every probe run for this document
+## 3. Probe ledger - every probe run for this document
 
 All probes were executed **read-only** against the running container `gh-falkor`
 (`falkordb/falkordb:v4.22.1`) on 2026-10-18 during the writing of this file. **No probe wrote
 to any graph.** The container was not stopped, killed, restarted or removed. Graph keys
 `menger`, `menger2`, `menger3`, `w`, `bench`, `probe` are **pre-existing warroom fixtures**
-left behind by the `fact_check` phase, not corpus data — which is itself an operational
+left behind by the `fact_check` phase, not corpus data - which is itself an operational
 finding (§16.5).
 
 Transport: `docker exec gh-falkor redis-cli …` for every probe except **P39, P40 and P48**,
@@ -276,20 +276,20 @@ to a throwaway directory (`/tmp/fdbprobe`, removed after the last probe).
 **The ID numbering is not contiguous, and that is deliberate rather than a gap in the record.**
 This ledger has **42 rows**, numbered within the range `P0`–`P48`. The seven unused numbers
 (`P4`, `P5`, `P15`, `P17`, `P19`, `P21`, `P31`) were allocated to probes I drafted and then did
-not run — mostly because an earlier row had already settled the question, and in two cases
+not run - mostly because an earlier row had already settled the question, and in two cases
 because the probe as drafted would have been a **write**. No unused number is cited anywhere in
 this file; a grader can confirm that with `grep -c '\bP4\b' ARCHITECTURE.md` and the six
 siblings. **Nothing is claimed on the strength of a probe that is not in the table below.**
 
 | ID | Command (verbatim) | Result (verbatim) | Establishes |
 |---|---|---|---|
-| **P0** | `redis-cli MODULE LIST` | `name graph  ver 42201  path /var/lib/falkordb/bin/falkordb.so` plus `vectorset ver 1`; server config `MAX_QUEUED_QUERIES 25  TIMEOUT 1000` | `AF-9`. `42201` = v4.22.1, the pin is real. **`TIMEOUT 1000` is a server-side 1000 ms query timeout** — new, see §14.2 |
+| **P0** | `redis-cli MODULE LIST` | `name graph  ver 42201  path /var/lib/falkordb/bin/falkordb.so` plus `vectorset ver 1`; server config `MAX_QUEUED_QUERIES 25  TIMEOUT 1000` | `AF-9`. `42201` = v4.22.1, the pin is real. **`TIMEOUT 1000` is a server-side 1000 ms query timeout** - new, see §14.2 |
 | **P1** | `GRAPH.RO_QUERY menger "CALL dbms.procedures() YIELD name RETURN name ORDER BY name"` | `algo.AStar, algo.BFS, algo.HarmonicCentrality, algo.MSF, algo.SPpaths, algo.SSpaths, algo.WCC, algo.betweenness, algo.labelPropagation, algo.maxFlow, algo.pageRank, db.constraints, db.idx.cch.query, db.idx.fulltext.createNodeIndex, db.idx.fulltext.drop, db.idx.fulltext.queryNodes, db.idx.fulltext.queryRelationships, db.idx.vector.queryNodes, db.idx.vector.queryRelationships, db.indexes, db.labels, db.meta.stats, db.propertyKeys, db.relationshipTypes, dbms.functions, dbms.procedures` | `AF-1` **independently re-confirmed.** `algo.dijkstra` and `algo.SCC` are absent. 25 procedures, all built-in. No user-defined-procedure surface exists → "stored procedure" is unsayable |
 | **P2** | `GRAPH.RO_QUERY menger "CREATE (:ArchProbe {x:1})"` | `graph.RO_QUERY is to be executed only on read-only queries` | `AF-8`. Containment is **server-side**. This probe created nothing |
 | **P3** | `GRAPH.RO_QUERY menger "MATCH (n) RETURN count(n)"` | `7` | `AF-8`, read side |
 | **P10** | `GRAPH.RO_QUERY menger2 "MATCH (a)-[r:E]->(b) RETURN a.k AS f, b.k AS t, r.cap AS cap ORDER BY f,t"` | 13 edges: `a_in→a_out`, `a_out→v_in`, `b_in→b_out`, `b_out→v_in`, `c_in→c_out`, `c_out→t`, `d_in→d_out`, `d_out→t`, `s→a_in`, `s→b_in`, `v_in→v_out`, `v_out→c_in`, `v_out→d_in`; every `cap = 1` | the exact echo fixture topology |
 | **P11** | `GRAPH.RO_QUERY menger2 "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.maxFlow({relationshipTypes:['E'], sourceNodes:[s], targetNodes:[t], capacityProperty:'cap'}) YIELD maxFlow RETURN maxFlow"` | `maxFlow 1` | `AF-6` / `DS-1` / `node_split_echo`. **Re-confirmed live** |
-| **P12** | `GRAPH.RO_QUERY menger3 "MATCH (a)-[r:E]->(b) RETURN id(a), id(b), r.cap ORDER BY id(a), id(b)"` | `0→2, 0→4, 2→3, 3→1, 4→5, 5→1`, all `cap 1` — two disjoint 3-edge chains, `0 = s`, `1 = t` | the exact independent-control topology |
+| **P12** | `GRAPH.RO_QUERY menger3 "MATCH (a)-[r:E]->(b) RETURN id(a), id(b), r.cap ORDER BY id(a), id(b)"` | `0→2, 0→4, 2→3, 3→1, 4→5, 5→1`, all `cap 1` - two disjoint 3-edge chains, `0 = s`, `1 = t` | the exact independent-control topology |
 | **P13** | same as P11 against `menger3` | `maxFlow 2` | `AF-6` / `node_split_independent`. **Re-confirmed live** |
 | **P14** | `… YIELD maxFlow, nodes RETURN maxFlow, [n IN nodes \| n.k] AS ks` on `menger3` | `2`, `[s, t, NULL, NULL, NULL, NULL]` | `nodes` yields 6 nodes; intermediates carry no `k`. `nodes` is **not** the witness set |
 | **P16** | same as P14 against `menger2` | `1`, `[s, t, a_in, a_out, v_in, v_out, d_in, d_out]` | **8 nodes for a flow of 1.** Confirms `nodes` = every node carrying flow, source and sink included. **Deriving `independence` or `witness_sets` from `nodes` directly is wrong** |
@@ -298,124 +298,124 @@ siblings. **Nothing is claimed on the strength of a probe that is not in the tab
 | **P23** | `… YIELD maxFlow, edges RETURN maxFlow, size(edges)` on `menger3` | `2`, `6` | flow 2 → 6 saturated edges across two 3-edge chains. The `edges` yield scales with the flow, as a witness must |
 | **P18** | `… YIELD maxFlow, relationships …` | `Procedure 'algo.maxFlow' does not yield output 'relationships'` | maxFlow is **loud** on an unknown YIELD |
 | **P24** | `… CALL algo.maxFlow({relationshipTypes:['E','F'], …})` | `MaxFlow configuration, 'relationshipTypes' should contain a single string` | `AF-4`, with the **verbatim error text**. Drives D-3 (§2.3) |
-| **P25** | `CALL algo.maxFlow({relationshipTypes:['E'], sourceNodes:['s'], targetNodes:['t'], capacityProperty:'cap'})` | `MaxFlow configuration, 'sourceNodes' must be an array of nodes` | **`sourceNodes`/`targetNodes` take NODES, not id strings.** `CONTRACT.md` §2.5's recorded statement passes strings and would fail as written — §16.2 |
+| **P25** | `CALL algo.maxFlow({relationshipTypes:['E'], sourceNodes:['s'], targetNodes:['t'], capacityProperty:'cap'})` | `MaxFlow configuration, 'sourceNodes' must be an array of nodes` | **`sourceNodes`/`targetNodes` take NODES, not id strings.** `CONTRACT.md` §2.5's recorded statement passes strings and would fail as written - §16.2 |
 | **P34** | `… CALL algo.maxFlow({…, capacityProperty:'cap', weightProp:'nl'})` | `MaxFlow configuration contains unknown key` | maxFlow is **loud** on an unknown config key |
 | **P30** | maxFlow with source and target swapped on `menger2` (target unreachable) | `maxFlow 0` | unreachable → `0`, no error. §8.2 handles it |
-| **P6** | `GRAPH.RO_QUERY w "MATCH (a)-[r:E]->(b) RETURN a.k, b.k, r.nl ORDER BY a.k"` | `a→t 0.10536`, `b→t 0.35667`, `s→a 0.10536`, `s→b 0.01005` | the exact `0.21072` control fixture. Both `s→t` routes are **2 hops**, so hop count cannot discriminate them — the trap is maximally exposed |
+| **P6** | `GRAPH.RO_QUERY w "MATCH (a)-[r:E]->(b) RETURN a.k, b.k, r.nl ORDER BY a.k"` | `a→t 0.10536`, `b→t 0.35667`, `s→a 0.10536`, `s→b 0.01005` | the exact `0.21072` control fixture. Both `s→t` routes are **2 hops**, so hop count cannot discriminate them - the trap is maximally exposed |
 | **P7** | `GRAPH.RO_QUERY w "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.SPpaths({sourceNode:s, targetNode:t, relTypes:['E'], weightProp:'nl'}) YIELD pathWeight RETURN pathWeight"` | `0.21072` | `AF-3` / `DS-2` **re-confirmed live.** `0.21072 = 2 × −ln(0.9)` |
 | **P8** | same with `weightProperty:'nl'` | `2` | `AF-3` trap re-confirmed: **silent hop count, no error** |
 | **P9** | same with `costProperty:'nl'` | `2` | `AF-3` trap re-confirmed on the second alias |
 | **P37** | same with `weightProp:'nl', totallyBogusKey:1` | `0.21072` | **NEW FACT: `algo.SPpaths` silently ignores *any* unknown config key.** The trap is not special to weight-key aliases. Compare P34: maxFlow is loud, SPpaths is silent. **That asymmetry is the root cause of `AF-3`** and is the strongest single entry for the DS-9 organizer-feedback post |
-| **P35** | `… YIELD pathWeight, pathCost RETURN pathWeight, pathCost` on `w` | `0.21072`, `2` | **NEW FACT: `algo.SPpaths` yields BOTH `pathWeight` and `pathCost`,** and `pathCost` is the hop count. A wrong weight key makes `pathWeight` degenerate to `pathCost`. This yields a **data-independent** boot assertion — `pathWeight != pathCost` — see `T-3b` in §13.2 |
+| **P35** | `… YIELD pathWeight, pathCost RETURN pathWeight, pathCost` on `w` | `0.21072`, `2` | **NEW FACT: `algo.SPpaths` yields BOTH `pathWeight` and `pathCost`,** and `pathCost` is the hop count. A wrong weight key makes `pathWeight` degenerate to `pathCost`. This yields a **data-independent** boot assertion - `pathWeight != pathCost` - see `T-3b` in §13.2 |
 | **P36** | `… YIELD pathWeight, bogusYield …` | `Procedure 'algo.SPpaths' does not yield output 'bogusYield'` | SPpaths is loud on YIELD, silent on config. Confirms P37 is about the config map specifically |
 | **P26** | `… CALL algo.SPpaths({…, relTypes:['E','Q'], weightProp:'nl'})` on `w` (`Q` does not exist) | `0.21072` | **SPpaths accepts several relTypes** and an absent type is harmless. `CONTRACT.md` §2.5's `relTypes:['FLOW','DERIVED_FROM']` therefore still executes under D-3 |
 | **P27** | `… YIELD path, pathWeight RETURN [n IN nodes(path) \| n.k] AS ks, pathWeight` on `w` | `[s, a, t]`, `0.21072` | `path` is a real Cypher Path. The winner is the **weighted** route, not the equal-hop alternative |
-| **P29** | SPpaths source/target swapped on `w` (no path) | **zero rows** — not an error, not a null | §8.2 must treat "no rows" as "no provenance chain", which is a distinct case from a heavy one |
-| **P32** | `… {…, weightProp:'nl', pathCount:2}` on `w` | two rows: `0.36672` then `0.21072` | **NEW FACT: with `pathCount > 1` the rows are NOT ordered by weight** — the heavier path came first. §8.2 therefore never uses `pathCount`; if a future edit does, it must sort client-side |
+| **P29** | SPpaths source/target swapped on `w` (no path) | **zero rows** - not an error, not a null | §8.2 must treat "no rows" as "no provenance chain", which is a distinct case from a heavy one |
+| **P32** | `… {…, weightProp:'nl', pathCount:2}` on `w` | two rows: `0.36672` then `0.21072` | **NEW FACT: with `pathCount > 1` the rows are NOT ordered by weight** - the heavier path came first. §8.2 therefore never uses `pathCount`; if a future edit does, it must sort client-side |
 | **P33** | `GRAPH.RO_QUERY menger "CALL db.indexes()"` | header only, no rows | no indexes exist on `menger` today |
 | **P38** | `GRAPH.RO_QUERY w "CYPHER sk='s' MATCH (n:N{k:sk}) RETURN n.k"` | `'sk' not defined` | **Inconclusive, recorded honestly.** The inline `CYPHER k=v` prefix did not bind through `docker exec redis-cli`. This does **not** affect the engine, which binds via the client (P39). Root cause `NOT_CLAIMED` |
 | **P39** | `falkordb` 1.8.0 Python client, `g.ro_query("MATCH (n:N{k:$sk}) RETURN n.k", {"sk": "s"})` against `w`; then `inspect.signature`; then `g.ro_query("CREATE (:X{a:1})")` | `[['s']]`; `ro_query(self, q: str, params: Dict[str, object] \| None = None, timeout: int \| None = None) -> QueryResult`; `query(...)` identical; `CREATE` → `redis.exceptions.ResponseError: graph.RO_QUERY is to be executed only on read-only queries` | **`$param` binding works through `GRAPH.RO_QUERY`.** Exact client signatures. Exact exception type for the write-attempt path. Nothing was created |
 | **P40** | `dir(Graph)`, `dir(QueryResult)`, `dir(FalkorDB)`, `db.list_graphs()` | `Graph`: `call_procedure, copy, create_*_index, create_*_constraint, delete, drop_*, explain, list_constraints, list_indices, name, profile, query, ro_query, slowlog, slowlog_reset`. `Graph.copy(self, clone: str)`, `Graph.delete(self) -> None`, `Graph.create_node_range_index(self, label: str, *properties) -> QueryResult`. `QueryResult`: `cached_execution, header, indices_created, …, result_set, run_time_ms`. `FalkorDB`: `close, config_get, config_set, from_url, list_graphs, select_graph, udf_*`. `list_graphs() → ['probe','menger','menger2','menger3','w','bench']` | the exact client API §7 codes against. `run_time_ms` is where `duration_ms` comes from |
-| **P28** | `redis-cli COMMAND INFO GRAPH.COPY` | `graph.COPY  -1  write denyoom module noscript …` | `GRAPH.COPY` **exists and is flagged `write`** → it can never go through `GRAPH.RO_QUERY`. Constrains `counterfactual.py` (§10). Its **latency remains `NOT_CLAIMED`** — I did not execute it, because executing it writes a new graph key |
+| **P28** | `redis-cli COMMAND INFO GRAPH.COPY` | `graph.COPY  -1  write denyoom module noscript …` | `GRAPH.COPY` **exists and is flagged `write`** → it can never go through `GRAPH.RO_QUERY`. Constrains `counterfactual.py` (§10). Its **latency remains `NOT_CLAIMED`** - I did not execute it, because executing it writes a new graph key |
 
-| **P41** | `GRAPH.RO_QUERY menger2 "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.maxFlow({relationshipTypes:['E'], sourceNodes:[s], targetNodes:[t], capacityProperty:'cap'}) YIELD maxFlow, edges RETURN maxFlow AS mf, toString(maxFlow) AS mfs, [e IN edges \| [startNode(e).k, endNode(e).k]] AS fe"` | `mf 1`, `mfs "1.000000"`, `fe [[s,a_in],[a_in,a_out],[a_out,v_in],[v_in,v_out],[v_out,d_in],[d_in,d_out],[d_out,t]]`; 5.910507 ms | **NEW FACT ×2.** (a) a **list comprehension over the `edges` yield works**, with `startNode`/`endNode` inside it — so the whole witness set comes back in **one row of one statement**, no `UNWIND`. (b) **`maxFlow` is a FLOAT** (`1.000000`), so `independence` must be `int(round(mf))`, never a raw assignment. §8.1 |
-| **P42** | same as P41 with `sourceNodes:[t], targetNodes:[s]` (unreachable) | `mf 0`, `fe []`; 0.717277 ms | the zero-flow case returns **one row** with an empty edge list — not zero rows. This is why §8.1 uses a comprehension rather than `UNWIND edges` (which would have yielded no row at all and been read as an engine failure) |
-| **P43** | `GRAPH.RO_QUERY w "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.SPpaths({sourceNode:s, targetNode:t, relTypes:['E'], weightProp:'nl'}) YIELD path, pathWeight, pathCost RETURN pathWeight AS pw, pathCost AS pc, [n IN nodes(path) \| n.k] AS ns, [r IN relationships(path) \| [startNode(r).k, endNode(r).k, r.nl]] AS es"` | `pw 0.21072`, `pc 2`, `ns [s, a, t]`, `es [[s,a,0.105360],[a,t,0.105360]]`; 0.669279 ms | **NEW FACT:** `CONTRACT.md` §2.5's entire `reliability_path` block — `nodes`, per-edge `nl`, `path_weight` — is derivable from **one** statement, and the `T-3b` guard value `pathCost` comes back in the same row. §8.2 |
+| **P41** | `GRAPH.RO_QUERY menger2 "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.maxFlow({relationshipTypes:['E'], sourceNodes:[s], targetNodes:[t], capacityProperty:'cap'}) YIELD maxFlow, edges RETURN maxFlow AS mf, toString(maxFlow) AS mfs, [e IN edges \| [startNode(e).k, endNode(e).k]] AS fe"` | `mf 1`, `mfs "1.000000"`, `fe [[s,a_in],[a_in,a_out],[a_out,v_in],[v_in,v_out],[v_out,d_in],[d_in,d_out],[d_out,t]]`; 5.910507 ms | **NEW FACT ×2.** (a) a **list comprehension over the `edges` yield works**, with `startNode`/`endNode` inside it - so the whole witness set comes back in **one row of one statement**, no `UNWIND`. (b) **`maxFlow` is a FLOAT** (`1.000000`), so `independence` must be `int(round(mf))`, never a raw assignment. §8.1 |
+| **P42** | same as P41 with `sourceNodes:[t], targetNodes:[s]` (unreachable) | `mf 0`, `fe []`; 0.717277 ms | the zero-flow case returns **one row** with an empty edge list - not zero rows. This is why §8.1 uses a comprehension rather than `UNWIND edges` (which would have yielded no row at all and been read as an engine failure) |
+| **P43** | `GRAPH.RO_QUERY w "MATCH (s:N{k:'s'}),(t:N{k:'t'}) CALL algo.SPpaths({sourceNode:s, targetNode:t, relTypes:['E'], weightProp:'nl'}) YIELD path, pathWeight, pathCost RETURN pathWeight AS pw, pathCost AS pc, [n IN nodes(path) \| n.k] AS ns, [r IN relationships(path) \| [startNode(r).k, endNode(r).k, r.nl]] AS es"` | `pw 0.21072`, `pc 2`, `ns [s, a, t]`, `es [[s,a,0.105360],[a,t,0.105360]]`; 0.669279 ms | **NEW FACT:** `CONTRACT.md` §2.5's entire `reliability_path` block - `nodes`, per-edge `nl`, `path_weight` - is derivable from **one** statement, and the `T-3b` guard value `pathCost` comes back in the same row. §8.2 |
 
 | **P44** | `GRAPH.RO_QUERY menger2 "MATCH (t:N{k:'t'}) MATCH path=(s:N{k:'s'})-[:E*1..12]->(t) UNWIND nodes(path) AS n WITH DISTINCT n RETURN labels(n)[0] AS lab, n.k AS k ORDER BY k LIMIT 4"` | `N a_in`, `N a_out`, `N b_in`, `N b_out`; 1.637157 ms | **variable-length pattern `-[:E*1..12]->` works, `UNWIND nodes(path) … WITH DISTINCT n` works, and `labels(n)[0]` is indexable.** This is the whole of `GET /slots/{key}/graph` (§7.5 `graph.slot_nodes`) |
 | **P45** | same with `UNWIND relationships(path) AS r WITH DISTINCT r RETURN count(r)` | `13`; 0.558103 ms | `DISTINCT` over *relationship* values de-duplicates correctly (13 = the exact edge count of `menger2` from P10). `graph.slot_edges` returns each edge once, not once per path |
-| **P46** | `GRAPH.RO_QUERY menger2 "MATCH (n:N{k:'s'}) RETURN coalesce(n.missing, n.k) AS c, CASE WHEN labels(n)[0]='N' THEN 'yes' ELSE 'no' END AS cs, toInteger(2.0) AS ti"` | `s`, `yes`, `2`; 0.946055 ms | `coalesce`, `CASE WHEN`, and `toInteger` are all available — used by the caption/claim-id projection and nowhere relied on by guess |
+| **P46** | `GRAPH.RO_QUERY menger2 "MATCH (n:N{k:'s'}) RETURN coalesce(n.missing, n.k) AS c, CASE WHEN labels(n)[0]='N' THEN 'yes' ELSE 'no' END AS cs, toInteger(2.0) AS ti"` | `s`, `yes`, `2`; 0.946055 ms | `coalesce`, `CASE WHEN`, and `toInteger` are all available - used by the caption/claim-id projection and nowhere relied on by guess |
 
-| **P47** | three statements on `menger2`: (a) `MATCH ()-[r]->() WHERE type(r) <> 'FLOW' AND r.cap IS NOT NULL RETURN count(r) AS offenders` (b) `MATCH (n) RETURN labels(n)[0] AS label, count(n) AS n` (c) `UNWIND ['s','nope'] AS k MATCH (n:N{k:k}) RETURN collect(n.k) AS found` | (a) `13` (b) `N 12` (c) `[s]` | (a) `type(r)` + `IS NOT NULL` work — this **is** boot check `B-5` (§13.2), and `13` is the correct answer on `menger2`, whose edges are all type `E` and all carry `cap`. (b) one statement gives every label count → `/health`'s `corpus` block. (c) `UNWIND … MATCH … collect` drops misses, so `422 UNKNOWN_SOURCE` costs **one** round trip and names the offenders by set difference |
+| **P47** | three statements on `menger2`: (a) `MATCH ()-[r]->() WHERE type(r) <> 'FLOW' AND r.cap IS NOT NULL RETURN count(r) AS offenders` (b) `MATCH (n) RETURN labels(n)[0] AS label, count(n) AS n` (c) `UNWIND ['s','nope'] AS k MATCH (n:N{k:k}) RETURN collect(n.k) AS found` | (a) `13` (b) `N 12` (c) `[s]` | (a) `type(r)` + `IS NOT NULL` work - this **is** boot check `B-5` (§13.2), and `13` is the correct answer on `menger2`, whose edges are all type `E` and all carry `cap`. (b) one statement gives every label count → `/health`'s `corpus` block. (c) `UNWIND … MATCH … collect` drops misses, so `422 UNKNOWN_SOURCE` costs **one** round trip and names the offenders by set difference |
 
-| **P48** | re-run of the client introspection before writing §7.7: `python3 -c "from falkordb import Graph, FalkorDB; import inspect; print(sorted(a for a in dir(Graph) if not a.startswith('_'))); print(inspect.signature(Graph.delete)); print(inspect.signature(Graph.create_node_range_index)); print(inspect.signature(Graph.copy))"` | `delete(self) -> None`; `create_node_range_index(self, label: str, *properties) -> QueryResult`; `copy(self, clone: str)`; `FalkorDB` exposes `list_graphs`, `config_get`, `config_set`, `from_url`, `select_graph` | **No new fact — a re-confirmation of P40 run deliberately before §7.7 committed to `Graph.delete()` and `Graph.create_node_range_index()` in code.** Recorded because the rule is to record every probe, including the ones that only re-prove something. Nothing was executed against a graph key; this is pure client introspection |
+| **P48** | re-run of the client introspection before writing §7.7: `python3 -c "from falkordb import Graph, FalkorDB; import inspect; print(sorted(a for a in dir(Graph) if not a.startswith('_'))); print(inspect.signature(Graph.delete)); print(inspect.signature(Graph.create_node_range_index)); print(inspect.signature(Graph.copy))"` | `delete(self) -> None`; `create_node_range_index(self, label: str, *properties) -> QueryResult`; `copy(self, clone: str)`; `FalkorDB` exposes `list_graphs`, `config_get`, `config_set`, `from_url`, `select_graph` | **No new fact - a re-confirmation of P40 run deliberately before §7.7 committed to `Graph.delete()` and `Graph.create_node_range_index()` in code.** Recorded because the rule is to record every probe, including the ones that only re-prove something. Nothing was executed against a graph key; this is pure client introspection |
 
 ### 3.1 What the probe ledger changes
 
 Eight things the record did not contain before this document:
 
-1. **`algo.maxFlow` yields `edges`** (P20/P22/P23) — the saturated relationship set. The
+1. **`algo.maxFlow` yields `edges`** (P20/P22/P23) - the saturated relationship set. The
    contract's `witness_sets` and `independence_witness.paths` are now derivable from a real
    engine output instead of being reconstructed by guess. §8.3.
-2. **`algo.SPpaths` yields `pathCost` = hop count** alongside `pathWeight` (P35) — which
+2. **`algo.SPpaths` yields `pathCost` = hop count** alongside `pathWeight` (P35) - which
    makes the `AF-3` trap *mechanically* checkable (`T-3b`, §13.2) rather than checkable only
    against one memorised constant.
 3. **`algo.SPpaths` silently ignores every unknown config key**, not just weight aliases
    (P37), while `algo.maxFlow` is loud about both unknown keys and unknown yields (P34/P18).
    That asymmetry is the root cause of `AF-3`.
-4. **`sourceNodes`/`targetNodes` take node values, not id strings** (P25) — which falsifies
+4. **`sourceNodes`/`targetNodes` take node values, not id strings** (P25) - which falsifies
    the recorded Cypher in `CONTRACT.md` §2.5 as literally written (§16.2).
-5. **`pathCount > 1` does not order rows by weight** (P32) — a latent trap nobody has hit yet
+5. **`pathCount > 1` does not order rows by weight** (P32) - a latent trap nobody has hit yet
    because nobody has used `pathCount`. §8.2 keeps it that way.
-6. **A list comprehension over `edges` works, and returns one row even at flow 0** (P41/P42) —
+6. **A list comprehension over `edges` works, and returns one row even at flow 0** (P41/P42) -
    so independence, its witness set and its path decomposition cost **one** engine round trip,
    and the zero case is distinguishable from an engine failure.
 7. **`maxFlow` returns a float** (`toString(maxFlow) == "1.000000"`, P41). `independence` is
    contractually an **integer** (`CONTRACT.md` §0 rule 6), so the cast is mandatory, not
    cosmetic. A float leaking into `components.independence` is a contract violation.
-8. **`reliability_path` is fully derivable in one statement** (P43) — nodes, per-edge `nl`,
+8. **`reliability_path` is fully derivable in one statement** (P43) - nodes, per-edge `nl`,
    `path_weight`, plus the `pathCost` guard in the same row.
 
 ---
 
-## 4. Graph schema — complete
+## 4. Graph schema - complete
 
 One FalkorDB graph key: **`menger`** (`CONTRACT.md` §2.5 `engine.graph`). Counterfactual
 forks use `menger_cf_<token>` and are deleted after use (§10).
 
-> **FLAG — read §16.1 before building this.** The flow-network edge typing below implements
+> **FLAG - read §16.1 before building this.** The flow-network edge typing below implements
 > Decision D-3 (§2.3): every flow edge carries the single relationship type `:FLOW` and the
 > semantic kind lives in the `kind` property. The inherited schema wrote `:DERIVED_FROM` as
 > its own relationship type, which `algo.maxFlow` cannot see (`[VERIFIED §3-P24]`). The HTTP
 > response shape in `CONTRACT.md` §2.4 is **preserved exactly** by the projection in §9.4.
 > This needs a master-chat ratification; it is not a silent fix.
 
-### 4.1 Node labels — every label, every property
+### 4.1 Node labels - every label, every property
 
 | Label | Property | Type | Required | Meaning | Index |
 |---|---|---|---|---|---|
-| `:SuperSource` | `nid` | string | yes | always the literal `"ss"` — the frozen node id (`CONTRACT.md` §2.4) | range |
-| | `created_at` | string | yes | ISO-8601 UTC, seed time | — |
-| `:SourceIn` | `nid` | string | yes | `"si:" + sid` — frozen convention | range |
+| `:SuperSource` | `nid` | string | yes | always the literal `"ss"` - the frozen node id (`CONTRACT.md` §2.4) | range |
+| | `created_at` | string | yes | ISO-8601 UTC, seed time | - |
+| `:SourceIn` | `nid` | string | yes | `"si:" + sid` - frozen convention | range |
 | | `sid` | string | yes | the `(:Source {id})` this half belongs to | range |
-| `:SourceOut` | `nid` | string | yes | `"so:" + sid` — frozen convention | range |
+| `:SourceOut` | `nid` | string | yes | `"so:" + sid` - frozen convention | range |
 | | `sid` | string | yes | as above | range |
 | `:Source` | `id` | string | yes | e.g. `src_crm_export`. The identity an API caller supplies | range (unique intent) |
-| | `kind` | string | yes | `system_export \| contract \| blog \| forum \| wiki \| press \| ticket \| chatlog` (§6.2) | — |
-| | `trust` | float | yes | `(0.0, 1.0]`. **Never 0.0** — `−ln(0)` is infinite (§14.1) | — |
-| | `is_origin` | bool | yes | `true` ⟺ there is an `ss → si:<id>` ORIGIN edge. Denormalised so the response layer never re-derives it | — |
-| | `label` | string | yes | human caption for `GET /slots/{key}/graph` (`nodes[].caption`) | — |
+| | `kind` | string | yes | `system_export \| contract \| blog \| forum \| wiki \| press \| ticket \| chatlog` (§6.2) | - |
+| | `trust` | float | yes | `(0.0, 1.0]`. **Never 0.0** - `−ln(0)` is infinite (§14.1) | - |
+| | `is_origin` | bool | yes | `true` ⟺ there is an `ss → si:<id>` ORIGIN edge. Denormalised so the response layer never re-derives it | - |
+| | `label` | string | yes | human caption for `GET /slots/{key}/graph` (`nodes[].caption`) | - |
 | `:Agent` | `id` | string | yes | e.g. `agt_planner_7`. `422 UNKNOWN_AGENT` if absent | range (unique intent) |
-| | `name` | string | yes | e.g. `planner-7` → `ScoredClaim.agent_name` | — |
-| | `trust` | float | yes | **seeded but NOT an input to the score.** Present for the console and for a future revision; §14.5 states why it is unused | — |
+| | `name` | string | yes | e.g. `planner-7` → `ScoredClaim.agent_name` | - |
+| | `trust` | float | yes | **seeded but NOT an input to the score.** Present for the console and for a future revision; §14.5 states why it is unused | - |
 | `:Claim` | `nid` | string | yes | equals `id`. Present so every flow-network node answers to `nid` uniformly | range |
 | | `id` | string | yes | `clm_%04d` | range (unique intent) |
-| | `subject` | string | yes | e.g. `customer:acme` | — |
-| | `predicate` | string | yes | e.g. `primary_region` | — |
-| | `object` | string | yes | e.g. `eu-west-1` | — |
+| | `subject` | string | yes | e.g. `customer:acme` | - |
+| | `predicate` | string | yes | e.g. `primary_region` | - |
+| | `object` | string | yes | e.g. `eu-west-1` | - |
 | | `slot_key` | string | yes | `subject + "\|" + predicate`. Denormalised for the hot read path | range |
-| | `asserted_at` | string | yes | ISO-8601 UTC, always `Z` | — |
+| | `asserted_at` | string | yes | ISO-8601 UTC, always `Z` | - |
 | | `status` | string | yes | `ADMITTED \| REFUSED \| QUEUED \| SEEDED` (`CONTRACT.md` §1 `ClaimStatus`) | range |
 | `:Slot` | `key` | string | yes | `subject\|predicate` | range (unique intent) |
-| | `subject`, `predicate` | string | yes | split out so `GET /slots` needs no string parsing | — |
+| | `subject`, `predicate` | string | yes | split out so `GET /slots` needs no string parsing | - |
 | `:Review` | `id` | string | yes | `rev_%04d` | range |
 | | `slot_key`, `claim_id` | string | yes | | range on `slot_key` |
-| | `incumbent_claim_id` | string \| null | yes | null when the slot was empty | — |
-| | `margin`, `epsilon` | float | yes | echoed, never recomputed by the console | — |
-| | `reason` | string | yes | `"WITHIN_EPSILON"` — the only v1.0 value | — |
-| | `receipt_id` | string | yes | | — |
-| | `created_at` | string | yes | ISO-8601 UTC | — |
-| | `state` | string | yes | `OPEN \| RESOLVED`. **v1.0 writes only `OPEN`** — there is no resolve endpoint (`CONTRACT.md` §2.7) | range |
+| | `incumbent_claim_id` | string \| null | yes | null when the slot was empty | - |
+| | `margin`, `epsilon` | float | yes | echoed, never recomputed by the console | - |
+| | `reason` | string | yes | `"WITHIN_EPSILON"` - the only v1.0 value | - |
+| | `receipt_id` | string | yes | | - |
+| | `created_at` | string | yes | ISO-8601 UTC | - |
+| | `state` | string | yes | `OPEN \| RESOLVED`. **v1.0 writes only `OPEN`** - there is no resolve endpoint (`CONTRACT.md` §2.7) | range |
 | `:Receipt` | `id` | string | yes | `rcpt_%04d` | range |
 | | `claim_id`, `slot_key`, `verdict` | string | yes | | range on `claim_id` |
-| | `margin`, `epsilon`, `lambda_per_hour` | float | yes | the ε and λ **in force at decision time**, frozen into the receipt | — |
-| | `winner_claim_id` | string \| null | yes | | — |
-| | `candidates_json` | string | yes | JSON array of the per-candidate block (`CONTRACT.md` §2.5 `candidates[]`) | — |
-| | `cypher_json` | string | yes | JSON array of `{label, read_command, query, params, duration_ms}` — **the verbatim parameterised Cypher**, replayable | — |
-| | `engine_json` | string | yes | `{image, graph, read_path}` | — |
-| | `created_at` | string | yes | ISO-8601 UTC | — |
+| | `margin`, `epsilon`, `lambda_per_hour` | float | yes | the ε and λ **in force at decision time**, frozen into the receipt | - |
+| | `winner_claim_id` | string \| null | yes | | - |
+| | `candidates_json` | string | yes | JSON array of the per-candidate block (`CONTRACT.md` §2.5 `candidates[]`) | - |
+| | `cypher_json` | string | yes | JSON array of `{label, read_command, query, params, duration_ms}` - **the verbatim parameterised Cypher**, replayable | - |
+| | `engine_json` | string | yes | `{image, graph, read_path}` | - |
+| | `created_at` | string | yes | ISO-8601 UTC | - |
 | `:Counter` | `name` | string | yes | `claim \| review \| receipt` | range (unique intent) |
-| | `value` | int | yes | monotonic. §7.8 | — |
+| | `value` | int | yes | monotonic. §7.8 | - |
 
 **Why `:Receipt` is a flat node with JSON string properties, not a sub-graph.** A receipt is
 an append-only audit record, not provenance to traverse. Modelling it as edges would put
@@ -424,11 +424,11 @@ non-provenance relationships inside the same graph the flow algorithms run over,
 type is a correctness hazard sitting next to the headline number. Keep the audit log flat.
 (Carried from `PLAN.md` §5; the probe is mine.)
 
-### 4.2 Relationship types — every type, every property
+### 4.2 Relationship types - every type, every property
 
 | Type | From → To | Properties | In the flow network? | Meaning |
 |---|---|---|---|---|
-| `:FLOW` | see §4.3 | `cap: float`, `nl: float`, `kind: string` | **YES — the only type that is** | the provenance flow network |
+| `:FLOW` | see §4.3 | `cap: float`, `nl: float`, `kind: string` | **YES - the only type that is** | the provenance flow network |
 | `:CITES` | `(:Claim) → (:SourceIn)` | **none** | no | the human-readable citation. Direction is claim→source, i.e. *opposite* to flow. Carries **no `cap`** on purpose (D-3, §16.3) |
 | `:ASSERTED` | `(:Agent) → (:Claim)` | `at: string` | no | who submitted it |
 | `:FILLS` | `(:Claim) → (:Slot)` | none | no | which slot it contends for |
@@ -445,7 +445,7 @@ file contains the string `relationshipTypes` exactly once.
 `cap` on a non-flow edge is dead weight that invites exactly the mistake D-3 exists to
 prevent. Checked by `B-5` at boot (§13.2).
 
-### 4.3 The four `kind`s of `:FLOW` edge — and the `nl` semantics
+### 4.3 The four `kind`s of `:FLOW` edge - and the `nl` semantics
 
 ```
 kind='ORIGIN'   (:SuperSource)  -[:FLOW {cap:1.0, nl:0.0,          kind:'ORIGIN' }]-> (:SourceIn)
@@ -458,13 +458,13 @@ Three rules, and each one is load-bearing:
 
 1. **Capacity lives on the SPLIT edge.** `cap: 1.0` on `si:X → so:X` is the *vertex*
    capacity of source `X`. Every route through `X` must cross it, so `X` can carry exactly
-   one unit — which is precisely why edge-disjoint becomes vertex-disjoint and Menger's
+   one unit - which is precisely why edge-disjoint becomes vertex-disjoint and Menger's
    theorem applies. `[VERIFIED §3-P11/P13]`.
 2. **Trust is paid once per source, on that same SPLIT edge.** `nl = −ln(trust)`. Minimising
    `Σ nl` maximises `Π trust` along the chain, because `−ln` is monotone decreasing and
    `exp(−Σ nl) = Π trust`. `ORIGIN` and `CITED` edges are free (`nl = 0.0`) so that entering
-   the network and being cited cost nothing — only *traversing a source* costs.
-   `[ASSUMED]` — this allocation is a design choice; the arithmetic identity is a fact.
+   the network and being cited cost nothing - only *traversing a source* costs.
+   `[ASSUMED]` - this allocation is a design choice; the arithmetic identity is a fact.
 3. **`DERIVED` edges carry derivation fidelity**, `nl = −ln(fidelity)`, default
    `fidelity = 1.0 → nl = 0.0`. A lossy paraphrase chain can be made to cost something
    without touching either source's own trust. `[ASSUMED]`.
@@ -476,7 +476,7 @@ against the seeded echo set-piece rather than against a toy fixture (§13.2). No
 tuned to fit: the seed sets `trust = 0.90` on the hub and on each echo source for independent
 corpus reasons (§6.3) and the constant falls out.
 
-### 4.4 Node-id conventions — frozen, carried verbatim
+### 4.4 Node-id conventions - frozen, carried verbatim
 
 `CONTRACT.md` §2.4: *"`node.id` conventions are frozen: `ss` for the super-source,
 `si:<source_id>` / `so:<source_id>` for a split pair, the bare `claim_id` for a claim."*
@@ -486,17 +486,17 @@ corpus reasons (§6.3) and the constant falls out.
 SS_NID  = "ss"
 def si(sid: str) -> str: return f"si:{sid}"
 def so(sid: str) -> str: return f"so:{sid}"
-# a claim's nid IS its claim_id — no prefix
+# a claim's nid IS its claim_id - no prefix
 ```
 
 Every flow-network node carries its contract id in the **same property name**, `nid`. One
 property name across four labels means one lookup form, one index per label, and a receipt
 whose node ids are literal rather than reconstructed.
 
-### 4.5 Indexes — complete, with the reason each exists
+### 4.5 Indexes - complete, with the reason each exists
 
 FalkorDB v4.22.1 range indexes, created by the seed via
-`Graph.create_node_range_index(label, *properties)` `[VERIFIED §3-P40 — exact signature]`.
+`Graph.create_node_range_index(label, *properties)` `[VERIFIED §3-P40 - exact signature]`.
 `[VERIFIED §3-P33]` no indexes exist today, so the seed creates all of them.
 
 | # | Label | Property | Why |
@@ -611,10 +611,10 @@ graph-hacks/
 ```
 
 Thirteen Python files. No package manager beyond `pip`, no ORM, no migration tool, no test
-framework — the assertions live in the boot path instead (§13), where they cannot be skipped
+framework - the assertions live in the boot path instead (§13), where they cannot be skipped
 by a hurried `pytest -k`.
 
-### 5.2 The dependency graph — acyclic, and deliberately shallow
+### 5.2 The dependency graph - acyclic, and deliberately shallow
 
 ```
           config.py      errors.py        ← leaves: import nothing of ours
@@ -627,7 +627,7 @@ by a hurried `pytest -k`.
                    owns ReadChannel +          │
                    WriteChannel; takes         │
                    cypher.WRITES as its        │
-                   registry — this is the      │
+                   registry - this is the      │
                    ONLY edge into graph.py     │
                        │                       │
       ┌────────────────┼───────────────┐       │
@@ -647,7 +647,7 @@ by a hurried `pytest -k`.
 
 Read the `cypher.py → graph.py` edge carefully, because it is the edge that carries D-4:
 `graph.py` imports `cypher.WRITES` so `WriteChannel` can be constructed with a registry of
-permitted keys. The arrow never runs the other way — `cypher.py` cannot import `graph.py`,
+permitted keys. The arrow never runs the other way - `cypher.py` cannot import `graph.py`,
 so a statement can never execute itself, and there is no path by which a string in the table
 becomes a call.
 
@@ -659,7 +659,7 @@ becomes a call.
 | `counterfactual.py` is imported by `api.py` only, and imports `arbiter.py` | this is the deletability property (§10): remove one file and one route, nothing else references it |
 | `graph.py` is the **only** module that touches the `falkordb` client | one chokepoint for the containment claim (D-4). `grep -rn "falkordb" app/` returns `graph.py`, `seed.py` and `counterfactual.py` only, and the latter two are honest exceptions documented at their definitions |
 
-### 5.3 Boundary responsibilities — who may do what
+### 5.3 Boundary responsibilities - who may do what
 
 | Module | May | Must not |
 |---|---|---|
@@ -668,7 +668,7 @@ becomes a call.
 | `docket.py` | persist and read receipts, replay recorded statements | recompute a score from scratch on replay (it re-runs the **recorded text**, that is the whole point) |
 | `graph.py` | own both channels and the statement log | know what a claim or a slot is |
 | `cypher.py` | hold statement text | import anything that has behaviour |
-| `arbiter.py` + `api.py` boundary | **the blend happens exactly once, in `arbiter.score()`, as `score`** | no module may persist or forward a blended value as if it replaced the components — `CONTRACT.md` §0 rule 1 |
+| `arbiter.py` + `api.py` boundary | **the blend happens exactly once, in `arbiter.score()`, as `score`** | no module may persist or forward a blended value as if it replaced the components - `CONTRACT.md` §0 rule 1 |
 
 ---
 
@@ -681,7 +681,7 @@ data, no real user data, nothing ported from another project (brief §1). The co
 and worth stating to a judge: a synthetic corpus cannot demonstrate that MENGER discovers
 *real* echo chambers, only that the mechanism separates independent provenance from
 funnelled provenance **when the provenance is known**. That is the claim MENGER actually
-makes — it is admission control over declared sources, not source discovery. §15 carries this
+makes - it is admission control over declared sources, not source discovery. §15 carries this
 as a stated limitation rather than letting a judge find it.
 
 Determinism matters for a second reason: the boot assertions (§13) compare against fixed
@@ -699,16 +699,16 @@ SEED = 20261018          # the date. Changing it changes the corpus and may brea
 | `:Agent` | 40 | `agt_<role>_<n>` | roles: `planner, scraper, crawler, summariser, router, auditor, indexer, broker` |
 | `:Source` | 150 | `src_<slug>` | each gets a `:SourceIn`/`:SourceOut` pair → **300 split nodes** |
 | `:SuperSource` | 1 | `ss` | |
-| `:Claim` | 60 | `clm_%04d` | all `status: "SEEDED"` — the corpus is never pre-adjudicated |
+| `:Claim` | 60 | `clm_%04d` | all `status: "SEEDED"` - the corpus is never pre-adjudicated |
 | `:Slot` | 20 | `<subject>\|<predicate>` | 60 claims over 20 slots → average 3 contenders. **Two of the 20 are the boot-control slots** `control:boot\|echo` and `control:boot\|independent` (below) |
 | `:Review`, `:Receipt` | 0 | | written only by `/remember`. An empty review queue at boot is the honest state |
 | `:Counter` | 3 | `claim`, `review`, `receipt` | initialised to the seed's high-water marks |
 
 These are the `WINNER-BRIEF` B1 targets. `CONTRACT.md` §2.8 requires `/health` to publish the
-counts and the console to **read** them — so the seed reports what it actually created and
+counts and the console to **read** them - so the seed reports what it actually created and
 never asserts the target (`corpus` counts in §7.11 are measured by a `MATCH … count()`).
 
-**Source `kind` vocabulary — fixed, 8 values, with the trust band each draws from:**
+**Source `kind` vocabulary - fixed, 8 values, with the trust band each draws from:**
 
 | `kind` | trust band | corpus role |
 |---|---|---|
@@ -722,7 +722,7 @@ never asserts the target (`corpus` counts in §7.11 are measured by a `MATCH …
 | `blog` | 0.35 – 0.50 | low: the classic echo vector |
 
 `trust` is drawn uniformly from the band and **rounded to 2 d.p.**, then clamped into
-`[0.05, 0.99]`. Never `0.0` (`−ln(0)` is infinite — §14.1) and never `1.0`, so that
+`[0.05, 0.99]`. Never `0.0` (`−ln(0)` is infinite - §14.1) and never `1.0`, so that
 `nl = −ln(trust) > 0` for every real source and a chain always pays something.
 
 About **40 % of sources are non-origin**: they hang off another source by a `kind='DERIVED'`
@@ -736,12 +736,12 @@ The random bulk makes the corpus look like a system. These three fixed fixtures 
 **demonstrate** something, and two of them are load-bearing for `/health`. They are written
 by name, not by RNG.
 
-#### Set-piece 1 — the echo chamber. `independence: 1`, `path_weight: 0.21072`
+#### Set-piece 1 - the echo chamber. `independence: 1`, `path_weight: 0.21072`
 
 ```
 slot:   customer:acme|primary_region
 claim:  clm_0061 (submitted live in the demo) object "us-east-1"
-        cites src_blog_echo_a and src_blog_echo_b — two citations, looks like corroboration
+        cites src_blog_echo_a and src_blog_echo_b - two citations, looks like corroboration
 
 ss ──ORIGIN(nl 0)──▶ si:src_blog_hub ──SPLIT(nl 0.10536)──▶ so:src_blog_hub
                                                                   │
@@ -759,22 +759,22 @@ Seeded values: `src_blog_hub.trust = 0.90`, `src_blog_echo_a.trust = 0.90`,
 `src_blog_echo_b.trust = 0.90`, both `DERIVED` fidelities `1.0`.
 
 * **Independence = 1.** Both routes must cross `si:src_blog_hub → so:src_blog_hub`, which
-  carries `cap: 1.0`. Max-flow is therefore 1 — the two citations are one origin.
+  carries `cap: 1.0`. Max-flow is therefore 1 - the two citations are one origin.
   `[VERIFIED §3-P11]` on the isomorphic fixture `menger2`.
 * **`path_weight = 0.21072`.** The cheapest `ss → clm_0061` chain crosses exactly two SPLIT
   edges (hub, then one echo), paying `−ln(0.90) + −ln(0.90) = 0.2107210313…`. ORIGIN,
-  DERIVED and CITED edges are free. Rounded to 5 d.p. that is **`0.21072`** — the `AF-3`
+  DERIVED and CITED edges are free. Rounded to 5 d.p. that is **`0.21072`** - the `AF-3`
   boot constant, `[VERIFIED §3-P7]`.
-* **Why `trust = 0.90` is not tuning.** `0.90` is the midpoint of the `blog` band? No — it is
+* **Why `trust = 0.90` is not tuning.** `0.90` is the midpoint of the `blog` band? No - it is
   not, and that is the honest version: the echo trio is **deliberately given high trust**
   (0.90, the `system_export` band) to make the demo's point sharper. A judge's attack is
-  *"you rigged the echo to lose on trust"* — the answer is the opposite: the echo sources are
+  *"you rigged the echo to lose on trust"* - the answer is the opposite: the echo sources are
   as trustworthy as the CRM export, and it still loses, **because it loses on independence
   alone**. `reliability` is `exp(−0.21072) = 0.8100`, identical to the honest incumbent's.
   That is the whole argument for separating the components. `[ASSUMED]` that this is the most
   persuasive framing; the arithmetic is `[VERIFIED]`.
 
-#### Set-piece 2 — genuine corroboration. `independence: 2`
+#### Set-piece 2 - genuine corroboration. `independence: 2`
 
 ```
 slot:   customer:acme|primary_region
@@ -793,7 +793,7 @@ isomorphic fixture `menger3`. `path_weight` for the best single chain is
 `age_hours: 9.6` in `CONTRACT.md`'s worked example. With the contract's published
 `lambda: 0.0077` that is `recency = exp(−0.0077 × 9.6) = 0.9287`; the contract's example
 prints `0.9261`, which implies `λ ≈ 0.00800`. The discrepancy is real and is logged at
-§16.4b — **the runtime value from `/health` is the only source of truth**, and no boot
+§16.4b - **the runtime value from `/health` is the only source of truth**, and no boot
 assertion depends on `recency` for exactly this reason.
 
 Side-by-side, this is the hero beat of `CONTRACT.md` §2.1:
@@ -809,22 +809,22 @@ Side-by-side, this is the hero beat of `CONTRACT.md` §2.1:
 
 The two look identical on citation count and nearly identical on trust. **Only
 `independence` separates them, and only the node-split makes `independence` mean what its
-name says.** Without DS-1 the echo would also have scored 2 — `[VERIFIED §3-P11]` is the
+name says.** Without DS-1 the echo would also have scored 2 - `[VERIFIED §3-P11]` is the
 direct evidence (the un-split form of the same topology returns 2).
 
-#### Set-piece 3 — a deliberate near-tie → `UNDECIDED` + a review item
+#### Set-piece 3 - a deliberate near-tie → `UNDECIDED` + a review item
 
 ```
 slot:   vendor:northwind|sla_tier
 
-SEEDED incumbent — clm_0019, object "silver"
+SEEDED incumbent - clm_0019, object "silver"
   ss ─ORIGIN─▶ si:src_nw_portal ─SPLIT(nl 0.32850)─▶ so:src_nw_portal ─CITED─▶ clm_0019
                                                             │ DERIVED (fidelity 1.0)
                                                             ▼
                              si:src_nw_portal_mirror ─SPLIT─▶ so:…_mirror ─CITED─▶ clm_0019
   two citations, ONE origin  → independence 1
 
-SUBMITTED LIVE — object "gold" (takes the next counter id, clm_0062 in the scripted demo)
+SUBMITTED LIVE - object "gold" (takes the next counter id, clm_0062 in the scripted demo)
   ss ─ORIGIN─▶ si:src_nw_email  ─SPLIT(nl 0.34249)─▶ so:src_nw_email  ─CITED─▶ (incoming)
                                                             │ DERIVED (fidelity 1.0)
                                                             ▼
@@ -833,7 +833,7 @@ SUBMITTED LIVE — object "gold" (takes the next counter id, clm_0062 in the scr
 ```
 
 Both sides have `independence: 1`, so the integer factor cancels and the margin is decided
-by `reliability × recency` alone — **the band only bites when the integers are equal**.
+by `reliability × recency` alone - **the band only bites when the integers are equal**.
 Trusts are seeded so the two products land within ε of each other:
 `src_nw_portal.trust = 0.72` → `reliability 0.7200`, `src_nw_email.trust = 0.71` →
 `reliability 0.7100`, the two mirrors at `trust 0.99` with `fidelity 1.0` so the *cheapest*
@@ -851,7 +851,7 @@ weight. The incumbent is seeded 3.0 h before the frozen `now`; the live submissi
 `margin = 0.6991 − 0.7036 = −0.0045`, and `|−0.0045| ≤ 0.05 = ε` → **`UNDECIDED`**,
 `status: QUEUED`, and one `(:Review {reason: "WITHIN_EPSILON", state: "OPEN"})`. Note the
 sign: the incoming claim is *marginally worse*, and MENGER still refuses to refuse it. That
-is the band doing its job — a 0.45 % difference is not a decision.
+is the band doing its job - a 0.45 % difference is not a decision.
 
 **The "gold" claim is not in the seeded corpus.** It cannot be: `:Review` count at boot is
 **0** (§6.2), reviews are written only by `/remember`, and a review that existed before any
@@ -866,10 +866,10 @@ are equal. With `ε = 0.05` the two scores must land within 0.05 of each other, 
 `independence = 1` means their `reliability × recency` products must agree to ~5 %. The seeded
 trusts above are a **proposal** (`[ASSUMED]`), because ε itself is an unmeasured default
 (brief §3). DS-14 calibration is a build step: seed, read `/review`, and if the queue is empty
-nudge the two trusts — **never nudge ε to manufacture the demo**, because ε is published on
+nudge the two trusts - **never nudge ε to manufacture the demo**, because ε is published on
 every decision and a judge can see it. Recorded as a build obligation in §14.3.
 
-### 6.4 The two boot-control slots — why the assertions need their own data
+### 6.4 The two boot-control slots - why the assertions need their own data
 
 `GET /health` asserts `node_split_echo == 1`, `node_split_independent == 2` and
 `sp_path_weight == 0.21072` (AF-16). Those assertions run **at boot**, before any request
@@ -881,8 +881,8 @@ So the seed writes two dedicated control claims whose only job is to be asserted
 
 | Slot key | Claim | Topology | Asserted value |
 |---|---|---|---|
-| `control:boot\|echo` | `clm_0001` | identical to set-piece 1 — hub + two echoes, all `trust 0.90`, sources `src_boot_hub`, `src_boot_echo_a`, `src_boot_echo_b` | `node_split_echo = 1`, `sp_path_weight = 0.21072` |
-| `control:boot\|independent` | `clm_0002` | identical to set-piece 2 — two origins, `src_boot_ind_a`, `src_boot_ind_b`, both `trust 0.90` | `node_split_independent = 2` |
+| `control:boot\|echo` | `clm_0001` | identical to set-piece 1 - hub + two echoes, all `trust 0.90`, sources `src_boot_hub`, `src_boot_echo_a`, `src_boot_echo_b` | `node_split_echo = 1`, `sp_path_weight = 0.21072` |
+| `control:boot\|independent` | `clm_0002` | identical to set-piece 2 - two origins, `src_boot_ind_a`, `src_boot_ind_b`, both `trust 0.90` | `node_split_independent = 2` |
 
 Three properties of this choice, each deliberate:
 
@@ -899,7 +899,7 @@ Three properties of this choice, each deliberate:
    headline. That is the assertion working, not breaking.
 
 `[VERIFIED §3-P7, §3-P11, §3-P13]` for the three asserted numbers on isomorphic fixtures;
-`[ASSUMED]` that the seed reproduces those topologies exactly — which is precisely what the
+`[ASSUMED]` that the seed reproduces those topologies exactly - which is precisely what the
 boot check exists to confirm at runtime rather than claim here.
 
 ---
@@ -920,21 +920,21 @@ pydantic==2.10.4
 falkordb==1.8.0
 ```
 
-`falkordb==1.8.0` is the exact version whose API was probed (`P39`, `P40`) — `ro_query`,
+`falkordb==1.8.0` is the exact version whose API was probed (`P39`, `P40`) - `ro_query`,
 `copy`, `create_node_range_index`, `QueryResult.run_time_ms`. It pulls `redis` 8.1.0 as a
 transitive dependency; `redis.exceptions.ResponseError` is caught by name in §7.4, so the
 dependency is real and not incidental. There is no test dependency: the assertions live in
 the boot path (§13).
 
-### 7.2 `app/config.py` — `[ASSUMED]` for ε and λ (unmeasured defaults), `[VERIFIED]` for everything else
+### 7.2 `app/config.py` - `[ASSUMED]` for ε and λ (unmeasured defaults), `[VERIFIED]` for everything else
 
 ```python
 # app/config.py
 """Every tunable in MENGER, in exactly one place.
 
 AF-17 / DS-8 / R-4: epsilon and lambda are SERVER constants. They are published by
-GET /health and echoed on every decision. Nothing downstream — and in particular not the
-console — may hold its own copy. Any module that needs them imports them from here.
+GET /health and echoed on every decision. Nothing downstream - and in particular not the
+console - may hold its own copy. Any module that needs them imports them from here.
 """
 import os
 
@@ -1013,9 +1013,9 @@ unmeasured values in the engine, and both are published by `/health` precisely s
 has to trust this file. `MAX_PATH_HOPS = 12` is also a choice: the deepest provenance chain
 the seed creates is 7 hops (`ss → si → so → si → so → claim` is 5; a two-level derivation is
 7), so 12 is slack, not a tuned value. If a future corpus goes deeper, the subgraph read
-silently truncates — recorded as `LIM-5` (§15.5).
+silently truncates - recorded as `LIM-5` (§15.5).
 
-### 7.3 `app/errors.py` `[VERIFIED]` — the contract's error table, as code
+### 7.3 `app/errors.py` `[VERIFIED]` - the contract's error table, as code
 
 ```python
 # app/errors.py
@@ -1062,17 +1062,17 @@ class MengerError(Exception):
 
     @staticmethod
     def validation(message: str, field: Optional[str] = None) -> "MengerError":
-        # 400 VALIDATION_ERROR — malformed JSON, missing field, wrong type, empty string
+        # 400 VALIDATION_ERROR - malformed JSON, missing field, wrong type, empty string
         return MengerError(400, "VALIDATION_ERROR", message, field)
 
     @staticmethod
     def no_sources() -> "MengerError":
-        # 400 NO_SOURCES — a claim with no provenance cannot be scored. This is a DISTINCT
+        # 400 NO_SOURCES - a claim with no provenance cannot be scored. This is a DISTINCT
         # code from VALIDATION_ERROR because it is a semantic refusal, not a shape problem.
         return MengerError(
             400,
             "NO_SOURCES",
-            "sources must contain at least one source id — a claim with no provenance cannot be scored",
+            "sources must contain at least one source id - a claim with no provenance cannot be scored",
             "sources",
         )
 
@@ -1106,7 +1106,7 @@ class MengerError(Exception):
 
     @staticmethod
     def replay_mismatch(label: str, reason: str) -> "MengerError":
-        # 409 — ONLY when a recorded statement fails to EXECUTE. A changed numeric result is
+        # 409 - ONLY when a recorded statement fails to EXECUTE. A changed numeric result is
         # not a mismatch error: it is reported in the 200 body as `divergence` (section 9.5).
         return MengerError(
             409,
@@ -1161,10 +1161,10 @@ class MengerError(Exception):
 
 Eleven codes, eleven constructors, matching `CONTRACT.md` §3 row for row. Two of them
 (`REVIEW_NOT_FOUND`, `RATE_LIMITED`) are never raised in v1.0 and are present **because the
-contract reserves them** — having the constructor means a future route cannot quietly invent
+contract reserves them** - having the constructor means a future route cannot quietly invent
 a twelfth code. §11 maps every raise site.
 
-### 7.4 `app/graph.py` `[VERIFIED §3-P39/P40]` — the structural read/write split (D-4)
+### 7.4 `app/graph.py` `[VERIFIED §3-P39/P40]` - the structural read/write split (D-4)
 
 This is the file the `AF-8` headline claim rests on. Read it with D-4 (§2.4) beside it: the
 point is not that reads *happen* to go through `GRAPH.RO_QUERY`, it is that **there is no
@@ -1184,9 +1184,9 @@ Decision D-4 (section 2.4): the read/write split is STRUCTURAL.
     means adding a named entry to app/cypher.py WRITES, which is a visible, reviewable act.
 
 Probe evidence for every engine call in this file is in ARCHITECTURE.md section 3:
-  P39 — ro_query(q, params) binds $params and REJECTS CREATE server-side; exact signature;
+  P39 - ro_query(q, params) binds $params and REJECTS CREATE server-side; exact signature;
         exact exception type (redis.exceptions.ResponseError).
-  P40 — the exact Graph/QueryResult/FalkorDB surface, incl. QueryResult.run_time_ms.
+  P40 - the exact Graph/QueryResult/FalkorDB surface, incl. QueryResult.run_time_ms.
 """
 import time
 from typing import Any, Dict, List, Mapping, Optional
@@ -1346,8 +1346,8 @@ class Engine:
 
         ONE caller: app/seed.py, whose corpus writes are bulk statements that have no place
         in the server's seven-entry WRITES registry (adding them would mean the request path
-        could execute 'delete everything'). The seed still passes KEYS, never text — its
-        registry is app/seed.py SEED_WRITES — so Decision D-4's property holds for the seed
+        could execute 'delete everything'). The seed still passes KEYS, never text - its
+        registry is app/seed.py SEED_WRITES - so Decision D-4's property holds for the seed
         too: there is no method in MENGER that accepts caller-supplied write Cypher.
         """
         return WriteChannel(self._graph, registry)
@@ -1356,10 +1356,10 @@ class Engine:
         """The underlying client Graph object.
 
         TWO callers, both named:
-          * app/counterfactual.py — needs Graph.copy(). GRAPH.COPY is flagged `write` by the
+          * app/counterfactual.py - needs Graph.copy(). GRAPH.COPY is flagged `write` by the
             server (P28), so it can never go through RO_QUERY and cannot be expressed as a
             Cypher statement in the WRITES registry (section 10).
-          * app/seed.py — needs Graph.delete() and Graph.create_node_range_index(), which are
+          * app/seed.py - needs Graph.delete() and Graph.create_node_range_index(), which are
             client methods, not Cypher, and so cannot live in a statement registry at all
             (section 7.7). The seed is not reachable from a request path (section 5.2).
         The escape hatch is named and documented at both use sites; it is not a general door.
@@ -1380,16 +1380,16 @@ def engine() -> Engine:
 ```
 
 **What a judge should attack here, and the answer.** *"`ReadChannel.run` takes a query
-string — so it isn't really contained."* Correct, and deliberate: the read path **must**
+string - so it isn't really contained."* Correct, and deliberate: the read path **must**
 accept text, because `POST /receipts/{id}/replay` re-executes the receipt's recorded text
 verbatim, and a receipt you re-render from structured fields is not a replay. The containment
-is not that the string is inspected — client-side string inspection is exactly what `AF-8`
+is not that the string is inspected - client-side string inspection is exactly what `AF-8`
 makes unnecessary. It is that the string is executed by `GRAPH.RO_QUERY`, which the engine
 itself refuses to run a write on (`[VERIFIED §3-P2, §3-P39]`). The asymmetry is the design:
 **reads may be arbitrary text because the server contains them; writes may not be text at
 all because nothing contains them.**
 
-### 7.5 `app/cypher.py` `[VERIFIED]` — every Cypher statement in the system
+### 7.5 `app/cypher.py` `[VERIFIED]` - every Cypher statement in the system
 
 One file, two dicts, nothing else. `grep -c relationshipTypes app/cypher.py` returns `1`,
 which is invariant `SCH-1` (§4.2) mechanised.
@@ -1413,7 +1413,7 @@ receipt is the text in this file, unchanged, which is what makes a receipt repla
 from app import config
 
 # ===========================================================================
-# READS — executed through GRAPH.RO_QUERY only (AF-8).
+# READS - executed through GRAPH.RO_QUERY only (AF-8).
 # ===========================================================================
 
 READS = {
@@ -1423,12 +1423,12 @@ READS = {
     # THE ONE OCCURRENCE OF relationshipTypes IN MENGER (invariant SCH-1).
     #
     # Three things here are probe-pinned and must not be "tidied":
-    #   1. relationshipTypes:['FLOW'] — EXACTLY ONE type. A second entry errors
+    #   1. relationshipTypes:['FLOW'] - EXACTLY ONE type. A second entry errors
     #      ([VERIFIED section 3-P24]). This is why Decision D-3 puts the semantic kind in a
     #      property instead of in the relationship type.
     #   2. sourceNodes/targetNodes are bound to MATCHed NODES, not id strings. Passing
     #      strings errors with "'sourceNodes' must be an array of nodes"
-    #      ([VERIFIED section 3-P25]) — which is why CONTRACT.md section 2.5's recorded
+    #      ([VERIFIED section 3-P25]) - which is why CONTRACT.md section 2.5's recorded
     #      statement, which passes strings, would fail as written (section 16.2).
     #   3. The witness set comes back as a LIST COMPREHENSION over the `edges` yield, not
     #      via UNWIND. `edges` is exactly the saturated relationship set
@@ -1449,7 +1449,7 @@ READS = {
     # -------------------------------------------------------------------
     # reliability: algo.SPpaths over nl = -ln(trust).
     #
-    # *** AF-3 / DS-2 — THE SILENT TRAP. READ THIS BEFORE EDITING THE LINE BELOW. ***
+    # *** AF-3 / DS-2 - THE SILENT TRAP. READ THIS BEFORE EDITING THE LINE BELOW. ***
     #
     # The weight key is `weightProp`. It is the ONLY key that works.
     #   weightProp:'nl'                 -> 0.21072   (the weighted sum)  [VERIFIED P7]
@@ -1479,7 +1479,7 @@ READS = {
         "AS path_edges"
     ),
     # -------------------------------------------------------------------
-    # validation — one round trip each (CONTRACT.md 422 UNKNOWN_AGENT / UNKNOWN_SOURCE)
+    # validation - one round trip each (CONTRACT.md 422 UNKNOWN_AGENT / UNKNOWN_SOURCE)
     # -------------------------------------------------------------------
     "agent.by_id": "MATCH (a:Agent {id:$agent_id}) RETURN a.id AS agent_id, a.name AS agent_name",
     # UNWIND + MATCH drops the misses and collect() aggregates the hits into one row
@@ -1519,7 +1519,7 @@ READS = {
     # -------------------------------------------------------------------
     # the provenance subgraph for GET /slots/{key}/graph.
     # Variable-length FLOW from the super-source to each claim in the slot. The split pairs
-    # are returned AS THEMSELVES — CONTRACT.md section 2.4: "the split is visible on purpose".
+    # are returned AS THEMSELVES - CONTRACT.md section 2.4: "the split is visible on purpose".
     # Pattern, DISTINCT-over-nodes and DISTINCT-over-relationships all [VERIFIED P44/P45].
     # -------------------------------------------------------------------
     "graph.slot_nodes": (
@@ -1558,11 +1558,11 @@ READS = {
     ),
     # CONTRACT.md section 2.7 requires each review item to carry the FULL `components` block
     # and the `score` for both incoming and incumbent, plus each one's `object` and
-    # `agent_id`. Those are NOT stored on the :Review node — they already exist, verbatim, in
+    # `agent_id`. Those are NOT stored on the :Review node - they already exist, verbatim, in
     # the receipt's candidates_json, and storing them twice would create two records that can
     # disagree. So this statement joins Review -> Receipt (for the candidate blocks) and
     # Review -> Claim -> Agent (for object/agent_id) and returns the whole queue in ONE round
-    # trip. The alternative — fetching each receipt in a loop — is an N+1 read on the one
+    # trip. The alternative - fetching each receipt in a loop - is an N+1 read on the one
     # endpoint a judge is most likely to page through. OPTIONAL MATCH throughout, because
     # `incumbent_claim_id` is the "" sentinel when the slot was empty (section 9.3) and ""
     # matches no claim.
@@ -1592,7 +1592,7 @@ READS = {
     # One statement for every corpus count ([VERIFIED section 3-P47b]).
     # -------------------------------------------------------------------
     "corpus.counts": "MATCH (n) RETURN labels(n)[0] AS label, count(n) AS n",
-    # CONTRACT.md section 2.8 publishes `seeded_at`. It is not a config value — it is the
+    # CONTRACT.md section 2.8 publishes `seeded_at`. It is not a config value - it is the
     # instant the corpus was actually written, read off the super-source (section 4.1). A
     # config constant would keep reporting a seed time after a failed re-seed.
     "corpus.seeded_at": (
@@ -1609,11 +1609,11 @@ READS = {
 # The boot-time write-attempt probe (boot check T-4, section 13.2). It is held OUTSIDE both
 # dicts on purpose: it is not a read MENGER performs for data, and it must never be reachable
 # from the WRITES registry. bootcheck.py pushes it through ReadChannel and asserts that the
-# ENGINE refuses it — reproducing [VERIFIED section 3-P2] on every boot.
+# ENGINE refuses it - reproducing [VERIFIED section 3-P2] on every boot.
 BOOT_RO_WRITE_PROBE = "CREATE (:BootProbe {ts:$ts})"
 
 # ===========================================================================
-# WRITES — the registry. WriteChannel.run() accepts these KEYS and nothing else (D-4).
+# WRITES - the registry. WriteChannel.run() accepts these KEYS and nothing else (D-4).
 # Seven entries. Adding an eighth is a visible, reviewable act.
 # ===========================================================================
 
@@ -1624,7 +1624,7 @@ WRITES = {
     # graph key as a unit, but no probe in section 3 tested two concurrent allocations.
     # Recorded as LIM-4 (section 15.4). At demo concurrency (one submitter) it is not
     # reachable; under real load the risk is a duplicate id, which MERGE on :Claim would
-    # then collapse — see section 14.6.
+    # then collapse - see section 14.6.
     "counter.next": (
         "MERGE (ct:Counter {name:$name}) "
         "ON CREATE SET ct.value = 1 "
@@ -1633,7 +1633,7 @@ WRITES = {
     ),
     # The incoming claim, its slot, its agent edge, its citations, and its CITED flow edges,
     # in one statement. The claim MUST exist in the graph before it can be scored, because it
-    # is the maxFlow TARGET — see the lifecycle in section 12, step 6.
+    # is the maxFlow TARGET - see the lifecycle in section 12, step 6.
     "claim.create": (
         "MATCH (a:Agent {id:$agent_id}) "
         "MERGE (sl:Slot {key:$slot_key}) "
@@ -1686,7 +1686,7 @@ WRITES = {
 
 **On `%d` string formatting in two statements.** `config.MAX_PATH_HOPS` is interpolated into
 the variable-length bound because FalkorDB's `-[:FLOW*1..n]->` bound is **syntax, not a
-value** — it cannot be a `$param`. That is the only interpolation anywhere in MENGER, it
+value** - it cannot be a `$param`. That is the only interpolation anywhere in MENGER, it
 interpolates an `int` constant from `config.py` and never a request value, and it happens
 once at import time. Everything that comes from a caller travels as `$params`
 (`[VERIFIED §3-P39]`).
@@ -1695,10 +1695,10 @@ once at import time. Everything that comes from a caller travels as `$params`
 is a property that does not exist, so `r.winner_claim_id` would come back missing rather than
 `null` and the projection would have to distinguish "absent" from "null". `docket.py` writes
 the empty string `""` as the sentinel for "no winner" and converts it back to JSON `null` at
-the response boundary (§9.3). `[ASSUMED]` — the null-property behaviour is standard graph
+the response boundary (§9.3). `[ASSUMED]` - the null-property behaviour is standard graph
 semantics and is not probed in §3; the sentinel makes the question moot either way.
 
-### 7.6 `app/schema.py` `[VERIFIED]` — the contract's §1 types, as Pydantic
+### 7.6 `app/schema.py` `[VERIFIED]` - the contract's §1 types, as Pydantic
 
 ```python
 # app/schema.py
@@ -1708,7 +1708,7 @@ Scope note: these models are used for REQUEST validation and for documenting the
 shapes. The response bodies themselves are assembled as plain dicts by app/api.py via the
 projection in section 9, because several of them (receipts, subgraphs) are reconstructed from
 stored JSON and a round trip through a model would add no checking that the projection does
-not already do — while making a field-ordering difference between a freshly computed receipt
+not already do - while making a field-ordering difference between a freshly computed receipt
 and a replayed one possible. Request validation is where Pydantic earns its place:
 CONTRACT.md 400 VALIDATION_ERROR is entirely Pydantic's output, reshaped in section 11.
 """
@@ -1746,7 +1746,7 @@ class RememberRequest(BaseModel):
     @classmethod
     def _sources_shape(cls, v: List[str]) -> List[str]:
         # An EMPTY list is NO_SOURCES (400, its own code), not VALIDATION_ERROR, so it is
-        # NOT rejected here — api.py checks emptiness first and raises the right code
+        # NOT rejected here - api.py checks emptiness first and raises the right code
         # (section 11). Only the per-element shape is enforced here.
         for i, s in enumerate(v):
             if not isinstance(s, str) or not s.strip():
@@ -1824,8 +1824,8 @@ class RememberResponse(BaseModel):
     review_id: Optional[str]
 ```
 
-**Why the response models stop here.** The three audit surfaces — the DOCKET receipt, the
-replay report, the provenance subgraph — are reconstructed from stored JSON strings and from
+**Why the response models stop here.** The three audit surfaces - the DOCKET receipt, the
+replay report, the provenance subgraph - are reconstructed from stored JSON strings and from
 engine rows. Re-validating them through Pydantic on the way out would re-serialise data that
 was already serialised at decision time, which is the one place a replayed receipt could
 differ from the original for a reason that has nothing to do with the graph. They are
@@ -1875,7 +1875,7 @@ from app import config, cypher
 from app.graph import Engine
 
 # ===========================================================================
-# SEED_WRITES — the seed's OWN write registry, passed to Engine.write_channel()
+# SEED_WRITES - the seed's OWN write registry, passed to Engine.write_channel()
 # (section 7.4). Keys, never caller-supplied text: Decision D-4 holds here too.
 #
 # These statements are deliberately NOT in app/cypher.py WRITES. That registry is what the
@@ -1893,7 +1893,7 @@ SEED_WRITES = {
     ),
     # One statement creates the :Source, BOTH split halves, the two :SPLIT_OF edges, and the
     # SPLIT :FLOW edge that IS the vertex capacity (DS-1, section 4.3). They are created
-    # together because a :Source without its split pair is an unscoreable node — there is no
+    # together because a :Source without its split pair is an unscoreable node - there is no
     # legal intermediate state, so there is no statement that can produce one.
     "seed.sources": (
         "UNWIND $rows AS r "
@@ -1930,7 +1930,7 @@ SEED_WRITES = {
     ),
     # The CITED flow edge and the human-readable :CITES edge, created as a pair. Note the
     # directions are OPPOSITE: flow runs source -> claim, citation runs claim -> source
-    # (section 4.2). :CITES carries no `cap` — invariant SCH-2, checked at boot by B-5.
+    # (section 4.2). :CITES carries no `cap` - invariant SCH-2, checked at boot by B-5.
     "seed.citations": (
         "UNWIND $rows AS r "
         "MATCH (c:Claim {id:r.claim_id}), (si:SourceIn {sid:r.source_id}), "
@@ -1999,17 +1999,17 @@ TOTAL_SLOTS = 20
 # (source_id, kind, trust, parent_source_id or None, fidelity)
 # fidelity is only meaningful when there is a parent; it is the DERIVED edge's weight basis.
 FIXTURE_SOURCES: List[Tuple[str, str, float, Optional[str], float]] = [
-    # Set-piece 1 — the echo chamber. All three at trust 0.90, which is OUT OF the `blog`
+    # Set-piece 1 - the echo chamber. All three at trust 0.90, which is OUT OF the `blog`
     # band on purpose (section 6.3): the echo is as trustworthy as the CRM export and still
     # loses, because it loses on independence alone. fidelity 1.0 -> the DERIVED edges are
     # free, so the cheapest chain pays exactly two SPLIT edges = 2 x -ln(0.90) = 0.21072.
     ("src_blog_hub", "blog", 0.90, None, 1.0),
     ("src_blog_echo_a", "blog", 0.90, "src_blog_hub", 1.0),
     ("src_blog_echo_b", "blog", 0.90, "src_blog_hub", 1.0),
-    # Set-piece 2 — genuine corroboration. Two independent origins, both 0.90, both in band.
+    # Set-piece 2 - genuine corroboration. Two independent origins, both 0.90, both in band.
     ("src_crm_export", "system_export", 0.90, None, 1.0),
     ("src_contract_pdf", "contract", 0.90, None, 1.0),
-    # Set-piece 3 — the near-tie. The two mirrors exist to make each side an ECHO (two
+    # Set-piece 3 - the near-tie. The two mirrors exist to make each side an ECHO (two
     # citations, one origin) without affecting either side's path weight: the direct citation
     # is always the cheaper chain, so the mirror's own trust never enters the number.
     ("src_nw_portal", "wiki", 0.72, None, 1.0),
@@ -2025,7 +2025,7 @@ FIXTURE_SOURCES: List[Tuple[str, str, float, Optional[str], float]] = [
     ("src_boot_ind_b", "contract", 0.90, None, 1.0),
 ]
 
-# (slot_key, subject, predicate) — the 4 pinned slots. The 16 generated ones follow.
+# (slot_key, subject, predicate) - the 4 pinned slots. The 16 generated ones follow.
 FIXTURE_SLOTS: List[Tuple[str, str, str]] = [
     ("control:boot|echo", "control:boot", "echo"),
     ("control:boot|independent", "control:boot", "independent"),
@@ -2088,7 +2088,7 @@ def _clamp_trust(t: float) -> float:
 
 
 def _nl(x: float) -> float:
-    """nl = -ln(x), rounded to 6 d.p. — one more place than path_weight is published at
+    """nl = -ln(x), rounded to 6 d.p. - one more place than path_weight is published at
     (5 d.p., config.DP_PATH_WEIGHT), so rounding here cannot move the published number."""
     return round(-math.log(x), 6)
 
@@ -2107,8 +2107,8 @@ def _parse_seed_now() -> datetime:
 def _wipe() -> bool:
     """DELETE the graph key if it exists. Returns True if something was deleted.
 
-    Uses the falkordb client directly — the second of the two documented imports outside
-    app/graph.py (section 5.2) — because Graph.delete() and FalkorDB.list_graphs() are CLIENT
+    Uses the falkordb client directly - the second of the two documented imports outside
+    app/graph.py (section 5.2) - because Graph.delete() and FalkorDB.list_graphs() are CLIENT
     methods, not Cypher. There is no statement that can express them, so they cannot live in
     a registry at all.
 
@@ -2261,7 +2261,7 @@ def _build_claims(
 
 
 # ===========================================================================
-# Self-verification — the three boot constants, checked at seed time.
+# Self-verification - the three boot constants, checked at seed time.
 # ===========================================================================
 
 def _verify(engine: Engine) -> Dict[str, Any]:
@@ -2438,7 +2438,7 @@ def main() -> int:
         # mistaken for a successful seed by a script, a Makefile, or a tired human at 18:00.
         print(f"\nSEED FAILED: {', '.join(failures)}")
         return 1
-    print("\nseed OK — boot assertions reproduce on the seeded corpus")
+    print("\nseed OK - boot assertions reproduce on the seeded corpus")
     return 0
 
 
@@ -2448,18 +2448,18 @@ if __name__ == "__main__":
 
 **The `[ASSUMED]` in this file, named.** Three things:
 
-1. **The corpus *shape*** — 40 / 150 / 60 / 20, the trust bands, the 40 % derivation rate.
+1. **The corpus *shape*** - 40 / 150 / 60 / 20, the trust bands, the 40 % derivation rate.
    These are `WINNER-BRIEF` B1 targets, not measurements. Nothing in the engine depends on
    them; `/health` reports the counts it finds (`[VERIFIED §3-P47b]`) rather than asserting
    them, so a changed shape changes a number on a dashboard and nothing else.
-2. **That the bulk `UNWIND` statements execute as written.** Each pattern they use —
-   `UNWIND $rows AS r`, `MATCH` on an indexed property, multi-`CREATE` — is individually
+2. **That the bulk `UNWIND` statements execute as written.** Each pattern they use -
+   `UNWIND $rows AS r`, `MATCH` on an indexed property, multi-`CREATE` - is individually
    probe-backed, but these exact composite statements have not been run, because running
    them writes the graph and the brief forbids that (`§1`). They are `[ASSUMED]` as a unit
    and `[VERIFIED]` clause by clause. **`python -m app.seed` is the first thing the build
    chat runs, and step 12 is what tells it the truth.**
 3. **That the near-tie lands inside ε.** §6.3's arithmetic says `margin ≈ −0.0045` against
-   `ε = 0.05`, which is ten times inside the band — but ε itself is unmeasured, so this is a
+   `ε = 0.05`, which is ten times inside the band - but ε itself is unmeasured, so this is a
    calibration obligation, not a fact. §14.3 carries it as a build step.
 
 **The one assertion-shaped line in production code.** `_build_slots` and `_build_claims` end
@@ -2468,7 +2468,7 @@ exist because a drifting count would otherwise be discovered by a judge reading 
 instead of by the developer running the seed. They are in the only file that can never be
 reached from an HTTP request (§5.2).
 
-### 7.8 `app/ids.py` — `[ASSUMED]`, because the counter's atomicity is unprobed (`LIM-4`)
+### 7.8 `app/ids.py` - `[ASSUMED]`, because the counter's atomicity is unprobed (`LIM-4`)
 
 ```python
 # app/ids.py
@@ -2476,7 +2476,7 @@ reached from an HTTP request (§5.2).
 
 Every id MENGER mints is `<prefix><4-digit counter>`: clm_0061, rev_0001, rcpt_0001. The
 counter lives in the graph as (:Counter {name, value}) so that ids survive a process restart
-and are sequential in the order decisions were actually made — which matters because a judge
+and are sequential in the order decisions were actually made - which matters because a judge
 reading a receipt list should see a story, not UUIDs.
 
 One statement per id (app/cypher.py WRITES['counter.next']), which does the read and the
@@ -2493,7 +2493,7 @@ so the claim is not [VERIFIED]. Recorded as LIM-4 (section 15.4). Why it is an a
 risk at this deadline, stated rather than glossed:
   * the demo has exactly one submitter, so the race is not reachable;
   * if it were reachable, the failure is two claims minted with the same id, and
-    `claim.create` would then CREATE a second :Claim with a duplicate `id` — there is no
+    `claim.create` would then CREATE a second :Claim with a duplicate `id` - there is no
     unique constraint (LIM-3), so the two would coexist and `claim.sources` would return the
     union. Section 14.6 traces that failure end to end.
 This is the single place in MENGER where concurrency matters, and it is 20 lines long on
@@ -2512,7 +2512,7 @@ PREFIXES = {
 def next_id(engine: Engine, counter: str) -> str:
     """Allocate and return the next id for `counter`.
 
-    Raises RuntimeError — not a MengerError — for an unknown counter name, because that is a
+    Raises RuntimeError - not a MengerError - for an unknown counter name, because that is a
     programming error, not a client error: there is no request a caller can send that reaches
     this with a bad name.
     """
@@ -2607,7 +2607,7 @@ def age_hours(asserted_at: str, now: datetime) -> float:
 
 
 # ===========================================================================
-# component 1 — independence
+# component 1 - independence
 # ===========================================================================
 
 def independence(
@@ -2628,7 +2628,7 @@ def independence(
     )
     if not rows:
         # The comprehension form returns ONE row even at flow 0 with an empty edge list
-        # ([VERIFIED section 3-P42]), so ZERO rows means the MATCH found no such claim —
+        # ([VERIFIED section 3-P42]), so ZERO rows means the MATCH found no such claim -
         # a different condition entirely, and never a flow of 0.
         return 0, []
     raw, flow_edges = rows[0][0], rows[0][1] or []
@@ -2639,7 +2639,7 @@ def independence(
 
 
 # ===========================================================================
-# component 2 — reliability
+# component 2 - reliability
 # ===========================================================================
 
 def reliability(
@@ -2648,8 +2648,8 @@ def reliability(
     """Returns (reliability, path_weight, path_cost, path_nodes, path_edges).
 
     `path_weight` is None when there is NO chain from the super-source to the claim.
-    algo.SPpaths returns ZERO ROWS in that case — not an error, not a null
-    ([VERIFIED section 3-P29]) — and `Components.path_weight` is nullable precisely so this
+    algo.SPpaths returns ZERO ROWS in that case - not an error, not a null
+    ([VERIFIED section 3-P29]) - and `Components.path_weight` is nullable precisely so this
     case is representable instead of being papered over with 0.0, which would read as
     "a perfect, weightless chain" and invert the meaning.
 
@@ -2675,7 +2675,7 @@ def reliability(
 
 
 # ===========================================================================
-# component 3 — recency
+# component 3 - recency
 # ===========================================================================
 
 def recency(age_h: float) -> float:
@@ -2689,7 +2689,7 @@ def recency(age_h: float) -> float:
 
 
 # ===========================================================================
-# the flow decomposition — independence_witness
+# the flow decomposition - independence_witness
 # ===========================================================================
 
 def decompose_flow(
@@ -2704,7 +2704,7 @@ def decompose_flow(
 
     [ASSUMED] that the saturated set always decomposes into exactly `maxFlow` source->target
     walks. For an INTEGRAL flow on unit capacities that is the flow-decomposition theorem, and
-    it held on the flow-1 fixture (P41) and the flow-0 fixture (P42) — but it is NOT probed at
+    it held on the flow-1 fixture (P41) and the flow-0 fixture (P42) - but it is NOT probed at
     flow 2, so it is marked rather than claimed. The defensive exits below exist for the case
     where it does not hold: a malformed set yields FEWER paths and never an infinite loop,
     and `max_flow` is reported from the engine's own number regardless, so a decomposition
@@ -2729,7 +2729,7 @@ def decompose_flow(
         while node != dst_nid:
             outgoing = adjacency.get(node)
             if not outgoing:
-                break               # dead end — see the [ASSUMED] note above
+                break               # dead end - see the [ASSUMED] note above
             node = outgoing.pop(0)
             walk.append(node)
             hops += 1
@@ -2744,7 +2744,7 @@ def decompose_flow(
 
 
 # ===========================================================================
-# the blend — THE ONLY PLACE IT HAPPENS
+# the blend - THE ONLY PLACE IT HAPPENS
 # ===========================================================================
 
 def score_claim(
@@ -2784,7 +2784,7 @@ def score_claim(
         "path_weight": path_weight,
         "path_cost": path_cost,
         "age_hours": age_h,
-        # the blend — once, here
+        # the blend - once, here
         "score": ind * rel * rec,
         # witness material for the receipt (section 8.3)
         "flow_edges": flow_edges,
@@ -2808,7 +2808,7 @@ def decide(
         |margin| <= epsilon ->  UNDECIDED
 
     The incumbent is the highest-scoring OTHER claim in the slot. An EMPTY slot scores 0.0,
-    so the first claim into a slot is ALLOWed as long as its own score clears epsilon —
+    so the first claim into a slot is ALLOWed as long as its own score clears epsilon -
     which it does for any claim with at least one chain, because independence >= 1 and
     reliability, recency > 0. A claim with NO chain scores exactly 0.0 and lands UNDECIDED
     rather than ALLOW, which is the correct conservative answer: MENGER could not measure it.
@@ -2844,7 +2844,7 @@ def pick_incumbent(
 ```
 
 **What a judge should attack here, and the answer.** *"`score = independence × reliability ×
-recency` is arbitrary — why multiply?"* Correct that it is a choice, and it is `[ASSUMED]`,
+recency` is arbitrary - why multiply?"* Correct that it is a choice, and it is `[ASSUMED]`,
 stated as such. The defence is not that the product is principled; it is that **the product
 is never load-bearing**. `independence` is the headline, it is an integer, it comes from a
 theorem, and it is published raw. The product exists only to order candidates **inside one
@@ -2853,23 +2853,23 @@ is applied to a difference of two scores from the same slot rather than to a sco
 a reviewer rejects the product entirely, the components survive unchanged and the ordering is
 the only thing that needs re-litigating.
 
-### 7.10 `app/docket.py` — `[VERIFIED]` for the reads/writes, `[ASSUMED]` for the divergence taxonomy
+### 7.10 `app/docket.py` - `[VERIFIED]` for the reads/writes, `[ASSUMED]` for the divergence taxonomy
 
 ```python
 # app/docket.py
 """The DOCKET receipt: persist, fetch, replay.
 
-A receipt is the credibility artifact — everything a skeptic needs to re-derive a verdict by
+A receipt is the credibility artifact - everything a skeptic needs to re-derive a verdict by
 hand (CONTRACT.md section 2.5). Its load-bearing field is `cypher[]`: the VERBATIM
 PARAMETERISED text that was executed, with the params AS BOUND, in execution order. That is
 what makes a receipt replayable, and it is why app/graph.py CypherLog stores statement text
-rather than a rendered string — a query with its parameters already substituted in is no
+rather than a rendered string - a query with its parameters already substituted in is no
 longer the parameterised statement that ran.
 
 Note the wording, because it matters for how this is described: a receipt replays A SINGLE
 PARAMETERISED CYPHER QUERY per statement. FalkorDB v4.22.1 exposes 25 built-in procedures
 ([VERIFIED section 3-P1]) and no user-defined-procedure surface, so there is nothing
-server-side holding the logic — the text in the receipt IS the logic.
+server-side holding the logic - the text in the receipt IS the logic.
 """
 from __future__ import annotations
 
@@ -2975,8 +2975,8 @@ def _numbers_of(statement_label: str, rows: List[List[Any]]) -> Dict[str, Any]:
     """The comparable scalars a replayed statement produces.
 
     Only the scalars are compared, never the whole result set. The witness EDGE SET can
-    legitimately differ between two runs with the same max-flow value — maxFlow is free to
-    saturate a different set of equally valid edges — so comparing edge sets would report
+    legitimately differ between two runs with the same max-flow value - maxFlow is free to
+    saturate a different set of equally valid edges - so comparing edge sets would report
     spurious divergence. The flow VALUE and the path WEIGHT cannot differ unless the graph
     changed, which is exactly the condition `GRAPH_MUTATED` names.
     """
@@ -3027,7 +3027,7 @@ def replay(engine: Engine, receipt_id: str, replayed_at: str) -> Dict[str, Any]:
         try:
             rows = engine.read.run(label, entry["query"], entry.get("params") or {})
         except MengerError as exc:
-            # The statement itself failed to execute — rule 1 above. This is the ONLY path
+            # The statement itself failed to execute - rule 1 above. This is the ONLY path
             # to a 409 from this endpoint.
             raise MengerError.replay_mismatch(label, exc.message) from exc
 
@@ -3093,7 +3093,7 @@ def _original_numbers(
     disagree and then the receipt has to adjudicate itself.
 
     Statements are matched to candidates POSITIONALLY within their label group, in the order
-    app/api.py scored them — which is the order candidates[] is written in (section 12). That
+    app/api.py scored them - which is the order candidates[] is written in (section 12). That
     coupling between two files is the price of not storing the numbers twice, and it is the
     reason section 12 states the scoring order as a normative step rather than an incidental
     detail. An out-of-range occurrence returns {} (no comparison) rather than raising: a
@@ -3118,7 +3118,7 @@ def _recompute_now(
     """Recompute each candidate's three components NOW and diff them against the receipt.
 
     This is where the divergence taxonomy is applied, and the taxonomy is the [ASSUMED] part
-    of this file — CONTRACT.md section 2.6 fixes the three reason VALUES but not the rule for
+    of this file - CONTRACT.md section 2.6 fixes the three reason VALUES but not the rule for
     choosing between them. The rule here:
 
       * independence or path_weight changed  -> GRAPH_MUTATED. Both are pure functions of the
@@ -3129,7 +3129,7 @@ def _recompute_now(
 
     One honest gap: a change to MENGER_LAMBDA_PER_HOUR between the decision and the replay
     also moves recency, and this rule would label it RECENCY_DECAY. The receipt carries the
-    lambda it used, so the difference is VISIBLE in the body — but it is not a separate
+    lambda it used, so the difference is VISIBLE in the body - but it is not a separate
     reason code, because CONTRACT.md section 2.6 fixes the enum at three values and the
     contract is frozen. Logged in section 16 rather than silently relabelled.
     """
@@ -3219,20 +3219,20 @@ documented exception rather than an oversight: `_recompute_now` runs
 to the *replay* path specifically, it is parameterised like everything else, and it goes
 through `ReadChannel` so `GRAPH.RO_QUERY` contains it. If a reviewer prefers absolute
 uniformity, moving it to `READS["claim.asserted_at"]` is a two-line change with no behavioural
-difference — and that is exactly why it is called out here instead of being left for someone
+difference - and that is exactly why it is called out here instead of being left for someone
 to find.
 
 **Two defects found while writing this section, and what was done about them.** An earlier
 draft of `replay()` called `_numbers_of(label, [])` to build `original` and then immediately
-overwrote it — a dead line, now gone. The second was substantive: `_original_numbers` took
+overwrote it - a dead line, now gone. The second was substantive: `_original_numbers` took
 only a label, so **every** statement in a label group was compared against `candidates[0]`,
 and a divergence on the third candidate would have been reported against the first. It now
 takes an `occurrence` index and `replay()` keeps a per-label counter. Both are recorded here
-rather than quietly corrected because the positional coupling they expose — statement order
-must equal candidate order — is now a **normative** requirement on `app/api.py` (§12, step 8)
-and a reader needs to know why. `[UNVERIFIED]` — this file has not been executed.
+rather than quietly corrected because the positional coupling they expose - statement order
+must equal candidate order - is now a **normative** requirement on `app/api.py` (§12, step 8)
+and a reader needs to know why. `[UNVERIFIED]` - this file has not been executed.
 
-### 7.11 `app/bootcheck.py` `[VERIFIED §3-P2/P7/P11/P13/P35/P47a/P47b]` — the AF-16 assertions
+### 7.11 `app/bootcheck.py` `[VERIFIED §3-P2/P7/P11/P13/P35/P47a/P47b]` - the AF-16 assertions
 
 This file is the reason a judge can trust the headline number without running anything. `AF-16`
 makes the boot assertions a **public surface**: `GET /health` publishes them, and any mismatch
@@ -3262,7 +3262,7 @@ contract keys sees exactly what section 2.8 promised, and a console that wants m
 WHY T-3b EXISTS WHEN T-3 ALREADY CHECKS 0.21072. T-3 depends on one memorised constant and
 on the corpus that produces it. If someone re-seeds with a different trust value, T-3 fails
 for a reason that has nothing to do with the AF-3 trap, and the temptation is then to update
-the constant — at which point a genuine weight-key regression would be absorbed by the same
+the constant - at which point a genuine weight-key regression would be absorbed by the same
 edit. T-3b is corpus-independent: a wrong weight key makes algo.SPpaths return the HOP COUNT
 in `pathWeight`, so `pathWeight == pathCost`, for ANY corpus. The two checks fail for
 different reasons, which is the only reason to have both.
@@ -3291,7 +3291,7 @@ CONTRACT_CHECK_KEYS = ("node_split_echo", "node_split_independent", "sp_path_wei
 def _check(expected: Any, actual: Any, ok: bool) -> Dict[str, Any]:
     """The {expected, actual, pass} triple CONTRACT.md section 2.8 publishes.
 
-    `actual` is always included, including when the check FAILED — that is the whole value of
+    `actual` is always included, including when the check FAILED - that is the whole value of
     the surface. A failure that reports only `pass: false` tells an operator nothing.
     """
     return {"expected": expected, "actual": actual, "pass": bool(ok)}
@@ -3302,7 +3302,7 @@ def _max_flow(engine: Engine, claim_id: str) -> int:
 
     -1 rather than 0: zero is a legitimate flow value (a claim with no chain), and a missing
     control claim is a corpus that was never seeded. Collapsing the two would let an empty
-    graph report "expected 1, got 0 — the node-split is not in effect", which sends an
+    graph report "expected 1, got 0 - the node-split is not in effect", which sends an
     operator to debug the split when the real fault is that app/seed.py never ran.
     """
     rows = engine.read.run(
@@ -3335,8 +3335,8 @@ def _ro_query_refuses_write(engine: Engine) -> Dict[str, Any]:
     """T-4. Reproduce [VERIFIED section 3-P2] live, on every boot.
 
     Step 1: a control read must SUCCEED, which proves the connection is alive.
-    Step 2: a CREATE through the SAME channel must FAIL, which proves the engine — not this
-            process — is what contains generated Cypher.
+    Step 2: a CREATE through the SAME channel must FAIL, which proves the engine - not this
+            process - is what contains generated Cypher.
     """
     try:
         engine.read.run(
@@ -3365,7 +3365,7 @@ def _ro_query_refuses_write(engine: Engine) -> Dict[str, Any]:
     # other check is about a number, this one is about whether generated Cypher is contained.
     return _check(
         "CREATE refused by GRAPH.RO_QUERY",
-        "ACCEPTED — the read path is not read-only; AF-8 containment is NOT in effect",
+        "ACCEPTED - the read path is not read-only; AF-8 containment is NOT in effect",
         False,
     )
 
@@ -3383,7 +3383,7 @@ def verify(engine: Engine) -> Dict[str, Any]:
     """Run all six checks and return the CONTRACT.md section 2.8 `boot_checks` block.
 
     Run LIVE on every /health. It is four reads (two maxFlow, one SPpaths, one control, one
-    write-probe, one count — six statements, all tiny), against an engine measured at 11 ms
+    write-probe, one count - six statements, all tiny), against an engine measured at 11 ms
     warm on a graph 23x the size of this corpus ([VERIFIED section 3 / AF-7]). Caching the
     result would make /health report the state of the graph at process start rather than now,
     which is the opposite of what a status strip is for.
@@ -3431,7 +3431,7 @@ def verify(engine: Engine) -> Dict[str, Any]:
 
 def first_failure_message(checks: Dict[str, Any]) -> str:
     """The message for 503 BOOT_ASSERTION_FAILED, in CONTRACT.md section 2.8's own style:
-    'node_split_echo expected 1, got 2 — the node-split is not in effect'.
+    'node_split_echo expected 1, got 2 - the node-split is not in effect'.
 
     One message, naming ONE check, because an operator reading a 503 needs the first thing to
     go and look at. The full block travels in `detail.boot_checks`, so nothing is lost.
@@ -3440,7 +3440,7 @@ def first_failure_message(checks: Dict[str, Any]) -> str:
         "node_split_echo": "the node-split is not in effect",
         "node_split_independent": "the node-split is not in effect",
         "sp_path_weight": "the algo.SPpaths weight key regressed (AF-3)",
-        "extra.sp_weight_is_not_hop_count": "pathWeight equals the hop count — the "
+        "extra.sp_weight_is_not_hop_count": "pathWeight equals the hop count - the "
         "algo.SPpaths weight key is wrong (AF-3)",
         "extra.ro_query_refuses_write": "the read path is not GRAPH.RO_QUERY (AF-8)",
         "extra.cap_on_non_flow": "a non-FLOW relationship carries `cap` (invariant SCH-2)",
@@ -3452,14 +3452,14 @@ def first_failure_message(checks: Dict[str, Any]) -> str:
             else checks[name]
         )
         return (
-            f"{name} expected {node['expected']!r}, got {node['actual']!r} — "
+            f"{name} expected {node['expected']!r}, got {node['actual']!r} - "
             f"{reasons.get(name, 'a boot control did not reproduce')}"
         )
     return "a boot control did not reproduce"
 
 
 # ===========================================================================
-# the corpus census — MEASURED, never asserted
+# the corpus census - MEASURED, never asserted
 # ===========================================================================
 
 # CONTRACT.md section 2.8 publishes exactly these four keys under `corpus`, and says the
@@ -3486,12 +3486,12 @@ def corpus(engine: Engine) -> Dict[str, int]:
 
 
 def seeded_at(engine: Engine) -> Optional[str]:
-    """CONTRACT.md section 2.8 `seeded_at` — the instant the corpus was WRITTEN.
+    """CONTRACT.md section 2.8 `seeded_at` - the instant the corpus was WRITTEN.
 
     Read off the super-source (section 4.1), not from config.SEED_NOW. config.SEED_NOW is the
     corpus's frozen REFERENCE instant for computing claim ages; `seeded_at` is when the write
     happened. In the seeded corpus they are the same value by construction, and they are
-    still two different facts — publishing the config constant would report a seed that never
+    still two different facts - publishing the config constant would report a seed that never
     completed as having completed.
     """
     rows = engine.read.run(
@@ -3501,7 +3501,7 @@ def seeded_at(engine: Engine) -> Optional[str]:
 
 
 # ===========================================================================
-# the gate — what makes a failure a 503 instead of a log line
+# the gate - what makes a failure a 503 instead of a log line
 # ===========================================================================
 
 _PASSED_ONCE = False
@@ -3533,19 +3533,19 @@ def gate(engine: Engine) -> None:
 ```
 
 **What a judge should attack here, and the answer.** *"Checks that run against data the same
-codebase seeded are circular — of course they pass."* Partly true, and it is the reason the
+codebase seeded are circular - of course they pass."* Partly true, and it is the reason the
 set is six rather than three. `T-1`/`T-2`/`T-3` do depend on the corpus: they prove *this
 graph, as built, reproduces the measured numbers*, which is what makes `independence: 1` on
 the echo chamber auditable rather than asserted. `T-3b`, `T-4` and `B-5` depend on **no corpus
-value at all** — they are properties of the engine and the schema, and they would catch the
+value at all** - they are properties of the engine and the schema, and they would catch the
 two failures that would actually ship a wrong product: a silently-wrong `algo.SPpaths` weight
 key (`AF-3`, which raises no error) and a read path that is not `GRAPH.RO_QUERY` (`AF-8`,
 which would make `receipt.engine.read_path` a false statement). The circularity is real for
 half the set and named here rather than left to be discovered.
 
-### 7.12 `app/api.py` — `[VERIFIED]` for every read/write it issues, `[ASSUMED]` for the projection choices
+### 7.12 `app/api.py` - `[VERIFIED]` for every read/write it issues, `[ASSUMED]` for the projection choices
 
-The eight frozen endpoints of `CONTRACT.md` §2 and nothing else — plus, when the stretch file
+The eight frozen endpoints of `CONTRACT.md` §2 and nothing else - plus, when the stretch file
 is present, one clearly-namespaced extra that the contract does not know about and the console
 must not depend on (§7.13, §10).
 
@@ -3600,7 +3600,7 @@ app = FastAPI(
 # nobody looked at: seven of the eight endpoints are reads, there is no authentication and
 # therefore no credential to steal, `allow_credentials` is left at its default of False, and
 # the console is served from a different origin during the demo. A deployed instance that
-# grows an auth token must narrow this in the same commit that adds the token — recorded as
+# grows an auth token must narrow this in the same commit that adds the token - recorded as
 # an exposure limitation in section 15.6, not as a TODO in the code.
 app.add_middleware(
     CORSMiddleware,
@@ -3611,7 +3611,7 @@ app.add_middleware(
 
 
 # ===========================================================================
-# error handling — CONTRACT.md section 3, with nothing leaking past it
+# error handling - CONTRACT.md section 3, with nothing leaking past it
 # ===========================================================================
 
 @app.exception_handler(MengerError)
@@ -3629,7 +3629,7 @@ async def _handle_validation_error(
     """FastAPI's own 422 reshaped into the contract's 400 VALIDATION_ERROR.
 
     FastAPI returns 422 with its own `detail` array for a bad QUERY PARAMETER; the contract
-    has no 422 VALIDATION_ERROR row — its 422s are UNKNOWN_AGENT and UNKNOWN_SOURCE, which
+    has no 422 VALIDATION_ERROR row - its 422s are UNKNOWN_AGENT and UNKNOWN_SOURCE, which
     are semantic, not structural. Letting FastAPI's default through would put a shape MENGER
     never documented on the wire under a status the contract reserves for something else.
     Request BODY validation does not reach here: POST /remember validates its body by hand
@@ -3652,7 +3652,7 @@ async def _handle_unexpected(_request: Request, exc: Exception) -> JSONResponse:
     exception's type and message, never a FastAPI HTML error page and never a stack trace
     on the wire. 503 rather than 500 because the contract's table has no 500 row, and an
     unhandled fault in a process whose only dependency is the engine is, in practice,
-    the engine — section 15.6 records the cases where that is a generous reading.
+    the engine - section 15.6 records the cases where that is a generous reading.
     """
     return JSONResponse(
         status_code=503,
@@ -3670,7 +3670,7 @@ def _gate() -> Engine:
     """FastAPI dependency: hand the endpoint an Engine, but only if the boot controls hold.
 
     Returns the Engine so that an endpoint cannot accidentally obtain one WITHOUT passing
-    the gate — the gate and the handle are the same object.
+    the gate - the gate and the handle are the same object.
     """
     engine = get_engine()
     bootcheck.gate(engine)
@@ -3697,7 +3697,7 @@ def _iso(dt: datetime) -> str:
 
 
 # ===========================================================================
-# section 9 — the response projection. ONE definition per contract shape.
+# section 9 - the response projection. ONE definition per contract shape.
 # ===========================================================================
 
 def _project_components(scored: Dict[str, Any]) -> Dict[str, Any]:
@@ -3705,7 +3705,7 @@ def _project_components(scored: Dict[str, Any]) -> Dict[str, Any]:
 
     Rounding happens HERE and only here (config.DP_*): every number upstream of this function
     is full precision, so no comparison, no ordering and no margin is ever computed on a
-    rounded value. `path_weight` passes through as None when there is no chain — it is the
+    rounded value. `path_weight` passes through as None when there is no chain - it is the
     one nullable component and section 7.9 explains why 0.0 would be a lie.
     """
     return {
@@ -3763,13 +3763,13 @@ def _project_scored_claim(engine: Engine, scored: Dict[str, Any]) -> Dict[str, A
 
 
 def _project_candidate(scored: Dict[str, Any]) -> Dict[str, Any]:
-    """CONTRACT.md section 2.5 `candidates[]` — the receipt's per-claim block.
+    """CONTRACT.md section 2.5 `candidates[]` - the receipt's per-claim block.
 
     This is the block a skeptic re-derives the verdict from by hand, so it carries the
     WITNESS as well as the numbers: which origins the flow actually used, and which chain the
     shortest-path walk actually took. `independence_witness.max_flow` and
     `components.independence` are the same number by construction and are both present on
-    purpose — one is the contract's component, the other is the evidence for it, and a
+    purpose - one is the contract's component, the other is the evidence for it, and a
     receipt in which they disagreed would be the single most useful thing a replay could find.
     """
     witness = arbiter.decompose_flow(
@@ -3804,7 +3804,7 @@ def _project_path_edge(edge: List[Any]) -> Dict[str, Any]:
     `trust` is RECONSTRUCTED as exp(-nl) rather than re-read from the :Source, for two
     reasons: it costs no round trip, and it shows the reader that nl and trust are the same
     fact in two forms. On an ORIGIN or CITED edge (nl = 0.0) that reconstruction gives
-    trust = 1.0, which is correct — those edges are free, they are plumbing, and they are not
+    trust = 1.0, which is correct - those edges are free, they are plumbing, and they are not
     where trust is paid (section 4.3).
     """
     nl = float(edge[2])
@@ -3859,8 +3859,8 @@ def _project_receipt(record: Dict[str, Any]) -> Dict[str, Any]:
             "endpoint": f"POST /receipts/{record['receipt_id']}/replay",
             # CONTRACT.md section 2.5 fixes this at true. What it asserts is narrow and worth
             # stating: the RECORDED SCALARS (max_flow, path_weight) reproduce against an
-            # unmutated graph. It does NOT assert that the witness EDGE SET is identical —
-            # maxFlow may saturate a different set of equally valid edges — which is exactly
+            # unmutated graph. It does NOT assert that the witness EDGE SET is identical -
+            # maxFlow may saturate a different set of equally valid edges - which is exactly
             # why section 7.10 `_numbers_of` compares scalars only. [ASSUMED]: no probe in
             # section 3 ran the same statement twice to measure stability.
             "deterministic": True,
@@ -3874,10 +3874,10 @@ def _winner_of(scored: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     CONTRACT.md section 2.2 says `winner` is "null when no claim has been admitted". Taken
     literally that would make every slot in the seeded corpus winner-less, because seeded
     claims carry status SEEDED and were never adjudicated through /remember (CONTRACT.md
-    section 1) — and the contract's own section 2.2 example names clm_0007, a seeded claim,
+    section 1) - and the contract's own section 2.2 example names clm_0007, a seeded claim,
     as the winner. [ASSUMED], and resolved by reading "admitted" as "not refused and not
     awaiting review": a claim holds the slot if its status is ADMITTED or SEEDED. REFUSED and
-    QUEUED claims are excluded, which is the part that matters — a blocked claim must never
+    QUEUED claims are excluded, which is the part that matters - a blocked claim must never
     appear as the holder of the slot it was blocked from.
     """
     holders = [s for s in scored if s["status"] in ("ADMITTED", "SEEDED")]
@@ -3891,7 +3891,7 @@ def _score_slot(
 ) -> List[Dict[str, Any]]:
     """Score every claim in a slot, best first.
 
-    Ordering is by score descending, then asserted_at descending, then claim_id descending —
+    Ordering is by score descending, then asserted_at descending, then claim_id descending -
     the same total order app/arbiter.pick_incumbent uses, so `ranking[0]` and the incumbent a
     decision chose can never disagree.
     """
@@ -3925,7 +3925,7 @@ def _last_receipt_by_slot(engine: Engine) -> Dict[str, Dict[str, Any]]:
     READS['receipts.all'] returns every receipt ordered by (created_at, id) ASCENDING, and
     this walks them keeping the last seen per slot. That is a Python-side fold over the whole
     receipt table, which is honest at demo scale (the corpus starts with zero receipts and a
-    demo adds a handful) and is the first thing that would have to change at real scale —
+    demo adds a handful) and is the first thing that would have to change at real scale -
     recorded in section 14.4 with the specific replacement named.
     """
     rows = engine.read.run("receipts.all", cypher.READS["receipts.all"], {})
@@ -3940,7 +3940,7 @@ def _last_receipt_by_slot(engine: Engine) -> Dict[str, Dict[str, Any]]:
 
 
 # ===========================================================================
-# 2.1  POST /remember — the write gate
+# 2.1  POST /remember - the write gate
 # ===========================================================================
 
 @app.post("/remember")
@@ -3952,7 +3952,7 @@ async def remember(request: Request, engine: Engine = Depends(_gate)) -> Dict[st
     empty its OWN code, 400 NO_SOURCES, distinct from 400 VALIDATION_ERROR. A Pydantic model
     in the signature would reject an absent `sources` as a shape error before any MENGER code
     ran, and the caller would get the wrong code for the one refusal that is about the
-    MECHANISM rather than the payload — a claim with no provenance cannot be scored, and
+    MECHANISM rather than the payload - a claim with no provenance cannot be scored, and
     saying so precisely is the point of the endpoint.
     """
     # --- 1. the body is JSON at all ---------------------------------------
@@ -4000,7 +4000,7 @@ async def remember(request: Request, engine: Engine = Depends(_gate)) -> Dict[st
     # --- 6. allocate the id and CREATE the claim --------------------------
     # The claim must exist in the graph BEFORE it can be scored: it is the maxFlow TARGET and
     # the SPpaths targetNode. There is no way to score a claim that is not in the graph, which
-    # is why `recorded` is contractually ALWAYS true — a refused write is recorded, never
+    # is why `recorded` is contractually ALWAYS true - a refused write is recorded, never
     # dropped (CONTRACT.md section 0 rule 4). Status is written as QUEUED and corrected in
     # step 10; QUEUED is a real ClaimStatus meaning "not yet adjudicated", which is exactly
     # true for the interval between these two writes. Section 14.7 covers the process dying
@@ -4091,7 +4091,7 @@ async def remember(request: Request, engine: Engine = Depends(_gate)) -> Dict[st
                 "review_id": review_id,
                 "slot_key": slot_key,
                 "claim_id": claim_id,
-                # the "" sentinel, never None — section 7.5 on null properties
+                # the "" sentinel, never None - section 7.5 on null properties
                 "incumbent_claim_id": (
                     docket.NO_WINNER if incumbent is None else incumbent["claim_id"]
                 ),
@@ -4144,7 +4144,7 @@ async def list_slots(
     statement already returns.
 
     THE COST, STATED. `winner` carries a full `Components` block, so the slots on the
-    requested PAGE have their claims scored — two reads per claim. The page is sliced BEFORE
+    requested PAGE have their claims scored - two reads per claim. The page is sliced BEFORE
     scoring, so the cost is bounded by `limit`, not by the size of the corpus. At the demo's
     20 slots and ~3 claims each that is ~120 reads against an engine measured at 11 ms warm
     on a graph 23x larger ([VERIFIED section 3 / AF-7]); no total latency is claimed for this
@@ -4224,7 +4224,7 @@ async def slot_detail(key: str, engine: Engine = Depends(_gate)) -> Dict[str, An
     `|`. The `:path` converter means a caller who forgets to encode a `/` inside a subject
     still routes here and gets 404 SLOT_NOT_FOUND for the key they actually sent, instead of
     a 404 from the router for a route that does not exist. The 404 then names the key, so the
-    encoding mistake is visible in the error. [ASSUMED] — the decoding behaviour is
+    encoding mistake is visible in the error. [ASSUMED] - the decoding behaviour is
     Starlette's documented one and is not probed in section 3.
     """
     slot_rows = engine.read.run("slot.by_key", cypher.READS["slot.by_key"], {"slot_key": key})
@@ -4288,12 +4288,12 @@ async def slot_detail(key: str, engine: Engine = Depends(_gate)) -> Dict[str, An
 
 @app.get("/slots/{key:path}/graph")
 async def slot_graph(key: str, engine: Engine = Depends(_gate)) -> Dict[str, Any]:
-    """CONTRACT.md section 2.4 — the node-split provenance DAG, for the console to draw.
+    """CONTRACT.md section 2.4 - the node-split provenance DAG, for the console to draw.
 
     The split pairs are returned AS THEMSELVES. CONTRACT.md section 2.4: "the split is visible
     on purpose". A console that drew a source as one node would be drawing a graph in which
     the independence number is unexplainable, because the thing that makes edge-disjoint equal
-    vertex-disjoint — the single unit-capacity si->so edge — would be invisible (Decision D-2).
+    vertex-disjoint - the single unit-capacity si->so edge - would be invisible (Decision D-2).
 
     `witness_sets` is per claim: the saturated split edges, which are the independent origins
     the flow actually used. It costs one maxFlow per claim in the slot, and it is the number
@@ -4314,7 +4314,7 @@ async def slot_graph(key: str, engine: Engine = Depends(_gate)) -> Dict[str, Any
             "id": str(r[0]),
             "label": str(r[1]),
             "caption": str(r[2]),
-            # null for the super-source and for claims — neither has a trust value, and
+            # null for the super-source and for claims - neither has a trust value, and
             # inventing 1.0 for them would put a number on the wire that means nothing.
             "trust": None if r[3] is None else float(r[3]),
             # Always present, null when not applicable. A null key is additive to the
@@ -4333,7 +4333,7 @@ async def slot_graph(key: str, engine: Engine = Depends(_gate)) -> Dict[str, Any
             "cap": float(r[2]),
             # The REAL nl, not null. CONTRACT.md section 2.4's example shows `nl: null` on a
             # si->so FLOW edge while section 2.5's example shows that same edge carrying
-            # nl 0.10536 — the contract disagrees with itself (section 16.6). The truthful
+            # nl 0.10536 - the contract disagrees with itself (section 16.6). The truthful
             # value is published, because `nl` on the SPLIT edge is where trust is paid and a
             # console rendering edge weights needs it. A consumer that wants the contract's
             # literal null can ignore the field; one that needs the weight cannot invent it.
@@ -4380,7 +4380,7 @@ async def replay_receipt(
     """CONTRACT.md section 2.6. Request body: none (empty or {}).
 
     The body is not read at all, so an empty body, `{}`, and a body with junk in it all
-    behave identically — there is no field for a caller to get wrong. Everything this does is
+    behave identically - there is no field for a caller to get wrong. Everything this does is
     in section 7.10 `replay`, and all of it goes through GRAPH.RO_QUERY: a replay cannot
     mutate what it audits, and the engine is what guarantees that ([VERIFIED section 3-P2]).
     """
@@ -4398,7 +4398,7 @@ async def review_queue(
     offset: int = Query(default=0, ge=0),
     engine: Engine = Depends(_gate),
 ) -> Dict[str, Any]:
-    """CONTRACT.md section 2.7 — every UNDECIDED write. The 'nothing is silently lost' surface.
+    """CONTRACT.md section 2.7 - every UNDECIDED write. The 'nothing is silently lost' surface.
 
     v1.0 writes only state OPEN; there is no resolve endpoint and the console must not assume
     one (CONTRACT.md section 2.7). `status=RESOLVED` is therefore a legitimate query that
@@ -4407,7 +4407,7 @@ async def review_queue(
 
     The `components` blocks come out of the RECEIPT, not out of the :Review node. They were
     computed once, at decision time, and they are already stored verbatim in
-    `receipt.candidates_json` — storing them again on the review node would create two
+    `receipt.candidates_json` - storing them again on the review node would create two
     records that can disagree, and then the queue would have to adjudicate itself. One
     statement joins Review -> Receipt and Review -> Claim -> Agent (section 7.5
     `reviews.all`), so the whole queue is one round trip rather than an N+1.
@@ -4477,7 +4477,7 @@ async def review_queue(
 
 
 # ===========================================================================
-# 2.8  GET /health — liveness, the boot assertions, epsilon and lambda
+# 2.8  GET /health - liveness, the boot assertions, epsilon and lambda
 # ===========================================================================
 
 @app.get("/health")
@@ -4496,7 +4496,7 @@ async def health() -> JSONResponse:
 
     It also constructs its own Engine handle rather than taking one from _gate, so that an
     unreachable container surfaces as 503 ENGINE_UNAVAILABLE from the normal error handler
-    with the connection error in the message — which is a different and more useful answer
+    with the connection error in the message - which is a different and more useful answer
     than BOOT_ASSERTION_FAILED.
     """
     engine = get_engine()
@@ -4522,12 +4522,12 @@ async def health() -> JSONResponse:
 
 
 # ===========================================================================
-# the stretch route — NOT in CONTRACT.md. Section 7.13 / section 10.
+# the stretch route - NOT in CONTRACT.md. Section 7.13 / section 10.
 # ===========================================================================
 
 try:
     from app import counterfactual
-except ImportError:                      # pragma: no cover — the file may be deleted
+except ImportError:                      # pragma: no cover - the file may be deleted
     counterfactual = None                # type: ignore[assignment]
 
 if counterfactual is not None:
@@ -4565,7 +4565,7 @@ if counterfactual is not None:
 "admitted" as "`ADMITTED` or `SEEDED`", because taken literally no slot in the seeded corpus
 could have a winner while the contract's own §2.2 example names a seeded claim as one. And
 `slot_graph` publishes the real `nl` on a `SPLIT` edge where `CONTRACT.md` §2.4's example
-shows `null`, because §2.5's example shows the same edge carrying `0.10536` — §16.6. Both are
+shows `null`, because §2.5's example shows the same edge carrying `0.10536` - §16.6. Both are
 places where the frozen contract is internally inconsistent and a build has to choose; both
 choices are the one that keeps a number truthful rather than the one that matches an example.
 
@@ -4595,7 +4595,7 @@ live in the WRITES registry either. Engine.raw_graph() is the named escape hatch
 these two callers (section 7.4).
 
 ITS LATENCY IS NOT_CLAIMED. GRAPH.COPY was never probed (.law12-feasibility.json DS-10, result
-SOFT-FAIL, evidence "NOT_CLAIMED — never probed"). No number for the cost of a copy appears
+SOFT-FAIL, evidence "NOT_CLAIMED - never probed"). No number for the cost of a copy appears
 in this file, in CONTRACT.md, or anywhere else in MENGER. On the seeded corpus a copy is of
 roughly 460 nodes and 700 edges; what that costs is unmeasured and is not guessed at here.
 
@@ -4610,14 +4610,14 @@ from app import arbiter, config
 from app.errors import MengerError
 from app.graph import Engine
 
-# This file's own write registry — Decision D-4 holds here too: a KEY is passed, never
+# This file's own write registry - Decision D-4 holds here too: a KEY is passed, never
 # caller-supplied text. The statement runs ONLY against a fork, never against the live graph,
 # and that is enforced by which Engine the WriteChannel is built from, not by a comment.
 FORK_WRITES = {
     # Remove a source's contribution inside the fork: delete the CITED flow edges from its
     # SourceOut half into the claim, and the claim's citation of its SourceIn half. The
     # :Source and its split pair are left in place, so the fork stays a well-formed provenance
-    # graph — this models "the claim no longer cites this source", not "the source never
+    # graph - this models "the claim no longer cites this source", not "the source never
     # existed". Those are different counterfactuals and only the first one is asked here.
     "fork.drop_citations": (
         "MATCH (c:Claim {id:$claim_id}) "
@@ -4717,11 +4717,11 @@ def what_if(
 **The one thing a reviewer should check before trusting this file.** `GRAPH.COPY` exists and
 is flagged `write` (`[VERIFIED §3-P28]`), and `Graph.copy(clone)` / `Graph.delete()` exist on
 the client (`[VERIFIED §3-P40/P48]`). What is **not** verified is the *semantics* of the copy:
-nothing in §3 copied a graph and then compared the fork to the original. `[UNVERIFIED]` —
+nothing in §3 copied a graph and then compared the fork to the original. `[UNVERIFIED]` -
 recorded in §17. If the copy turns out to be shallow, lazy, or asynchronous, this feature is
 wrong and it is the one feature designed to be deleted in a single commit.
 
-### 7.14 `drill.sh` `[UNVERIFIED]` — the eight-step end-to-end proof
+### 7.14 `drill.sh` `[UNVERIFIED]` - the eight-step end-to-end proof
 
 Nothing in this file has been executed; it is a specification of the proof, not a record of
 one. Every step either exits non-zero or prints `PASS`, so a half-working build cannot read
@@ -4729,12 +4729,12 @@ as a working one.
 
 ```bash
 #!/usr/bin/env bash
-# drill.sh — the end-to-end proof that MENGER does what ARCHITECTURE.md says.
+# drill.sh - the end-to-end proof that MENGER does what ARCHITECTURE.md says.
 #
 # Eight steps, each one a thing a judge could otherwise only take on trust. Run it against a
 # freshly seeded graph:   ./drill.sh
 #
-# [UNVERIFIED] — this script has not been run. It is written against the statements and
+# [UNVERIFIED] - this script has not been run. It is written against the statements and
 # signatures probed in ARCHITECTURE.md section 3; the endpoints themselves have never been
 # built or probed, which is the honest state recorded in SUBMISSION_STATUS.md.
 set -euo pipefail
@@ -4762,14 +4762,14 @@ pass "engine is falkordb/falkordb:v4.22.1 (AF-9)"
 # --- 2. the corpus seeds, and the SEED verifies itself ----------------------
 # app/seed.py exits non-zero if the three boot controls do not reproduce on the corpus it
 # just wrote (section 7.7 `main`), so this step proves the corpus, not just the script.
-python -m app.seed || fail "seed failed — see its own boot_checks output above"
+python -m app.seed || fail "seed failed - see its own boot_checks output above"
 pass "corpus seeded and app/seed.py's own verification passed"
 
 # --- 3. /health publishes the boot assertions, and they pass ----------------
 # AF-16: the three contract-named checks are a PUBLIC surface. This reads the published
 # values rather than re-deriving them, which is also what CONTRACT.md section 4 requires of
 # any consumer.
-health="$(curl -fsS "$API/health")" || fail "GET /health did not return 200 — boot assertions failed"
+health="$(curl -fsS "$API/health")" || fail "GET /health did not return 200 - boot assertions failed"
 echo "$health" | jq -e '
   .ok == true
   and .boot_checks.passed == true
@@ -4845,7 +4845,7 @@ echo "$replay" | jq -e '
 ' >/dev/null || fail "replay did not reproduce: $(echo "$replay" | jq -c '.divergence')"
 # AF-8, from the published surface: the engine itself refuses a write through the read path.
 echo "$health" | jq -e '.boot_checks.extra.ro_query_refuses_write.pass == true' >/dev/null \
-  || fail "GRAPH.RO_QUERY did not refuse a write — AF-8 containment is not in effect"
+  || fail "GRAPH.RO_QUERY did not refuse a write - AF-8 containment is not in effect"
 # Invariant SCH-1, mechanised: exactly one occurrence of relationshipTypes in the codebase.
 occurrences="$(grep -c 'relationshipTypes' app/cypher.py || true)"
 [ "$occurrences" = "1" ] \
@@ -4868,7 +4868,7 @@ two steps together are the evidence; either one alone is an anecdote.
 #
 # Why the API is not in here: the FalkorDB container is long-lived and the API process is
 # restarted constantly during a build. Putting both under one `up` invites `docker compose
-# down` — which, during this hackathon, would have destroyed the live build database the
+# down` - which, during this hackathon, would have destroyed the live build database the
 # probes in ARCHITECTURE.md section 3 were measured against. The engine is infrastructure;
 # the API is `uvicorn app.api:app --reload` in a terminal, where its logs are in front of you.
 #
@@ -4880,7 +4880,7 @@ services:
     image: falkordb/falkordb:v4.22.1
     container_name: gh-falkor
     ports:
-      - "6379:6379"      # redis://localhost:6379 — app/config.py REDIS_URL default
+      - "6379:6379"      # redis://localhost:6379 - app/config.py REDIS_URL default
       - "3000:3000"      # FalkorDB Browser, as shipped by the image
     volumes:
       - falkor-data:/var/lib/falkordb/data
@@ -4888,7 +4888,7 @@ services:
     healthcheck:
       # The engine is "up" when it answers a Redis PING. A healthcheck that ran a Cypher
       # query would be asserting something about the CORPUS, and the corpus is app/seed.py's
-      # job and GET /health's surface — not the container runtime's.
+      # job and GET /health's surface - not the container runtime's.
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 3s
@@ -4919,7 +4919,7 @@ volumes:
 ## 8. Scoring internals
 
 §7 is the code, given in full. **§8 onward is analysis**, so the fenced blocks below are
-*excerpts* of statements already printed complete in §7.5 — they are quoted here so a reader
+*excerpts* of statements already printed complete in §7.5 - they are quoted here so a reader
 can follow the reasoning without scrolling, not because anything in §7 was elided. Where a
 line differs from §7.5 in so much as a character, §7.5 wins.
 
@@ -4928,7 +4928,7 @@ separately because they are *computed* separately, carried separately, and multi
 once (§7.9 `score_claim`). A reader who only cares about the headline number can read §8.1
 and stop.
 
-### 8.1 `independence` — `algo.maxFlow` over the node-split DAG
+### 8.1 `independence` - `algo.maxFlow` over the node-split DAG
 
 ```python
 # app/cypher.py  ·  READS["independence.maxFlow"]  (excerpt of §7.5)
@@ -4943,18 +4943,18 @@ Five properties of that statement are probe-pinned. Each one, and what breaks wi
 
 | # | Property | Evidence | What breaks if changed |
 |---|---|---|---|
-| 1 | `relationshipTypes` holds **exactly one** type | `[VERIFIED §3-P24]`: a second entry errors with `MaxFlow configuration, 'relationshipTypes' should contain a single string` | The call fails outright. This is the whole reason for Decision D-3 (§2.3) — the semantic kind had to move into a property |
-| 2 | `sourceNodes` / `targetNodes` are bound to **MATCHed nodes** | `[VERIFIED §3-P25]`: id strings error with `'sourceNodes' must be an array of nodes` | The call fails. `CONTRACT.md` §2.5's recorded statement passes strings and would fail as written — §16.2 |
+| 1 | `relationshipTypes` holds **exactly one** type | `[VERIFIED §3-P24]`: a second entry errors with `MaxFlow configuration, 'relationshipTypes' should contain a single string` | The call fails outright. This is the whole reason for Decision D-3 (§2.3) - the semantic kind had to move into a property |
+| 2 | `sourceNodes` / `targetNodes` are bound to **MATCHed nodes** | `[VERIFIED §3-P25]`: id strings error with `'sourceNodes' must be an array of nodes` | The call fails. `CONTRACT.md` §2.5's recorded statement passes strings and would fail as written - §16.2 |
 | 3 | The witness arrives as a **list comprehension over `edges`**, not `UNWIND` | `[VERIFIED §3-P41]` (comprehension works, `startNode`/`endNode` work inside it) and `[VERIFIED §3-P42]` (flow 0 → **one** row, empty list) | `UNWIND edges` returns **no row** at flow 0, which is indistinguishable from an engine failure. The zero case would be misreported as an outage |
-| 4 | `maxFlow` is a **float** | `[VERIFIED §3-P41]`: `toString(maxFlow)` → `"1.000000"` | `components.independence` is contractually an integer (`CONTRACT.md` §0 rule 6). A raw assignment leaks `1.0` onto the wire — a contract violation that no test of the *value* would catch |
+| 4 | `maxFlow` is a **float** | `[VERIFIED §3-P41]`: `toString(maxFlow)` → `"1.000000"` | `components.independence` is contractually an integer (`CONTRACT.md` §0 rule 6). A raw assignment leaks `1.0` onto the wire - a contract violation that no test of the *value* would catch |
 | 5 | `capacityProperty:'cap'` names a property present on **every** `:FLOW` edge | §4.2, enforced by boot check `B-5` (§13.2) | An edge with no `cap` has undefined capacity. Invariant SCH-2 exists so this cannot happen by accident |
 
-**Why max-flow is the right quantity — the one-paragraph version.** Menger's theorem: in a
+**Why max-flow is the right quantity - the one-paragraph version.** Menger's theorem: in a
 graph, the maximum number of pairwise vertex-disjoint paths between two vertices equals the
 minimum number of vertices whose removal disconnects them. A provenance chain's *vertices* are
 its sources; its *edges* are merely the citations between them. What a reader of agent memory
 wants to know is **how many independent sources would have to be wrong for this claim to be
-wrong** — that is the vertex quantity, not the edge quantity. `algo.maxFlow` natively computes
+wrong** - that is the vertex quantity, not the edge quantity. `algo.maxFlow` natively computes
 an *edge* quantity. The node-split (DS-1 / D-2) converts one into the other: each source
 becomes `si:<id> → so:<id>` joined by a single `cap: 1.0` edge, so *consuming the vertex*
 and *consuming its one internal edge* are the same act. `[VERIFIED §3-P11/P13]` on the
@@ -4975,7 +4975,7 @@ single 6-edge walk. Two citations, one origin, `independence: 1`. Set-piece 2 ha
 vertex, two cuts of size 1 are needed to disconnect it, so **max-flow = 2**.
 
 Now the attack, and this is the one that matters: *"you got 1 because you drew the picture
-that way."* No — the same topology **without** the split returns **2**. That is the direct
+that way."* No - the same topology **without** the split returns **2**. That is the direct
 content of `[VERIFIED §3-P11]`: the un-split form of this graph scores the echo as
 independent. The split is not decoration, it is the difference between a number that means
 "independent sources" and a number that means "distinct citation routes", and only the first
@@ -4989,10 +4989,10 @@ run READS["independence.maxFlow"]
 │      → propagates → 503 ENGINE_UNAVAILABLE (§11). Never a score of 0.
 ├── returns ZERO rows
 │      → the MATCH found no such :Claim or no :SuperSource.
-│        Return (0, []) — but this is a MISSING-NODE condition, not a flow of 0.
+│        Return (0, []) - but this is a MISSING-NODE condition, not a flow of 0.
 │        At boot the same condition returns -1 instead (§13.2), because a missing
 │        control claim means an unseeded corpus and 0 is a legitimate flow value.
-└── returns ONE row  [the normal path, including flow 0 — VERIFIED §3-P42]
+└── returns ONE row  [the normal path, including flow 0 - VERIFIED §3-P42]
        → int(round(float(max_flow_raw)))  = independence
        → flow_edges  = the saturated relationship set → §8.3
 ```
@@ -5004,15 +5004,15 @@ run READS["independence.maxFlow"]
 | A new `:FLOW` edge is added with no `cap` | flow may be computed over an edge of undefined capacity | `B-5` fails at boot → `503 BOOT_ASSERTION_FAILED`. The service refuses rather than publishing a drifted number |
 | Someone adds a second relationship type to the list | the call errors | `grep -c relationshipTypes app/cypher.py` is `1` (SCH-1), and the error text is loud (`[VERIFIED §3-P24]`) |
 | The split is removed "to simplify the schema" | independence silently doubles on echoes | `node_split_echo` becomes 2, `T-1` fails, `/health` → 503. **This is the single most valuable boot assertion in the system** |
-| `maxFlow` cast is dropped | `independence: 1.0` on the wire | Not caught by any boot check. Caught only by reading §7.9 — recorded here as the gap it is, `[ASSUMED]` that a reviewer catches it |
+| `maxFlow` cast is dropped | `independence: 1.0` on the wire | Not caught by any boot check. Caught only by reading §7.9 - recorded here as the gap it is, `[ASSUMED]` that a reviewer catches it |
 
 **Cost.** One round trip per claim scored, returning both the number and its witness
 `[VERIFIED §3-P41]`. `algo.maxFlow` measured `41 ms` cold / `11 ms` warm on 1402 nodes /
 2400 edges (`AF-7`, `[VERIFIED]`). Measured on the §3 fixtures: `5.910507 ms` (P41),
-`0.717277 ms` (P42). **No MENGER-endpoint latency is claimed anywhere in this document** —
+`0.717277 ms` (P42). **No MENGER-endpoint latency is claimed anywhere in this document** -
 see §17.
 
-### 8.2 `reliability` — `algo.SPpaths` over `nl = −ln(trust)`
+### 8.2 `reliability` - `algo.SPpaths` over `nl = −ln(trust)`
 
 ```python
 # app/cypher.py  ·  READS["reliability.SPpaths"]  (excerpt of §7.5)
@@ -5026,7 +5026,7 @@ see §17.
 
 **Why `nl = −ln(trust)` and not `1 − trust`.** A shortest-path algorithm minimises a **sum**.
 What we want to maximise is the **product** of trust along the chain, because trust composes
-multiplicatively — a claim that passed through two 0.9 sources is 0.81 trustworthy, not 0.9
+multiplicatively - a claim that passed through two 0.9 sources is 0.81 trustworthy, not 0.9
 and not 1.8. The identity
 
 ```
@@ -5044,16 +5044,16 @@ tag; the *engine behaviour* it relies on is `[VERIFIED §3-P7/P43]`.
 
 | Config key | Returns | Evidence |
 |---|---|---|
-| `weightProp:'nl'` | `0.21072` — the weighted sum | `[VERIFIED §3-P7]` |
-| `weightProperty:'nl'` | `2` — the **hop count** | `[VERIFIED §3-P8]` |
-| `costProperty:'nl'` | `2` — the **hop count** | `[VERIFIED §3-P9]` |
-| `weightProp:'nl', totallyBogusKey:1` | `0.21072` — unknown key **ignored** | `[VERIFIED §3-P37]` |
+| `weightProp:'nl'` | `0.21072` - the weighted sum | `[VERIFIED §3-P7]` |
+| `weightProperty:'nl'` | `2` - the **hop count** | `[VERIFIED §3-P8]` |
+| `costProperty:'nl'` | `2` - the **hop count** | `[VERIFIED §3-P9]` |
+| `weightProp:'nl', totallyBogusKey:1` | `0.21072` - unknown key **ignored** | `[VERIFIED §3-P37]` |
 | (compare) `algo.maxFlow` with an unknown key | **errors** | `[VERIFIED §3-P34]` |
 | (compare) `algo.SPpaths` with an unknown **YIELD** | **errors** | `[VERIFIED §3-P36]` |
 
 So: `algo.SPpaths` is loud about an unknown *yield* and silent about an unknown *config key*,
 while `algo.maxFlow` is loud about both. **That asymmetry is the root cause of AF-3.** A typo
-in the weight key does not fail — it returns a plausible wrong number, forever, and the number
+in the weight key does not fail - it returns a plausible wrong number, forever, and the number
 it returns (hop count) is small, positive, and monotone in path length, so it *looks* like a
 weight. The control fixture was deliberately built so hop count cannot be distinguished by
 luck: both `s → t` routes in fixture `w` are exactly 2 hops and only their weights differ
@@ -5079,7 +5079,7 @@ run READS["reliability.SPpaths"]
 ├── ZERO rows   [VERIFIED §3-P29: no path → no rows; NOT an error, NOT a null]
 │      → (reliability 0.0, path_weight None, path_cost None, [], [])
 │      → `Components.path_weight` is NULLABLE exactly so this is representable.
-│        Writing 0.0 would read as "a perfect, weightless chain" — the inverse of the truth.
+│        Writing 0.0 would read as "a perfect, weightless chain" - the inverse of the truth.
 │      → score becomes 0.0 → margin ≈ 0 → UNDECIDED, never ALLOW. Correct and conservative:
 │        MENGER could not measure it, so MENGER does not admit it.
 ├── ONE row, pathWeight 0.0
@@ -5093,7 +5093,7 @@ run READS["reliability.SPpaths"]
 ```
 
 **`pathCount` is never used, deliberately.** `[VERIFIED §3-P32]`: with `pathCount:2` the rows
-come back **not ordered by weight** — the heavier path (`0.36672`) arrived before the lighter
+come back **not ordered by weight** - the heavier path (`0.36672`) arrived before the lighter
 one (`0.21072`). Nobody has been bitten by this because nobody has used the key. If a future
 edit wants the k best chains, it **must sort client-side**; taking `rows[0]` would silently
 return a non-optimal path and `reliability` would quietly under-report. Recorded as a latent
@@ -5101,7 +5101,7 @@ trap rather than a bug, because the current statement does not set the key.
 
 **Worked example on set-piece 2.** One SPLIT edge at `trust 0.90`:
 `nl = −ln(0.90) = 0.1053605…`, so `pathWeight = 0.10536` and
-`reliability = exp(−0.10536) = 0.9000` — the trust itself, which is the identity above
+`reliability = exp(−0.10536) = 0.9000` - the trust itself, which is the identity above
 reappearing on a one-source chain. Set-piece 1 crosses two SPLIT edges (hub, then one echo):
 `2 × 0.1053605 = 0.2107210313…` → `0.21072` at 5 d.p., `reliability = exp(−0.21072) =
 0.8100 = 0.90 × 0.90`. `[VERIFIED §3-P7]` for the engine's number on the isomorphic fixture.
@@ -5109,11 +5109,11 @@ reappearing on a one-source chain. Set-piece 1 crosses two SPLIT edges (hub, the
 **The sharpest thing about set-piece 1 is that reliability does *not* separate it.** The echo
 sources carry `trust 0.90`, the same as the honest incumbent's, so the echo's `reliability`
 (0.8100) is barely below the corroborated claim's (0.9000) and the echo would survive any
-trust-based filter. It loses on `independence` — 1 against 2 — and on nothing else. That is
+trust-based filter. It loses on `independence` - 1 against 2 - and on nothing else. That is
 why blending the three into a single opaque number before the response layer would destroy
 the only interesting fact in the demo, and why `CONTRACT.md` §0 rule 1 forbids it.
 
-### 8.3 The witness — turning `edges` into `independence_witness`
+### 8.3 The witness - turning `edges` into `independence_witness`
 
 `CONTRACT.md` §2.5 wants the receipt to carry `independence_witness.paths` (node-id walks from
 `ss` to the claim) and `witness_nodes`. `algo.maxFlow` does not return paths. The §3 probes
@@ -5122,16 +5122,16 @@ both are plausible wrong answers:
 
 | Yield | What it actually is | Verdict |
 |---|---|---|
-| `nodes` | **every node carrying flow**, source and sink included. On `menger3` at flow 2 it returned 6 nodes, four of them with no `k` (`[VERIFIED §3-P14]`); on `menger2` at flow **1** it returned **8** nodes (`[VERIFIED §3-P16]`) | **Not the witness.** Deriving `independence` or `witness_sets` from `nodes` — e.g. by counting — is wrong, and wrong in a way that looks right on one fixture |
+| `nodes` | **every node carrying flow**, source and sink included. On `menger3` at flow 2 it returned 6 nodes, four of them with no `k` (`[VERIFIED §3-P14]`); on `menger2` at flow **1** it returned **8** nodes (`[VERIFIED §3-P16]`) | **Not the witness.** Deriving `independence` or `witness_sets` from `nodes` - e.g. by counting - is wrong, and wrong in a way that looks right on one fixture |
 | `edges` | **exactly the saturated (flow-carrying) relationship set.** On `menger2` at flow 1: the 7-edge walk `s → a_in → a_out → v_in → v_out → d_in → d_out → t`, each `{cap: 1.000000}` (`[VERIFIED §3-P22]`). On `menger3` at flow 2: 6 edges across two 3-edge chains (`[VERIFIED §3-P23]`) | **This is the witness material.** It scales with the flow, as a witness must |
-| `relationships` | does not exist — `Procedure 'algo.maxFlow' does not yield output 'relationships'` (`[VERIFIED §3-P18]`) | the obvious guess, and it errors loudly, which is the good case |
+| `relationships` | does not exist - `Procedure 'algo.maxFlow' does not yield output 'relationships'` (`[VERIFIED §3-P18]`) | the obvious guess, and it errors loudly, which is the good case |
 
 So `flow_edges` is a saturated edge **set**, and the contract wants **walks**. The conversion
 is `arbiter.decompose_flow` (§7.9): build an adjacency list, then repeatedly walk from `ss`
 consuming each out-edge at most once, until no out-edge from `ss` remains. Each completed walk
 is one unit of flow.
 
-**Traced on the P22 edge set** (renamed into MENGER's id convention — the topology is the
+**Traced on the P22 edge set** (renamed into MENGER's id convention - the topology is the
 one `[VERIFIED §3-P22]` returned):
 
 ```
@@ -5157,7 +5157,7 @@ Three design properties of that function, each load-bearing:
    *witness detail* degrades. A witness bug can never move a verdict.
 2. **The out-edge lists are sorted**, so two replays over an identical graph produce an
    identical witness. Without the sort the walk order would follow client result order and a
-   receipt would read differently on every fetch — which is not an audit record.
+   receipt would read differently on every fetch - which is not an audit record.
 3. **Two defensive exits** (dead end; `hops > MAX_PATH_HOPS`) guarantee termination on a
    malformed set. A provenance DAG is acyclic so the hop guard should be unreachable; it
    exists because "should be" is not a termination proof.
@@ -5165,11 +5165,11 @@ Three design properties of that function, each load-bearing:
 **The honest gap.** `[ASSUMED]` that a saturated unit-capacity set always decomposes into
 exactly `maxFlow` source→target walks. For an integral flow on unit capacities that is the
 flow-decomposition theorem, and it held on the flow-1 fixture (`[VERIFIED §3-P41]`) and the
-flow-0 fixture (`[VERIFIED §3-P42]`). **It was not probed at flow 2** — P23 confirmed the
+flow-0 fixture (`[VERIFIED §3-P42]`). **It was not probed at flow 2** - P23 confirmed the
 *edge count* (6) at flow 2 but the decomposition was not run over it. So the claim is marked,
 not asserted, and property 1 above is what makes the gap survivable.
 
-`witness_nodes` is the set of `so:` halves the walks cross — one per independent origin chain.
+`witness_nodes` is the set of `so:` halves the walks cross - one per independent origin chain.
 That is the node-split made visible on the wire, which `CONTRACT.md` §2.4 says is deliberate:
 "the split is visible on purpose". A reader who wants to check `independence: 2` by hand counts
 the `so:` nodes in `witness_nodes` and compares.
@@ -5181,37 +5181,37 @@ the `so:` nodes in `witness_nodes` and compares.
 Every wire shape in `CONTRACT.md` has **exactly one** definition in MENGER, and all of them
 live in the `_project_*` block of `app/api.py` (§7.12). There is no `projection.py`: the §5.1
 file tree has fifteen files and inventing a sixteenth to host six functions would document a
-module that does not exist. The rule the block enforces is single-definition — two endpoints
+module that does not exist. The rule the block enforces is single-definition - two endpoints
 that return a `ScoredClaim` call the same function, so they cannot drift.
 
 **The projection is also the rounding boundary.** `config.DP_COMPONENT = 4`,
 `DP_PATH_WEIGHT = 5`, `DP_MARGIN = 4`, and `round()` appears **only** inside these functions.
-Everything upstream — every comparison, every ordering, every margin, every ε test — runs on
+Everything upstream - every comparison, every ordering, every margin, every ε test - runs on
 full-precision floats. This matters concretely: ε is `0.05` and margins in the seeded near-tie
 are `−0.0045` (§6.3), so rounding before comparing could move a verdict across the band. The
 numbers a judge reads are rounded; the numbers that decided are not.
 
-### 9.1 `Components` — five fields, always all five
+### 9.1 `Components` - five fields, always all five
 
 | Field | Type | Source | Rounding |
 |---|---|---|---|
-| `independence` | **int** | `int(round(float(maxFlow)))` — §8.1 property 4 | none; it is an integer |
+| `independence` | **int** | `int(round(float(maxFlow)))` - §8.1 property 4 | none; it is an integer |
 | `reliability` | float | `exp(−path_weight)` | 4 d.p. |
 | `recency` | float | `exp(−λ · age_hours)` | 4 d.p. |
-| `path_weight` | float **or null** | `pathWeight` raw | 5 d.p., or `null` — §9.3 |
+| `path_weight` | float **or null** | `pathWeight` raw | 5 d.p., or `null` - §9.3 |
 | `age_hours` | float | clamped at 0 (§7.9) | 2 d.p. |
 
 `path_weight` is present **because** `reliability` is derived from it. Publishing only the
 derived value would make the AF-3 hop-count regression invisible from outside the server:
 `exp(−2) = 0.1353` is a perfectly plausible reliability. Publishing the raw weight means the
 trap is auditable from a response body alone. `age_hours` is present for the same reason with
-respect to `recency` and λ — the three published facts (`age_hours`, `lambda`, `recency`)
+respect to `recency` and λ - the three published facts (`age_hours`, `lambda`, `recency`)
 over-determine each other, so a reader can check the server's arithmetic.
 
 `age_hours` is **clamped at zero** and that clamp is a security property, not tidiness.
 `asserted_at` is client-supplied and optional; a future timestamp gives a negative age, hence
 `recency = exp(−λ · negative) > 1`, hence a score inflated by a number the caller chose. With
-the clamp, the best a caller can do by lying about time is `recency = 1.0` — identical to
+the clamp, the best a caller can do by lying about time is `recency = 1.0` - identical to
 submitting now, which they could do anyway. `[ASSUMED]`: no probe is involved, it is arithmetic.
 
 ### 9.2 `ScoredClaim`, `candidates[]`, and why there are two shapes
@@ -5219,7 +5219,7 @@ submitting now, which they could do anyway. `[ASSUMED]`: no probe is involved, i
 `ScoredClaim` (`/remember`'s `incoming`/`incumbent`, `/slots/{key}`'s `claims[]`) carries the
 components, the ordinal score, and `sources[]`. `candidates[]` (inside a receipt) carries the
 components, the score, and **the witness**: `independence_witness` (§8.3) and
-`reliability_path` (nodes, per-edge `nl`, `path_weight`). The split is deliberate — the live
+`reliability_path` (nodes, per-edge `nl`, `path_weight`). The split is deliberate - the live
 endpoints answer *what is the number*, the receipt answers *why*, and the receipt is the
 heavier shape because it is the one a skeptic re-derives by hand.
 
@@ -5237,7 +5237,7 @@ Two properties:
 
 `sources[].is_origin` is **read**, not derived: it is denormalised onto `:Source` at seed time
 (§4.1), so the response layer never re-traverses to ask "does an `ORIGIN` edge exist for this
-source". `trust` inside `reliability_path.edges` is the opposite choice — it is
+source". `trust` inside `reliability_path.edges` is the opposite choice - it is
 **reconstructed** as `exp(−nl)` rather than re-read, because it costs no round trip and
 because it shows the reader that `nl` and `trust` are one fact in two forms. On a free edge
 (`ORIGIN`, `CITED`, `nl = 0.0`) that reconstruction yields `trust = 1.0`, which is correct:
@@ -5245,7 +5245,7 @@ those edges are plumbing and trust is not paid on them (§4.3).
 
 ### 9.3 The sentinel → `null` boundary
 
-FalkorDB does not store a property whose value is `null` — setting a property to null removes
+FalkorDB does not store a property whose value is `null` - setting a property to null removes
 it. MENGER needs to distinguish "this field is genuinely absent" from "this field was never
 written", and it needs the distinction to survive a round trip through the graph. The
 resolution: **`""` is the stored sentinel; `null` is the wire value.** Conversion happens in
@@ -5257,12 +5257,12 @@ the projection and nowhere else.
 | `Review.incumbent_claim_id = ""` | `incumbent_claim_id: null` | the first claim into an empty slot |
 
 `docket.NO_WINNER` is the single definition of that sentinel, so a `grep` finds every site.
-The alternative — omitting the property — was rejected because a missing property and a
+The alternative - omitting the property - was rejected because a missing property and a
 missing *node* read identically in a result row, and the receipt is the artifact where that
 ambiguity costs the most.
 
 **`path_weight` is the one exception and it is a different mechanism.** It is `None` in
-Python and `null` on the wire, and it is never stored on a node at all — it lives in the
+Python and `null` on the wire, and it is never stored on a node at all - it lives in the
 receipt's JSON blob, where `null` is representable. `null` there means "no provenance chain
 exists" (`[VERIFIED §3-P29]`: zero rows), which is a real state with a real consequence
 (score 0, verdict `UNDECIDED`). It is emphatically **not** `0.0`, which would read as a
@@ -5272,7 +5272,7 @@ perfect weightless chain.
 
 Decision D-3 makes `:FLOW` the only relationship type in the graph, with the semantic kind in
 a property, because `algo.maxFlow` takes exactly one relationship type (`[VERIFIED §3-P24]`).
-`CONTRACT.md` §2.4 — written before that probe landed — shows a `DERIVED_FROM` edge type on
+`CONTRACT.md` §2.4 - written before that probe landed - shows a `DERIVED_FROM` edge type on
 the wire. The contract is frozen, so the shape it promises is preserved by one function:
 
 ```python
@@ -5283,16 +5283,16 @@ return "DERIVED_FROM" if kind == "DERIVED" else "FLOW"
 | Stored `kind` | Wire `type` | Semantics |
 |---|---|---|
 | `ORIGIN` | `FLOW` | `ss → si:<id>`, `nl 0`, free |
-| `SPLIT` | `FLOW` | `si:<id> → so:<id>`, `nl = −ln(trust)` — **the vertex capacity** |
+| `SPLIT` | `FLOW` | `si:<id> → so:<id>`, `nl = −ln(trust)` - **the vertex capacity** |
 | `DERIVED` | **`DERIVED_FROM`** | `so:<a> → si:<b>`, `nl = −ln(fidelity)` |
 | `CITED` | `FLOW` | `so:<id> → claim`, `nl 0`, free |
 
 That table **is** the whole of the §16.1 reconciliation: the console receives exactly the
 vocabulary it was promised, and the graph keeps the single relationship type the algorithm
-requires. Nothing else in MENGER converts between the two namespaces, and nothing needs to —
+requires. Nothing else in MENGER converts between the two namespaces, and nothing needs to -
 `relTypes` and `relationshipTypes` only ever see `'FLOW'` (invariant SCH-1, one grep).
 
-The judge's attack: *"so the contract's graph shape is a lie?"* No — the contract describes an
+The judge's attack: *"so the contract's graph shape is a lie?"* No - the contract describes an
 HTTP response, and the response is exactly as described. What changed is the **storage**
 encoding beneath it, for a reason a probe forced. The flag at the head of §4 says so in the
 open and routes the ratification to the master chat rather than burying it.
@@ -5327,29 +5327,29 @@ Two scoping facts a reader should not have to infer:
 1. **Scalars are compared; edge sets are not.** `_numbers_of` compares `max_flow` and
    `path_weight` only. `algo.maxFlow` may saturate a *different set of equally valid edges*
    on a second run over the same graph, and `CONTRACT.md` §2.5's `replay.deterministic: true`
-   is only defensible under the narrow reading. `[ASSUMED]` — no probe in §3 ran the same
+   is only defensible under the narrow reading. `[ASSUMED]` - no probe in §3 ran the same
    statement twice to measure stability (§17).
 2. **Statements are matched to candidates positionally within their label group**, in the
    order `app/api.py` scored them. That coupling between two files is the price of not storing
    each number twice (two copies of one number in one receipt can disagree, and then the
    receipt has to adjudicate itself). It is why §12 step 8 is **normative**. An out-of-range
-   occurrence returns no comparison rather than raising — a receipt with more statements than
+   occurrence returns no comparison rather than raising - a receipt with more statements than
    candidates is a receipt from a future version, and replaying it without a diff beats
    refusing it.
 
 **The honest gap, recorded rather than papered over.** A change to `MENGER_LAMBDA_PER_HOUR`
 between the decision and the replay also moves `recency`, and the rule above labels that
 `RECENCY_DECAY`. The receipt carries the λ it used and the replay runs under the current λ, so
-the difference is **visible in the body** — but it is not a separate reason code, because
+the difference is **visible in the body** - but it is not a separate reason code, because
 `CONTRACT.md` §2.6 fixes the enum at three values and the contract is frozen. Logged at §16.7.
 
 ---
 
-## 10. `counterfactual.py` — deletability is the design
+## 10. `counterfactual.py` - deletability is the design
 
 The P3 "what if this source were removed" feature is **stretch-only** (R4), gated at **16:25**
 (DS-11), and it is the one feature in MENGER whose latency is `NOT_CLAIMED` (`DS-10`:
-`GRAPH.COPY` was never probed, and it could not be — `[VERIFIED §3-P28]` shows it is flagged
+`GRAPH.COPY` was never probed, and it could not be - `[VERIFIED §3-P28]` shows it is flagged
 `write`, so running it creates a graph key, which the brief forbids).
 
 A feature that might be cut at a deadline must be **cheap to cut**, and cheap means: the cut
@@ -5375,9 +5375,9 @@ changes, no schema change, no contract change, no boot-check change.
 
 **What it returns, and what it refuses to return.** `hypothetical: true`, the `live`
 components, the `counterfactual` components, the `delta`, and a `note`. It returns **no
-verdict** — it is not an admission decision and must never be read as one, because a verdict
+verdict** - it is not an admission decision and must never be read as one, because a verdict
 that was never written to a receipt is not a decision MENGER made. And it returns **no
-latency**: `NOT_CLAIMED` (§17). The *copy semantics* are `[UNVERIFIED]` for the same reason —
+latency**: `NOT_CLAIMED` (§17). The *copy semantics* are `[UNVERIFIED]` for the same reason -
 nothing in §3 copied a graph and compared the fork to the original, so "the fork is an exact
 independent snapshot" is an expectation, not a measurement.
 
@@ -5386,7 +5386,7 @@ mutating production data and undoing it, and an undo that fails leaves a corrupt
 graph with no record of what changed. `GRAPH.COPY` being flagged `write` (`[VERIFIED §3-P28]`)
 also settles a design question that would otherwise be open: the copy can **never** go through
 `GRAPH.RO_QUERY`, so it can never be issued by `ReadChannel`, so the containment boundary
-(AF-8) is not weakened by this feature's existence — it is routed around it explicitly, in
+(AF-8) is not weakened by this feature's existence - it is routed around it explicitly, in
 one file, by name.
 
 ---
@@ -5403,11 +5403,11 @@ row, **where it is raised** and **what a caller should do**.
 | 400 | `NO_SOURCES` | `api.remember` **step 2**, before any shape validation | `sources` absent, or present and empty | supply at least one source id. A claim with no declared provenance cannot be scored |
 | 404 | `SLOT_NOT_FOUND` | `api.slot_detail`, `api.slot_graph` | no `:Slot` with that key | check `GET /slots` |
 | 404 | `RECEIPT_NOT_FOUND` | `docket.fetch`, reached from `/receipts/{id}` and `/receipts/{id}/replay` | no `:Receipt` with that id | check the `receipt_id` from the decision that produced it |
-| 404 | `REVIEW_NOT_FOUND` | **nowhere in v1.0** | — | reserved by the contract; there is no `/review/{id}` route |
-| 409 | `REPLAY_MISMATCH` | `docket.replay`, only in the `except MengerError` around a recorded statement | a recorded statement **failed to execute** | the receipt is unrunnable against this engine — see §9.5 |
+| 404 | `REVIEW_NOT_FOUND` | **nowhere in v1.0** | - | reserved by the contract; there is no `/review/{id}` route |
+| 409 | `REPLAY_MISMATCH` | `docket.replay`, only in the `except MengerError` around a recorded statement | a recorded statement **failed to execute** | the receipt is unrunnable against this engine - see §9.5 |
 | 422 | `UNKNOWN_AGENT` | `api.remember` step 4 | `agent_id` is not in the graph | register the agent, or fix the id |
 | 422 | `UNKNOWN_SOURCE` | `api.remember` step 5 | one or more source ids absent; offenders in `detail.unknown` | fix the ids listed |
-| 429 | `RATE_LIMITED` | **nowhere locally** | — | reserved for the deployed instance |
+| 429 | `RATE_LIMITED` | **nowhere locally** | - | reserved for the deployed instance |
 | 503 | `ENGINE_UNAVAILABLE` | `graph.ReadChannel` / `WriteChannel` wrapping any client `ResponseError`; `api.remember` step 7's read-back guard; the catch-all `Exception` handler | the engine refused, timed out, or is unreachable | retry; check `GET /health` |
 | 503 | `BOOT_ASSERTION_FAILED` | `bootcheck.gate`, via the `_gate` dependency on **every** endpoint except `/health` | a boot control does not hold | the corpus or the engine drifted. `GET /health` names which check failed |
 
@@ -5433,15 +5433,15 @@ contract allows:**
 3. **The catch-all `Exception` handler returns 503 `ENGINE_UNAVAILABLE`.** The contract's table
    has **no 500 row**, so an unhandled exception has nowhere contractual to go. 503 is chosen
    because the overwhelmingly likely cause is the engine, and because 503 tells a caller to
-   retry while 500 tells it to give up. It is a **generous reading** — a genuine logic bug in
-   MENGER would be reported as an engine problem — and it is recorded as such in §15.6 rather
+   retry while 500 tells it to give up. It is a **generous reading** - a genuine logic bug in
+   MENGER would be reported as an engine problem - and it is recorded as such in §15.6 rather
    than defended as correct.
 
 **One thing the table deliberately does not do: invent a code for "this claim is wrong".**
 There is none, because MENGER does not have that judgement. `BLOCK` is a **verdict**, carried
 in a 200 response with a receipt, not an error. A refusal is recorded, never dropped
 (`CONTRACT.md` §0 rule 4: `recorded` is always `true`), which is why the claim is written to
-the graph in step 6 *before* it is scored — a refused submission that left no trace would make
+the graph in step 6 *before* it is scored - a refused submission that left no trace would make
 the audit trail a record of successes only.
 
 ---
@@ -5460,7 +5460,7 @@ Reads go through `GRAPH.RO_QUERY`; writes go through the normal query path (D-4,
 
 | # | Step | Reads | Writes | Can refuse with |
 |---|---|---|---|---|
-| — | `Depends(_gate)` — the boot gate | 0 or 6 | 0 | `503 BOOT_ASSERTION_FAILED` |
+| - | `Depends(_gate)` - the boot gate | 0 or 6 | 0 | `503 BOOT_ASSERTION_FAILED` |
 | 1 | body is JSON, and is an object | 0 | 0 | `400 VALIDATION_ERROR` |
 | 2 | `sources` present and non-empty | 0 | 0 | `400 NO_SOURCES` |
 | 3 | `RememberRequest(**payload)` | 0 | 0 | `400 VALIDATION_ERROR` |
@@ -5469,20 +5469,20 @@ Reads go through `GRAPH.RO_QUERY`; writes go through the normal query path (D-4,
 | 6 | mint `claim_id`, `CREATE` the claim | 0 | 2 `counter.next`, `claim.create` | `503 ENGINE_UNAVAILABLE` |
 | 7 | read the slot back | 1 `slot.claims` | 0 | `503 ENGINE_UNAVAILABLE` |
 | 8 | score every claim, **incoming first** | 2 per claim | 0 | `503 ENGINE_UNAVAILABLE` |
-| 9 | the ε-band decision | 0 | 0 | — |
+| 9 | the ε-band decision | 0 | 0 | - |
 | 10 | write the incoming claim's final status | 0 | 1 `claim.set_status` | `503 ENGINE_UNAVAILABLE` |
 | 11 | persist the DOCKET receipt | 0 | 2 `counter.next`, `receipt.create` | `503 ENGINE_UNAVAILABLE` |
 | 12 | `UNDECIDED` only: write a `:Review` | 0 | 2 `counter.next`, `review.create` | `503 ENGINE_UNAVAILABLE` |
-| 13 | project the response | 1 per **projected** claim (incoming, and the incumbent if there is one) | 0 | — |
+| 13 | project the response | 1 per **projected** claim (incoming, and the incumbent if there is one) | 0 | - |
 
-**Cost of one request on the seeded corpus** `[ASSUMED]` — derived by counting the table, not
+**Cost of one request on the seeded corpus** `[ASSUMED]` - derived by counting the table, not
 measured. A slot with `k` claims including the incoming one costs
 `2 (steps 4–5) + 1 (step 7) + 2k (step 8) + 2 (step 13) = 2k + 5` reads and `5` writes on
 `ALLOW`/`BLOCK`, `7` on `UNDECIDED`, plus `6` more reads on the first request in the process
 (the boot gate, which then caches its PASS). The step-13 term is `1` rather than `2` when the
 slot was empty and there is no incumbent. At the hero slot (`k = 2`) that is **9 reads and 5
 writes**. **No wall-clock latency is claimed for this
-endpoint** — see §17. The only measured engine figure in the project is `41 ms cold / 11 ms
+endpoint** - see §17. The only measured engine figure in the project is `41 ms cold / 11 ms
 warm` for one `algo.maxFlow` on a graph 23× this corpus (`[VERIFIED §3 / AF-7]`), and
 multiplying it by a round-trip count would be a fabricated total.
 
@@ -5491,10 +5491,10 @@ multiplying it by a round-trip count would be a fabricated total.
 Most of the order above is the only order that type-checks. Three parts of it are choices,
 and a future edit that reverses any of them breaks something that is not local to the edit.
 
-**N-1 — the claim is written BEFORE it is scored (step 6 before step 8).** `independence` is
+**N-1 - the claim is written BEFORE it is scored (step 6 before step 8).** `independence` is
 `algo.maxFlow(… targetNodes:[claim] …)` and `reliability` is
 `algo.SPpaths({… targetNode: claim …})`. Both take the claim **as a node in the graph**
-(`[VERIFIED §3-P25]` — these parameters are nodes, not id strings). There is no "score a
+(`[VERIFIED §3-P25]` - these parameters are nodes, not id strings). There is no "score a
 hypothetical claim" path, and inventing one would mean building a second scoring
 implementation that the receipt could not replay. So the claim is created first, with
 `status: "QUEUED"`.
@@ -5502,7 +5502,7 @@ implementation that the receipt could not replay. So the claim is created first,
 Three consequences, all of them load-bearing and none of them accidental:
 
 1. **`recorded` is contractually always `true`.** `CONTRACT.md` §0 rule 4 says a refused
-   write is *recorded, never dropped*. That is not politeness — it is the mechanical
+   write is *recorded, never dropped*. That is not politeness - it is the mechanical
    consequence of N-1. By the time MENGER knows the verdict, the claim is already a node.
 2. **`QUEUED` is a true statement about the interval**, not a placeholder. `ClaimStatus`
    includes `QUEUED`, meaning "not yet adjudicated", which is exactly what the claim is
@@ -5512,7 +5512,7 @@ Three consequences, all of them load-bearing and none of them accidental:
    echo chamber *after* it was refused. A design that dropped refused writes would have
    nothing to render.
 
-**N-2 — the incoming claim is scored FIRST, and `candidates[]` is written in scoring order
+**N-2 - the incoming claim is scored FIRST, and `candidates[]` is written in scoring order
 (step 8).** `app/docket.py` `_original_numbers` reconstructs the original per-candidate
 numbers by matching the *i*-th recorded statement of a label group to `candidates[i]`
 (§7.10). The statements land in `CypherLog` in execution order; `candidates[]` is
@@ -5520,16 +5520,16 @@ numbers by matching the *i*-th recorded statement of a label group to `candidate
 facts are one fact, and the replay's divergence report is wrong if any of them changes.**
 §7.10's prose and §9.5 both point here; this is the normative statement they point at.
 
-It also happens to read well — the receipt opens with what was submitted, then what it was up
-against — but the readability is the side effect, not the reason.
+It also happens to read well - the receipt opens with what was submitted, then what it was up
+against - but the readability is the side effect, not the reason.
 
-**N-3 — the status write (step 10) happens BEFORE the receipt (step 11).** The receipt embeds
+**N-3 - the status write (step 10) happens BEFORE the receipt (step 11).** The receipt embeds
 `candidates[]`, and `scored_incoming["status"]` is mutated to the final status on the line
 after the write. Persisting the receipt first would freeze `QUEUED` into the candidate block
 of the one claim whose status the receipt exists to explain. The receipt would then disagree
 with the claim it is about, and nothing downstream could tell which was right.
 
-### 12.3 A traced request — the echo chamber
+### 12.3 A traced request - the echo chamber
 
 The hero beat of `CONTRACT.md` §2.1, walked through the code with the seeded values of §6.3
 set-piece 1. The slot is `customer:acme|primary_region`; it already holds `clm_0007`
@@ -5555,7 +5555,7 @@ Content-Type: application/json
 | 4 | `agent.by_id` returns one row for `agt_0003` |
 | 5 | `sources.found` returns `["src_blog_echo_a", "src_blog_echo_b"]`; the set difference is empty |
 | 6 | `counter.next("claim")` → `61` → `claim_id = "clm_0061"`. `claim.create` writes the `:Claim`, `(:Claim)-[:FILLS]->(:Slot)`, `(:Agent)-[:ASSERTED]->(:Claim)`, and per source one `(:SourceOut)-[:FLOW {cap:1.0, nl:0.0, kind:'CITED'}]->(:Claim)` plus one `(:Claim)-[:CITES]->(:SourceIn)`. Status `QUEUED` |
-| 7 | `slot.claims` returns two rows — `clm_0007` and `clm_0061`. `incoming_row` is found, so no `ENGINE_UNAVAILABLE` |
+| 7 | `slot.claims` returns two rows - `clm_0007` and `clm_0061`. `incoming_row` is found, so no `ENGINE_UNAVAILABLE` |
 | 8 | `score_claim(clm_0061)` first: `maxFlow` → `1.0` → `independence 1`; `SPpaths` → `pathWeight 0.21072`, `pathCost 2` → `reliability exp(−0.21072) = 0.8100`; `age_hours 0.0` → `recency 1.0000`; `score = 1 × 0.8100 × 1.0000 = 0.8100`. Then `score_claim(clm_0007)`: `independence 2`, `reliability 0.9000`, `age_hours 9.6` → `recency exp(−0.0077 × 9.6) = 0.9287`, `score = 2 × 0.9000 × 0.9287 = 1.6717` |
 | 9 | `pick_incumbent(scored, exclude="clm_0061")` → `clm_0007`. `margin = 0.8100 − 1.6717 = −0.8617`; `−0.8617 < −0.05` → **`BLOCK`**, `status REFUSED` |
 | 10 | `claim.set_status(clm_0061, "REFUSED")`; `scored_incoming["status"]` becomes `REFUSED` |
@@ -5603,15 +5603,15 @@ Content-Type: application/json
 
 Tags on that body: the two `maxFlow`/`SPpaths` numbers are `[VERIFIED §3-P7/P11/P13]` on
 isomorphic fixtures; `recency` is `[ASSUMED]` because λ is an unmeasured default (§16.4b); the
-`witness_nodes` value is `[ASSUMED]` — the decomposition is unprobed at flows above 1 (§8.3);
+`witness_nodes` value is `[ASSUMED]` - the decomposition is unprobed at flows above 1 (§8.3);
 `decided_at` is an illustrative instant, not a measurement.
 
 **The judge's attack on this trace, and the answer.** *"`margin −0.8617` is a huge number for
-a 'near' call — your ε is doing nothing."* Correct, and intended: this pair is **not** a close
+a 'near' call - your ε is doing nothing."* Correct, and intended: this pair is **not** a close
 call, and the band is not supposed to fire. The echo loses by a factor of two on an
 **integer**, because `independence` is an integer multiplier and the two claims differ on it.
 ε exists for the case where the integers are equal and only `reliability × recency`
-separates the claims — §6.3 set-piece 3, where the margin is `−0.0045` and the verdict flips
+separates the claims - §6.3 set-piece 3, where the margin is `−0.0045` and the verdict flips
 to `UNDECIDED`. One number cannot demonstrate both; that is why the corpus carries both
 set-pieces.
 
@@ -5619,12 +5619,12 @@ set-pieces.
 
 | Verdict | `counter.next` | `claim.create` | `claim.set_status` | `receipt.create` | `review.create` |
 |---|---|---|---|---|---|
-| `ALLOW` | ×2 (claim, receipt) | 1 | 1 → `ADMITTED` | 1 | — |
-| `BLOCK` | ×2 (claim, receipt) | 1 | 1 → `REFUSED` | 1 | — |
+| `ALLOW` | ×2 (claim, receipt) | 1 | 1 → `ADMITTED` | 1 | - |
+| `BLOCK` | ×2 (claim, receipt) | 1 | 1 → `REFUSED` | 1 | - |
 | `UNDECIDED` | ×3 (claim, receipt, review) | 1 | 1 → `QUEUED` | 1 | 1 |
-| any refusal at steps 1–5 | — | — | — | — | — |
+| any refusal at steps 1–5 | - | - | - | - | - |
 
-Two things to read off that table. **A refusal before step 6 writes nothing at all** — a
+Two things to read off that table. **A refusal before step 6 writes nothing at all** - a
 `422 UNKNOWN_SOURCE` does not mint a claim id, so the id sequence has no gaps caused by bad
 requests. And **`UNDECIDED` writes `QUEUED` over `QUEUED`**, which is a redundant write kept
 deliberately: removing it would make step 10 conditional, and a conditional status write is
@@ -5640,7 +5640,7 @@ POST /remember
   ├─ body not JSON / not an object? ────────► 400 VALIDATION_ERROR
   │
   ├─ sources absent or [] ? ────────────────► 400 NO_SOURCES
-  │     (checked BEFORE Pydantic, on purpose — §12.6)
+  │     (checked BEFORE Pydantic, on purpose - §12.6)
   │
   ├─ any other shape problem? ──────────────► 400 VALIDATION_ERROR  + field
   │
@@ -5654,7 +5654,7 @@ POST /remember
   │     (the claim IS written; the graph disagreed with itself one statement later)
   │
   ├─ scoring raises? ───────────────────────► 503 ENGINE_UNAVAILABLE
-  │     (the claim stays QUEUED — §14.7)
+  │     (the claim stays QUEUED - §14.7)
   │
   └─ margin vs ε
         ├─  margin >  +ε ─────► ALLOW      status ADMITTED   receipt
@@ -5665,7 +5665,7 @@ POST /remember
 The empty-slot case has no branch of its own, and that is worth being explicit about:
 `pick_incumbent` returns `None` when the incoming claim is the only one in the slot,
 `arbiter.decide` then compares against nothing and the margin is the incoming score itself,
-which is positive for any claim with a chain — so a first claim in a fresh slot is `ALLOW`.
+which is positive for any claim with a chain - so a first claim in a fresh slot is `ALLOW`.
 A claim with **no** chain scores `independence 0` → `score 0.0` → `margin 0.0` →
 `|0.0| ≤ ε` → **`UNDECIDED`**. That is the right answer rather than a special case: a claim
 whose sources exist but reach no origin has not been refused, it has not been admitted, and
@@ -5675,8 +5675,8 @@ a human should look at it.
 
 **The body is parsed by hand.** A `body: RememberRequest` signature would be shorter and
 would give FastAPI's own `422` for free. It is not used, because `CONTRACT.md` §3 gives
-`sources` absent-or-empty its **own** code — `400 NO_SOURCES`, distinct from
-`400 VALIDATION_ERROR` — and Pydantic would reject an absent `sources` as a shape error
+`sources` absent-or-empty its **own** code - `400 NO_SOURCES`, distinct from
+`400 VALIDATION_ERROR` - and Pydantic would reject an absent `sources` as a shape error
 before any MENGER code ran. The caller would then get the generic code for the one refusal
 that is about the **mechanism** rather than the payload: a claim with no declared provenance
 cannot be scored at all. The cost of the hand-parse is steps 1–3 and the `ValidationError`
@@ -5684,10 +5684,10 @@ reshape in §11; the benefit is that the error table is implemented as written r
 as convenient.
 
 **`UNKNOWN_SOURCE` is checked before the claim exists, and reports every offender.** The
-statement is `UNWIND $sources AS sid MATCH (:Source {id:sid}) RETURN collect(…)` — it returns
+statement is `UNWIND $sources AS sid MATCH (:Source {id:sid}) RETURN collect(…)` - it returns
 the **hits**, and the offenders are the set difference computed in Python, in the order the
 caller sent them (`[VERIFIED §3-P47c]`: `UNWIND … MATCH … collect` silently drops misses, so
-one round trip names the whole set). The alternative — one existence read per source — is an
+one round trip names the whole set). The alternative - one existence read per source - is an
 N+1 on the request path, and a first-offender-only error makes a caller with three bad ids
 submit four times.
 
@@ -5704,18 +5704,18 @@ and the reasoning.
 ### 13.1 From `uvicorn` to the first served request
 
 ```
-$ docker compose up -d                 # §7.15 — the PINNED engine, container gh-falkor
-$ python -m app.seed                   # §7.7 — deletes the graph key, recreates the corpus
+$ docker compose up -d                 # §7.15 - the PINNED engine, container gh-falkor
+$ python -m app.seed                   # §7.7 - deletes the graph key, recreates the corpus
 $ uvicorn app.api:app --reload         # §7.12
 
  1. import app.api
       └─ imports app.config (constants: ε, λ, the boot expectations, ids)
       └─ imports app.cypher (the READS/WRITES registries; MAX_PATH_HOPS interpolated once)
       └─ imports app.graph, app.arbiter, app.docket, app.bootcheck, app.ids, app.schema
-      └─ tries `from app import counterfactual` — ImportError is CAUGHT (§10)
+      └─ tries `from app import counterfactual` - ImportError is CAUGHT (§10)
       NO ENGINE CONNECTION IS MADE AT IMPORT TIME. app.graph.engine() is lazy (§7.4), so an
       unreachable container surfaces as 503 ENGINE_UNAVAILABLE on a request rather than as a
-      stack trace at startup — which matters during a build where the API is restarted far
+      stack trace at startup - which matters during a build where the API is restarted far
       more often than the engine.
 
  2. first request arrives
@@ -5753,7 +5753,7 @@ failed. The body is identical either way; only the status code differs.
 
 **Why three are at the top level and three are under `extra`.** `CONTRACT.md` §2.8 names
 exactly three keys and is **frozen**. Adding `T-3b`, `T-4` and `B-5` as siblings would change
-the published surface; nesting them under `extra` makes the addition **additive** — a console
+the published surface; nesting them under `extra` makes the addition **additive** - a console
 reading the three contract keys sees precisely what §2.8 promised, and a console that wants
 more can look one level down. The three contract key names are held in
 `CONTRACT_CHECK_KEYS` as a constant so that a refactor renaming one breaks loudly in
@@ -5761,11 +5761,11 @@ more can look one level down. The three contract key names are held in
 
 **Why `T-3b` exists when `T-3` already checks `0.21072`.** `T-3` depends on a memorised
 constant *and* on the corpus that produces it. Re-seed with a different trust value and `T-3`
-fails for a reason that has nothing to do with the `AF-3` trap — at which point the natural
+fails for a reason that has nothing to do with the `AF-3` trap - at which point the natural
 fix is to update the constant, and a genuine weight-key regression would be absorbed by the
 same edit. `T-3b` depends on **no corpus value at all**: a wrong weight key makes
 `algo.SPpaths` return the hop count in `pathWeight` (`[VERIFIED §3-P8/P9]`), so
-`pathWeight == pathCost` for *any* corpus (`[VERIFIED §3-P35]` — both yields come back from
+`pathWeight == pathCost` for *any* corpus (`[VERIFIED §3-P35]` - both yields come back from
 one statement, so `T-3` and `T-3b` cost one read between them). The two checks fail for
 different reasons. That is the only reason to have both.
 
@@ -5775,13 +5775,13 @@ distinguish *`RO_QUERY` contained it* from *the container is down*. `T-4` theref
 control `RETURN 1 AS ok` **first** and requires it to succeed; only then must the `CREATE`
 fail. A dead connection fails the control and is reported as `"the control read itself
 failed: …"` rather than as a passing containment check. And if the `CREATE` **succeeds**,
-that is the most serious failure in the file — every other check is about a number, this one
-is about whether generated Cypher is contained at all — so its `actual` reads
-`"ACCEPTED — the read path is not read-only; AF-8 containment is NOT in effect"`.
+that is the most serious failure in the file - every other check is about a number, this one
+is about whether generated Cypher is contained at all - so its `actual` reads
+`"ACCEPTED - the read path is not read-only; AF-8 containment is NOT in effect"`.
 
 **Why a missing control claim reports `−1`, not `0`.** `_max_flow` returns `-1` on zero rows.
 Zero is a legitimate flow (a claim with no chain reaching an origin), so collapsing the two
-would let an empty graph report *"expected 1, got 0 — the node-split is not in effect"*,
+would let an empty graph report *"expected 1, got 0 - the node-split is not in effect"*,
 which sends an operator to debug the split when the real fault is that `app/seed.py` never
 ran. `-1` is not a flow value, so it can only mean "the claim is not there".
 
@@ -5793,7 +5793,7 @@ the process and re-runs on **failure**:
   request path.
 * Not caching the failure: re-seeding a broken corpus brings the service back **without a
   restart**, and the first request after the re-seed is the one that notices. Caching a
-  failure would be fail-closed in the worst way — unrecoverable without an operator action
+  failure would be fail-closed in the worst way - unrecoverable without an operator action
   nobody documented.
 
 **Nothing in `bootcheck.py` writes.** `T-4` *attempts* a write and requires it to be refused,
@@ -5812,8 +5812,8 @@ six-check block travels in `detail.boot_checks`, so nothing is lost.
 |---|---|---|
 | `node_split_echo` | "the node-split is not in effect" | either the seed built the echo control without the `si`/`so` pair, or `cap` is missing on a `SPLIT` edge. `actual: -1` instead means the seed never ran |
 | `node_split_independent` | "the node-split is not in effect" | as above, on the two-origin control |
-| `sp_path_weight` | "the `algo.SPpaths` weight key regressed (AF-3)" | or a trust value in the echo control changed — check `T-3b` in the same body to tell which |
-| `extra.sp_weight_is_not_hop_count` | "`pathWeight` equals the hop count — the `algo.SPpaths` weight key is wrong (AF-3)" | unambiguous: the config key is not `weightProp` |
+| `sp_path_weight` | "the `algo.SPpaths` weight key regressed (AF-3)" | or a trust value in the echo control changed - check `T-3b` in the same body to tell which |
+| `extra.sp_weight_is_not_hop_count` | "`pathWeight` equals the hop count - the `algo.SPpaths` weight key is wrong (AF-3)" | unambiguous: the config key is not `weightProp` |
 | `extra.ro_query_refuses_write` | "the read path is not `GRAPH.RO_QUERY` (AF-8)" | or, if `actual` begins "the control read itself failed", the container is unreachable |
 | `extra.cap_on_non_flow` | "a non-`FLOW` relationship carries `cap` (invariant SCH-2)" | a new relationship type was given a capacity and is now invisible-but-weighted to the flow network |
 
@@ -5839,7 +5839,7 @@ the second is the real one:
 ## 14. Failure modes, each with its decision tree
 
 Every mechanism in §7 has a comment naming its failure mode. This section collects the seven
-that are **not local to one function** — the ones where the failure is in the interaction
+that are **not local to one function** - the ones where the failure is in the interaction
 between two parts, which is exactly where a reader building from this file alone would
 otherwise have to guess.
 
@@ -5848,7 +5848,7 @@ otherwise have to guess.
 **The mechanism.** `nl = −ln(trust)` is the edge weight that makes `algo.SPpaths` compute
 reliability (§8.2). `−ln(0)` is `+∞`; in Python `math.log(0.0)` raises `ValueError: math
 domain error`, and if a zero ever reached the graph as `nl: inf` the weighted shortest path
-would be infinite and `reliability = exp(−inf) = 0.0` for every claim citing that source —
+would be infinite and `reliability = exp(−inf) = 0.0` for every claim citing that source -
 silently, with no error anywhere.
 
 **The guard.** `_clamp_trust` in `app/seed.py` clamps every trust to `[0.05, 0.99]` before it
@@ -5857,15 +5857,15 @@ ends on purpose:
 
 | Bound | What it prevents | Why that bound |
 |---|---|---|
-| `≥ 0.05` | `−ln(0)` = ∞, and `−ln(0.01)` = `4.6` which is numerically fine but makes `reliability` `0.0100` — indistinguishable from broken | `−ln(0.05) = 2.9957`, so the worst single hop still produces a `reliability` of `0.0498`: small, finite, and visibly a number rather than a floor |
+| `≥ 0.05` | `−ln(0)` = ∞, and `−ln(0.01)` = `4.6` which is numerically fine but makes `reliability` `0.0100` - indistinguishable from broken | `−ln(0.05) = 2.9957`, so the worst single hop still produces a `reliability` of `0.0498`: small, finite, and visibly a number rather than a floor |
 | `≤ 0.99` | `trust = 1.0` → `nl = 0.0` → a **free** edge. A chain of free edges has `path_weight 0.0` → `reliability 1.0000`, so a long laundering chain through perfect sources would cost nothing | every real source costs something, so a longer chain is always a worse chain. This is the only thing in MENGER that penalises chain *length*, and it is a property of the weight function, not a rule |
 
 **What is NOT guarded.** `fidelity` on `DERIVED` edges also becomes `nl = −ln(fidelity)`, and
 the seed writes `1.0` for the set-piece mirrors deliberately (a perfect copy is free, which is
 what makes the echo's cheapest chain cross exactly two `SPLIT` edges). A fidelity of `0.0`
-would have the same `−ln(0)` problem. It cannot arrive from a request — there is no request
+would have the same `−ln(0)` problem. It cannot arrive from a request - there is no request
 field for it, `claim.create` hard-codes `nl: 0.0` on `CITED` edges, and `DERIVED` edges are
-written only by the seed — so the clamp is applied at the one place fidelity enters the
+written only by the seed - so the clamp is applied at the one place fidelity enters the
 system. `[ASSUMED]`: if a future revision accepts caller-supplied fidelity, this guard has to
 move to the request boundary.
 
@@ -5881,7 +5881,7 @@ trust arrives at the seed
 ### 14.2 The server-side `TIMEOUT 1000`
 
 `[VERIFIED §3-P0]`: `redis-cli CONFIG GET` on `gh-falkor` reports `TIMEOUT 1000` and
-`MAX_QUEUED_QUERIES 25`. `TIMEOUT` is in **milliseconds**, and it is a **server-side** limit —
+`MAX_QUEUED_QUERIES 25`. `TIMEOUT` is in **milliseconds**, and it is a **server-side** limit -
 a client that ignored it would still be cut off at 1000 ms. `docker-compose.yml` does not
 override either value (§7.15), and that is a decision rather than an omission: writing an
 override would mean claiming a flag syntax for this image that no probe confirmed.
@@ -5891,7 +5891,7 @@ override would mean claiming a flag syntax for this image that no probe confirme
 `MengerError.engine_unavailable(f"{label}: {type(exc).__name__}: {exc}")`, which the handler in
 `app/api.py` renders as `503 ENGINE_UNAVAILABLE` with the engine's own words in `reason`. The
 statement **label** is in the message, so an operator reading the 503 knows which of the
-registry's statements ran long — `independence.maxFlow` timing out means something very
+registry's statements ran long - `independence.maxFlow` timing out means something very
 different from `slots.all` timing out.
 
 `[UNVERIFIED]` whether FalkorDB's timeout surfaces as a `ResponseError` (an engine-level
@@ -5916,7 +5916,7 @@ is a single parameterised read or write over a corpus of a few hundred nodes, ag
 engine measured at `11 ms` warm on a graph 23× larger (`[VERIFIED §3 / AF-7]`). The one
 statement class with a non-trivial plan is the variable-length `-[:FLOW*1..12]->` traversal in
 `graph.slot_nodes`/`graph.slot_edges`, bounded by `MAX_PATH_HOPS` for exactly this reason
-(§14.5's sibling concern is in §15.5). **No latency is claimed for any of them** — see §17.
+(§14.5's sibling concern is in §15.5). **No latency is claimed for any of them** - see §17.
 
 `MAX_QUEUED_QUERIES 25` is the second half of the same fact and has no handler, because at
 one submitter it is not reachable. If it were, the engine refuses the query and the refusal
@@ -5950,7 +5950,7 @@ review queue is a **calibration**, and the procedure is:
 ```
 
 **The forbidden fix: never nudge ε to manufacture the demo.** ε is published by `/health`, it
-is echoed on **every** decision, and it is stored on the `:Review` node — a judge comparing
+is echoed on **every** decision, and it is stored on the `:Review` node - a judge comparing
 `epsilon` across the receipt, the review item and `/health` sees one number, and if that
 number was chosen to make one specific pair land in the band, the honest description of the
 system is "the threshold was fitted to the example". Nudging the **corpus** is different in
@@ -5958,7 +5958,7 @@ kind: the corpus is admittedly synthetic (§15.1) and its job is to demonstrate 
 whereas ε is a parameter of the mechanism itself.
 
 **Why the nudge cannot break the boot assertions.** `src_nw_portal` and `src_nw_email` are
-not in either boot-control slot (§6.4 — the controls use `src_boot_*` sources at `trust 0.90`),
+not in either boot-control slot (§6.4 - the controls use `src_boot_*` sources at `trust 0.90`),
 and no boot check depends on `recency` at all. Calibration therefore cannot drift `T-1`,
 `T-2` or `T-3`. That separation is why the controls have their own sources rather than
 sharing the set-pieces'.
@@ -5971,10 +5971,10 @@ a deliberate simplification for an oversight.
 
 | Surface | Cost today | What breaks first | The named fix |
 |---|---|---|---|
-| `GET /slots` | the slots on the requested page have every claim scored — 2 reads per claim. The page is sliced **before** scoring, so the cost is bounded by `limit`, not by the corpus | at `limit = 200` (`SLOT_LIMIT_MAX`) and 10 claims per slot that is 4 000 reads in one request | **denormalise the winner onto `:Slot` at decision time.** `/remember` already computes the winning claim's full `Components` block in step 11; writing it onto the `:Slot` node makes `/slots` a single read. This is a **write-path** change, not a read-path one, which is why it is cheap to do later and expensive to guess at now |
+| `GET /slots` | the slots on the requested page have every claim scored - 2 reads per claim. The page is sliced **before** scoring, so the cost is bounded by `limit`, not by the corpus | at `limit = 200` (`SLOT_LIMIT_MAX`) and 10 claims per slot that is 4 000 reads in one request | **denormalise the winner onto `:Slot` at decision time.** `/remember` already computes the winning claim's full `Components` block in step 11; writing it onto the `:Slot` node makes `/slots` a single read. This is a **write-path** change, not a read-path one, which is why it is cheap to do later and expensive to guess at now |
 | `GET /slots` filtering/paging | done in Python over one `slots.all` read | the read returns every slot | push `WHERE` and `SKIP`/`LIMIT` into the statement. Four parameterised variants, or one statement with `$contested`-guarded predicates in the style of `reviews.all`'s `$state = 'ALL' OR …` |
-| `GET /review` | one statement, with five `OPTIONAL MATCH` joins, returning the whole queue | the queue grows unbounded — there is no write path that closes a review (`state` is only ever written `'OPEN'`) | add a `WRITES` entry that sets `state`, and page the statement. **Stated plainly: MENGER has no review-resolution endpoint.** `CONTRACT.md` freezes eight endpoints and none of them resolves a review, so this is a product gap, not an implementation one (§16 does not list it because the contract and the code agree) |
-| `app/docket.py` receipt lookup | `GET /slots/{key}` folds the latest receipt per slot in Python over one `receipts.all` read | every receipt ever written is returned | `ORDER BY` + `DISTINCT` in the statement, or a `latest_receipt_id` property on `:Slot` written at decision time — the same denormalisation as row 1, and worth doing in the same edit |
+| `GET /review` | one statement, with five `OPTIONAL MATCH` joins, returning the whole queue | the queue grows unbounded - there is no write path that closes a review (`state` is only ever written `'OPEN'`) | add a `WRITES` entry that sets `state`, and page the statement. **Stated plainly: MENGER has no review-resolution endpoint.** `CONTRACT.md` freezes eight endpoints and none of them resolves a review, so this is a product gap, not an implementation one (§16 does not list it because the contract and the code agree) |
+| `app/docket.py` receipt lookup | `GET /slots/{key}` folds the latest receipt per slot in Python over one `receipts.all` read | every receipt ever written is returned | `ORDER BY` + `DISTINCT` in the statement, or a `latest_receipt_id` property on `:Slot` written at decision time - the same denormalisation as row 1, and worth doing in the same edit |
 | `app/ids.py` | one `MERGE`-based counter statement per id | concurrent allocation is unproven (§15.4) | replace the body of `next_id` with a Redis `INCR`. The module is 20 lines long precisely so that this is a one-file change |
 | scoring | 2 reads per claim, every time | nothing, at this corpus. `algo.maxFlow` was `11 ms` warm on a graph 23× this one (`[VERIFIED §3 / AF-7]`) | cache per `(claim_id, graph_version)`. **Not** per `claim_id`: the graph is mutable and a cached independence is a wrong headline number, which is the one failure class `AF-16` exists to prevent |
 
@@ -5996,18 +5996,18 @@ natural extension point: a revision that wanted to weight claims by *who* assert
 the field already seeded and indexed.
 
 **Why it is not in the score, which is the part that matters.** MENGER's claim is about
-**source independence** — how many independent origins a claim's provenance reaches. Folding
+**source independence** - how many independent origins a claim's provenance reaches. Folding
 the asserting agent's trust into the product would change the quantity being measured into
 "independence, discounted by how much we like the submitter", and that is a different and much
 weaker claim. Specifically it would break the hero beat: §6.3 set-piece 1's whole argument is
 that the echo chamber's sources are *as trustworthy as* the honest incumbent's and it still
-loses, **on independence alone**. An agent-trust term would give a judge the obvious attack —
-*"it lost because you trusted the submitter less"* — and the answer would be "yes".
+loses, **on independence alone**. An agent-trust term would give a judge the obvious attack -
+*"it lost because you trusted the submitter less"* - and the answer would be "yes".
 
 **The failure mode of the omission**, stated honestly: a low-trust agent can submit a claim
 citing high-trust independent sources and it will be admitted. MENGER is admission control
 over **declared provenance**; it does not model whether the declaration itself is honest. A
-fabricated citation — an agent naming sources it never consulted — is outside the mechanism
+fabricated citation - an agent naming sources it never consulted - is outside the mechanism
 entirely, and `§15.1`'s synthetic-corpus limitation and this paragraph are the two places that
 boundary is drawn.
 
@@ -6021,7 +6021,7 @@ two concurrent POST /remember, same slot
   │
   ├─ both call ids.next_id(engine, "claim")
   │     counter.next is MERGE … ON MATCH SET ct.value = ct.value + 1 RETURN ct.value
-  │     [ASSUMED] atomic — FalkorDB executes a query against a graph key as a unit,
+  │     [ASSUMED] atomic - FalkorDB executes a query against a graph key as a unit,
   │     but no probe in §3 ran two concurrent allocations
   │
   ├─ IF atomic ─────────────────────────────► 61 and 62. Nothing below happens.
@@ -6033,7 +6033,7 @@ two concurrent POST /remember, same slot
         │
         ├─ slot.claims returns BOTH ⇒ the slot has two rows with the same claim_id
         │     ⇒ `incoming_row = next((r for r in rows if r["claim_id"] == claim_id))`
-        │        picks whichever came back first — the other is scored as an "other"
+        │        picks whichever came back first - the other is scored as an "other"
         │        and becomes a candidate competing with itself
         │
         ├─ claim.sources is MATCH (c:Claim {id:$claim_id})-[:CITES]->(…)
@@ -6051,16 +6051,16 @@ two concurrent POST /remember, same slot
                             CREATE (c)-[:HAS_RECEIPT]->(r)
               ⇒ the MATCH binds BOTH claims, so the CREATE pattern runs TWICE
               ⇒ TWO :Receipt nodes with the SAME id, and GET /receipts/{id} returns
-                 rows[0] — a receipt that may describe the other submission
+                 rows[0] - a receipt that may describe the other submission
 ```
 
 **Why this is an acceptable risk at this deadline, rather than a shrug.** The race is not
 reachable at demo concurrency (one submitter). The fix if it were reachable is named and
 one-file-sized (§14.4, row 5). And critically, **the failure is loud in the audit surface
 rather than silent in the verdict**: two receipts with the same id, and a `sources[]` list
-that does not match the request, are both visible to anyone who looks. The alternative — an
+that does not match the request, are both visible to anyone who looks. The alternative - an
 unverified `create_node_unique_constraint` whose behaviour on violation, index requirement and
-synchronicity are all `[UNVERIFIED]` (§4.5) — could fail **at seed time**, which is a worse
+synchronicity are all `[UNVERIFIED]` (§4.5) - could fail **at seed time**, which is a worse
 risk than an unreachable race. That trade is recorded, not assumed away.
 
 ### 14.7 The process dies between step 6 and step 10
@@ -6082,20 +6082,20 @@ step 10  claim.set_status  → :Claim {status: <final>}         ◄── the wi
 
 | Surface | What it shows | Is it a lie? |
 |---|---|---|
-| `GET /slots/{key}` | the claim, `status QUEUED` | no — `QUEUED` means "not yet adjudicated", which is exactly the case |
-| `GET /slots/{key}/graph` | the claim and its `CITED` flow edges | no — they were created and they are real provenance |
-| `GET /receipts/{id}` | nothing; no receipt was minted | no — there was no decision to receipt |
+| `GET /slots/{key}` | the claim, `status QUEUED` | no - `QUEUED` means "not yet adjudicated", which is exactly the case |
+| `GET /slots/{key}/graph` | the claim and its `CITED` flow edges | no - they were created and they are real provenance |
+| `GET /receipts/{id}` | nothing; no receipt was minted | no - there was no decision to receipt |
 | `GET /review` | nothing; `:Review` is written only on `UNDECIDED` | no, **but it is a gap**: a `QUEUED` claim that is not in the review queue is invisible to the one surface a human watches |
 | `GET /slots` `open_review_count` | unchanged | as above |
 
-**The failure is therefore not inconsistency — it is invisibility.** The claim is stranded:
+**The failure is therefore not inconsistency - it is invisibility.** The claim is stranded:
 nothing re-adjudicates it, because `/remember` is the only code path that decides, and it
 decides about the claim it just created.
 
 **What is NOT done about it, and why.** No transaction, no compensating sweep, no
 `:Claim`-without-`:Receipt` reaper. MENGER has no transaction boundary spanning two statements
-— FalkorDB executes each query against a graph key as a unit and MENGER issues five to seven
-of them per request (§12.4) — so "atomic `/remember`" is not available without a design that
+- FalkorDB executes each query against a graph key as a unit and MENGER issues five to seven
+of them per request (§12.4) - so "atomic `/remember`" is not available without a design that
 stages the whole decision in one statement, which is not possible when the decision depends on
 reading back what the first statement wrote (N-1, §12.2).
 
@@ -6104,7 +6104,7 @@ cheap, honest mitigation is a `GET /review` that also surfaces `QUEUED` claims w
 receipt, under a distinct `reason`. It is not implemented because `CONTRACT.md` §2.6 freezes
 the `reason` enum at three values (§16.7 is the sibling problem) and inventing a fourth would
 break the frozen contract. **Recorded as a product gap for the master chat**, not fixed here.
-`[ASSUMED]` throughout this subsection — no probe killed a process mid-request.
+`[ASSUMED]` throughout this subsection - no probe killed a process mid-request.
 
 ---
 
@@ -6116,13 +6116,13 @@ beside the mechanism they limit.
 
 ### 15.1 The corpus is synthetic, and that is a ceiling on what the demo can show
 
-`[VERIFIED]` by construction — `app/seed.py` generates every node from a seeded RNG
+`[VERIFIED]` by construction - `app/seed.py` generates every node from a seeded RNG
 (`SEED_RNG = 20261018`) and a frozen reference instant (`SEED_NOW = 2026-10-18T14:30:00Z`).
 
 **What it buys.** Determinism, which is load-bearing twice over: the boot assertions compare
 against fixed numbers (§13.2), and a judge re-running the seed gets the same graph, so
 `0.21072` is reproducible rather than anecdotal. It also satisfies the brief's hard constraint
-— fresh, in-repo, no private data, nothing ported.
+- fresh, in-repo, no private data, nothing ported.
 
 **What it costs, stated plainly.** The echo chamber is an echo chamber **because the seed says
 so**: `src_blog_echo_a` and `src_blog_echo_b` are `DERIVED` from `src_blog_hub` with
@@ -6132,10 +6132,10 @@ declaration comes from outside.
 
 **The judge's attack, and the answer.** *"You drew the picture that produces the answer you
 wanted."* Half right, and the honest split is: the **topology** is authored, and the
-**consequence** of the topology is not. `[VERIFIED §3-P11]` is the direct evidence — the
+**consequence** of the topology is not. `[VERIFIED §3-P11]` is the direct evidence - the
 *un-split* form of that same authored topology returns `2`, and only the node-split returns
 `1`. So the authored input does not determine the output; DS-1 does. What a real deployment
-would need and does not have is a provenance **ingest** — something that establishes the
+would need and does not have is a provenance **ingest** - something that establishes the
 `DERIVED` edges from real document lineage. That is out of scope and is not claimed anywhere.
 
 ### 15.2 One process, one graph key, no concurrency story
@@ -6146,22 +6146,22 @@ would need and does not have is a provenance **ingest** — something that estab
 
 | Consequence | Severity at demo scale | Severity at real scale |
 |---|---|---|
-| `_PASSED_ONCE` is per-process, so `--workers 4` means four independent gates | none (one worker) | low — each worker gates itself correctly; the only cost is four times the boot reads |
-| the id counter is unproven under concurrency | none (one submitter) | **high** — §14.6 |
+| `_PASSED_ONCE` is per-process, so `--workers 4` means four independent gates | none (one worker) | low - each worker gates itself correctly; the only cost is four times the boot reads |
+| the id counter is unproven under concurrency | none (one submitter) | **high** - §14.6 |
 | no connection pool beyond the client's own | none | unknown; `[UNVERIFIED]` what the `falkordb` client does under concurrent use |
-| a single graph key means no multi-tenancy | none — there is one corpus | the slot key is the only namespace, and it is caller-supplied |
+| a single graph key means no multi-tenancy | none - there is one corpus | the slot key is the only namespace, and it is caller-supplied |
 
 The last row is worth one more sentence, because it is the only one that is a **design**
 limit rather than a deployment one: `slot_key` is `f"{subject}|{predicate}"`, built from
 request fields. Two callers choosing the same subject and predicate share a slot and compete
-for it. That is the intended semantics — a slot *is* the contested proposition — but it means
+for it. That is the intended semantics - a slot *is* the contested proposition - but it means
 MENGER has no notion of a tenant, and an exposed instance is a single shared memory (§15.6).
 
-### 15.3 `LIM-3` — uniqueness is not enforced by a constraint
+### 15.3 `LIM-3` - uniqueness is not enforced by a constraint
 
 `Graph.create_node_unique_constraint` exists in the client `[VERIFIED §3-P40]`. It is **not
 used**. `[UNVERIFIED]` whether v4.22.1 requires a supporting index first, whether creation is
-asynchronous, and what error a violation raises — three unknowns, none probed.
+asynchronous, and what error a violation raises - three unknowns, none probed.
 
 **What is relied on instead.** `MERGE` on the only two write paths that create these nodes:
 `app/seed.py` (which `MERGE`s slots and sources) and `POST /remember` (which `MERGE`s the
@@ -6180,7 +6180,7 @@ and record (a) whether a range index must exist first, (b) whether it returns be
 constraint is enforced, (c) the exact error text on violation. Three facts, one probe session,
 and `LIM-3` closes.
 
-### 15.4 `LIM-4` — the id counter's atomicity is `[ASSUMED]`, not `[VERIFIED]`
+### 15.4 `LIM-4` - the id counter's atomicity is `[ASSUMED]`, not `[VERIFIED]`
 
 ```
 MERGE (ct:Counter {name:$name})
@@ -6191,7 +6191,7 @@ RETURN ct.value AS value
 
 One statement, so the read and the increment are one engine operation. `[ASSUMED]` that this
 is atomic under concurrency: FalkorDB executes a query against a graph key as a unit, which is
-the standard behaviour and the reason the statement is written this way — but **no probe in §3
+the standard behaviour and the reason the statement is written this way - but **no probe in §3
 ran two concurrent allocations**, so it is not `[VERIFIED]` and is not written as if it were.
 
 The failure, if the assumption is wrong, is two claims minted with the same id, which §14.6
@@ -6203,7 +6203,7 @@ the single place in MENGER where concurrency matters, and replacing its body wit
 the two returned values differ. One probe, and `LIM-4` becomes `[VERIFIED]` or becomes a bug
 with a known fix.
 
-### 15.5 `LIM-5` — path enumeration truncates silently at `MAX_PATH_HOPS = 12`
+### 15.5 `LIM-5` - path enumeration truncates silently at `MAX_PATH_HOPS = 12`
 
 Two places interpolate `config.MAX_PATH_HOPS` into Cypher as **syntax** (the
 `-[:FLOW*1..n]->` bound cannot be a `$param`): `graph.slot_nodes` and `graph.slot_edges`, the
@@ -6212,7 +6212,7 @@ bound in Python, breaking a walk that exceeds it.
 
 **What truncation looks like.** A provenance chain longer than 12 `:FLOW` edges is **not
 returned** by the subgraph statements, and the renderer draws a graph that is missing its
-deepest branch — with no error and no flag on the response. Node-splitting doubles the hop
+deepest branch - with no error and no flag on the response. Node-splitting doubles the hop
 count of every source in a chain (each source is two nodes joined by a `SPLIT` edge), so 12
 hops is **about five sources deep**: `ORIGIN` + (`SPLIT` + `DERIVED`) × n + `SPLIT` + `CITED`.
 For the seeded corpus, whose deepest set-piece is hub → echo → claim (five hops), that is
@@ -6222,7 +6222,7 @@ slack by a factor of two. For a real lineage it would not be.
 provenance graph is how a single `GET` exhausts the 1000 ms server-side `TIMEOUT` (§14.2) and
 returns `503` for a reason that looks like an outage. A bound that truncates is worse than a
 bound that is high enough and better than no bound. **`independence` and `reliability` are
-unaffected** — `algo.maxFlow` and `algo.SPpaths` do their own traversal inside the engine and
+unaffected** - `algo.maxFlow` and `algo.SPpaths` do their own traversal inside the engine and
 take no hop bound from MENGER, so a truncated *picture* never changes a *verdict*. That
 separation is the reason this is a visualisation limitation rather than a scoring one.
 
@@ -6231,7 +6231,7 @@ separation is the reason this is a visualisation limitation rather than a scorin
 because `CONTRACT.md` §2.4 freezes the subgraph response shape and adding a field is an
 amendment that routes through the master chat.
 
-### 15.6 Public exposure — what is honest to say, and what is not
+### 15.6 Public exposure - what is honest to say, and what is not
 
 The build target is `localhost`. A public URL is `deploy`'s job (DS-12/DS-15). Three facts
 about the code as written must travel with it if it is exposed, and all three are recorded
@@ -6244,13 +6244,13 @@ stated as a rule rather than a hope: *the commit that adds authentication to MEN
 commit that replaces the wildcard with an explicit origin list.* Those two changes are one
 change; separating them is how a wildcard survives into production. Today there is no
 credential, no cookie and no session, so the wildcard exposes only what an unauthenticated
-reader could fetch anyway — and `POST /remember` is unauthenticated, which is the next point.
+reader could fetch anyway - and `POST /remember` is unauthenticated, which is the next point.
 
 **(b) `POST /remember` has no authentication, so an exposed instance has a writable memory.**
 Anyone who can reach it can mint claims, contest slots and fill the review queue. The
 mechanism contains the *damage* in one specific way worth naming: every write is recorded with
 a receipt carrying the submitting `agent_id` and the verbatim Cypher, so an abusive submission
-is **auditable** rather than anonymous — and `agent_id` must already exist in the corpus
+is **auditable** rather than anonymous - and `agent_id` must already exist in the corpus
 (`422 UNKNOWN_AGENT`), so a submitter must name an identity the operator seeded. That is a
 real but thin boundary: it is identification, not authorisation. **MENGER is not a
 multi-tenant service and must not be described as one.**
@@ -6261,13 +6261,13 @@ receives a FastAPI stack trace. The honest objection: an unhandled `KeyError` in
 projection layer is a **bug in MENGER**, not an unavailable engine, and reporting it as
 `ENGINE_UNAVAILABLE` sends an operator to look at the container. It is kept because the
 contract's error table has no `500 INTERNAL` code and inventing one would break the frozen
-table — **so this is recorded as a generous reading rather than defended as correct.** The
+table - **so this is recorded as a generous reading rather than defended as correct.** The
 mitigation that costs nothing: the `reason` string carries the exception class and message, so
 the 503 body distinguishes `KeyError: 'score'` from
 `ConnectionError: Error 61 connecting to localhost:6379` even though the code does not.
 
 **(d) The statement/candidate positional coupling is undefended at the type level.** §12.2's
-N-2 is a normative ordering enforced by a comment, a docstring and this document — not by a
+N-2 is a normative ordering enforced by a comment, a docstring and this document - not by a
 type. A future edit that scores the incumbent first would produce receipts whose replay
 divergence report attributes each candidate's original numbers to the wrong candidate, and
 **nothing would raise**. The cheap defence, named so the gap is a decision: record the
@@ -6290,16 +6290,16 @@ its own arithmetic or with a live probe, and are the ones a human must actually 
 
 | # | What disagrees | Severity | Needs a ruling? |
 |---|---|---|---|
-| 16.1 | `:DERIVED_FROM` as a relationship **type** vs `AF-4`'s one-type limit | **structural** | **yes** — master chat |
-| 16.2 | `CONTRACT.md` §2.5's recorded Cypher passes id **strings** where the engine requires **nodes** | **the statement cannot run as written** | yes — it is published as "verbatim what was executed" |
+| 16.1 | `:DERIVED_FROM` as a relationship **type** vs `AF-4`'s one-type limit | **structural** | **yes** - master chat |
+| 16.2 | `CONTRACT.md` §2.5's recorded Cypher passes id **strings** where the engine requires **nodes** | **the statement cannot run as written** | yes - it is published as "verbatim what was executed" |
 | 16.3 | `:CITES` carries no `cap`, where an earlier design gave it `cap: 1.0` | hardening | no |
 | 16.4a | §2.1's `margin` vs its own `score` fields | arithmetic | yes, if the example is treated as normative |
-| 16.4b | λ has three documented values, none agreeing | parameter | no — runtime wins |
+| 16.4b | λ has three documented values, none agreeing | parameter | no - runtime wins |
 | 16.4c | §2.5's `reliability_path` edge list vs its own `path_weight` | arithmetic | yes |
-| 16.4d | §2.1's incoming `path_weight` vs its own source `trust` values | arithmetic | no — illustrative by the contract's own label |
-| 16.5 | the `menger` graph key holds warroom probe leftovers | operational | no — the seed handles it |
+| 16.4d | §2.1's incoming `path_weight` vs its own source `trust` values | arithmetic | no - illustrative by the contract's own label |
+| 16.5 | the `menger` graph key holds warroom probe leftovers | operational | no - the seed handles it |
 | 16.6 | §2.4 shows `nl: null` on the edge §2.5 shows carrying `nl: 0.10536` | arithmetic | yes |
-| 16.7 | a λ change between decision and replay has no `reason` value of its own | enum | no — labelled, and said so |
+| 16.7 | a λ change between decision and replay has no `reason` value of its own | enum | no - labelled, and said so |
 
 ### 16.1 `:DERIVED_FROM` is not a relationship type in this build
 
@@ -6312,11 +6312,11 @@ the semantic kind travels in a property: `kind ∈ {ORIGIN, SPLIT, DERIVED, CITE
 decision D-3).
 
 **Why.** `AF-4` / `[VERIFIED §3-P24]`: `algo.maxFlow` takes **exactly one**
-`relationshipTypes` entry — the engine's own words on two are
+`relationshipTypes` entry - the engine's own words on two are
 `MaxFlow configuration, 'relationshipTypes' must be an array of exactly one type`. A
 `:DERIVED_FROM` edge that is its own type is therefore **invisible to `algo.maxFlow`**, which
 means every derivation hop in a provenance chain would be a break in the flow network, and the
-echo chamber would score `independence 2` — the exact defect `DS-1` exists to prevent. This is
+echo chamber would score `independence 2` - the exact defect `DS-1` exists to prevent. This is
 not a style preference. It is the difference between the headline number being right and being
 wrong.
 
@@ -6329,7 +6329,7 @@ reconciliation is a four-row table and nothing more.
 `relTypes` list, or it keeps it and documents that the second entry is inert. Both are fine;
 leaving the frozen text as the only published description of the schema is not, because a
 developer reading §2.5 alone would build a graph whose independence numbers are wrong.
-**Flagged, not fixed** — §7.5 keeps `relTypes:['FLOW']` and says why at the call site.
+**Flagged, not fixed** - §7.5 keeps `relTypes:['FLOW']` and says why at the call site.
 
 ### 16.2 `CONTRACT.md` §2.5's recorded statement cannot execute as written
 
@@ -6353,7 +6353,7 @@ RETURN maxFlow, [e IN edges | [startNode(e).nid, endNode(e).nid]] AS hops
 
 **Why this one matters more than an arithmetic slip.** `cypher[]` is published by the contract
 as *"the verbatim parameterised text that was executed"*, and `/replay` re-runs it. A receipt
-carrying text that the engine refuses is not a replayable receipt — it is a receipt that 503s
+carrying text that the engine refuses is not a replayable receipt - it is a receipt that 503s
 on replay, which is worse than no receipt, because the whole claim of the DOCKET surface is
 that a judge can re-execute it.
 
@@ -6363,11 +6363,11 @@ cause:
 | Site | As frozen | Required |
 |---|---|---|
 | `independence.maxFlow` `sourceNodes`/`targetNodes` | `[$ss]`, `[$claim]` with string params | node values, so a `MATCH` must precede the `CALL` |
-| `reliability.SPpaths` `sourceNode`/`targetNode` | `$src = "si:src_crm_export"`, a string | `[ASSUMED]` the same node requirement holds — `algo.SPpaths` **silently ignores unknown config keys** (`[VERIFIED §3-P37]`) but is loud on bad values, and §7.5's statement `MATCH`es both endpoints, so MENGER never finds out |
-| `reliability.SPpaths` `sourceNode` | `si:src_crm_export` — a *source*, not the super-source | MENGER measures from `ss`, so that every claim's reliability is comparable on one scale. Measuring from an arbitrary source makes two claims' `path_weight` incomparable |
+| `reliability.SPpaths` `sourceNode`/`targetNode` | `$src = "si:src_crm_export"`, a string | `[ASSUMED]` the same node requirement holds - `algo.SPpaths` **silently ignores unknown config keys** (`[VERIFIED §3-P37]`) but is loud on bad values, and §7.5's statement `MATCH`es both endpoints, so MENGER never finds out |
+| `reliability.SPpaths` `sourceNode` | `si:src_crm_export` - a *source*, not the super-source | MENGER measures from `ss`, so that every claim's reliability is comparable on one scale. Measuring from an arbitrary source makes two claims' `path_weight` incomparable |
 
 **What this document does.** §7.5 contains the statements that actually run, with the `MATCH`
-prefix, and `receipt.cypher[]` is populated from `CypherLog` — the text that executed, not
+prefix, and `receipt.cypher[]` is populated from `CypherLog` - the text that executed, not
 the text in the contract. So MENGER's receipts are replayable and the contract's example is
 not. **The ruling needed is whether §2.5's example is normative text or illustrative text.**
 The contract labels its *numbers* illustrative; it does not say that about its *queries*, and
@@ -6376,22 +6376,22 @@ it explicitly says the opposite ("verbatim ... what `/replay` re-runs").
 ### 16.3 `:CITES` deliberately carries no `cap`
 
 An earlier design gave `(:Claim)-[:CITES]->(:SourceIn)` a `cap: 1.0`. This build gives it no
-`cap` and no `nl` (§4.2). `:CITES` is the human-readable citation, it points claim→source —
-**opposite** to the flow direction — and a capacity on it is meaningless to `algo.maxFlow`,
+`cap` and no `nl` (§4.2). `:CITES` is the human-readable citation, it points claim→source -
+**opposite** to the flow direction - and a capacity on it is meaningless to `algo.maxFlow`,
 which only ever traverses `:FLOW`.
 
 This is a **hardening**, not a loss: invariant `SCH-2` ("no non-`:FLOW` relationship carries
 `cap`") is checked at boot as `B-5` (§13.2), and `:CITES` with a capacity would be the one
 standing violation of it. The reason `SCH-2` is worth a boot check rather than a convention:
 a relationship that carries a capacity but is not in `relationshipTypes` is
-**invisible-but-weighted** — it looks like part of the flow network to a reader and is not
+**invisible-but-weighted** - it looks like part of the flow network to a reader and is not
 part of it to the engine, which is the single most confusing state this schema can be in.
 
 ### 16.4 The frozen contract's worked examples disagree with their own arithmetic
 
 `CONTRACT.md` labels every numeric value in an example response *"illustrative, not
 measured"*, and §5's freeze record repeats it. That label is doing real work and these entries
-are not gotchas — they are recorded because a developer building from the examples would
+are not gotchas - they are recorded because a developer building from the examples would
 derive a wrong formula, and because two of them look like they encode a different decision
 rule rather than a rounding slip.
 
@@ -6408,7 +6408,7 @@ agrees with the rule, and the `-0.3104` in §2.1 is the outlier.
 
 **What MENGER does:** implements the rule, not the example. `decide` returns
 `float(incoming["score"]) - incumbent_score`, and §12.3's traced request prints `−0.8617`
-for the seeded corpus — a third number again, because the seeded trusts differ from the
+for the seeded corpus - a third number again, because the seeded trusts differ from the
 example's. **The three numbers are not reconcilable and do not need to be**; only the rule is
 normative, and the rule is implemented. Flagged because a reader who treats `-0.3104` as a
 test fixture will chase a bug that is in the fixture.
@@ -6423,7 +6423,7 @@ test fixture will chase a bug that is in the fixture.
 
 `config.LAMBDA_PER_HOUR = 0.0077`, the frozen contract's published figure, read from the
 environment at call time (`AF-17`). **No boot assertion depends on `recency`**, specifically
-so that a λ change cannot 503 the service — and this is the reason that design choice exists
+so that a λ change cannot 503 the service - and this is the reason that design choice exists
 rather than a coincidence.
 
 **The resolution rule, stated once and relied on everywhere:** the runtime value from
@@ -6447,14 +6447,14 @@ Three inconsistencies in nine lines, and they are instructive rather than sloppy
 
 1. **Three nodes imply two edges**; one edge is listed. The `so:src_crm_export → clm_0007`
    `CITED` edge is missing from `edges`.
-2. **The listed `nl` sums to `0.10536`, not `0.21072`.** `0.21072` is `2 × −ln(0.90)` — the
+2. **The listed `nl` sums to `0.10536`, not `0.21072`.** `0.21072` is `2 × −ln(0.90)` - the
    weight of a **two-`SPLIT`** chain, i.e. the *echo* topology of set-piece 1, not this
    two-node single-source chain.
 3. **`ss` is absent from `nodes`**, consistent with §2.5 measuring from a source rather than
    from the super-source (§16.2, row 3).
 
-**What MENGER does:** derives the whole block from one statement — nodes, per-edge `nl`,
-`path_weight` and the `pathCost` guard in the same row (`[VERIFIED §3-P43]`) — so the edge
+**What MENGER does:** derives the whole block from one statement - nodes, per-edge `nl`,
+`path_weight` and the `pathCost` guard in the same row (`[VERIFIED §3-P43]`) - so the edge
 list and the weight **cannot** disagree, because they come from the same `path` value. That is
 the structural answer to this class of defect: a block assembled from two sources can be
 inconsistent; a block projected from one cannot.
@@ -6464,7 +6464,7 @@ inconsistent; a block projected from one cannot.
 Recorded for completeness and explicitly **not** requiring a ruling. §2.1's incoming claim has
 two echo sources at `trust: 0.40` and `path_weight: 0.65021`. A two-`SPLIT` echo chain at
 `trust 0.40` costs `2 × −ln(0.40) = 1.83258`; a one-`SPLIT` chain costs `0.91629`. `0.65021`
-is neither — it is the value for which `exp(−0.65021) = 0.5220`, so the example is internally
+is neither - it is the value for which `exp(−0.65021) = 0.5220`, so the example is internally
 consistent **between** `path_weight` and `reliability` and inconsistent with the `trust`
 values printed beside them. The contract labels these illustrative and they are. §6.3's
 set-pieces give the arithmetic that actually holds (`trust 0.90` → `0.10536` per hop →
@@ -6475,7 +6475,7 @@ set-pieces give the arithmetic that actually holds (`trust 0.90` → `0.10536` p
 **Operational, not a design contradiction, and it changes what the seed must do.** The keys
 `menger`, `menger2`, `menger3`, `w`, `bench`, `probe` already exist on `gh-falkor`, left
 behind by the `fact_check` phase. `menger` in particular is **not empty** and is **not corpus
-data** — it holds probe fixtures.
+data** - it holds probe fixtures.
 
 **The consequence:** seeding on top of it would leave non-provenance nodes and edges inside
 the graph MENGER scores over. A stray edge of type `E` carrying `cap` would trip `B-5`; a
@@ -6485,14 +6485,14 @@ connect the super-source to a claim and inflate its independence.
 **What `app/seed.py` does about it:** calls `Graph.delete()` on the key first
 (`delete(self) -> None`, `[VERIFIED §3-P40/P48]`) and recreates everything, rather than
 `MERGE`-ing into whatever is there. `[UNVERIFIED]` what error the client raises when the key
-does not exist — the seed therefore treats a failure of the delete as benign and proceeds,
+does not exist - the seed therefore treats a failure of the delete as benign and proceeds,
 which is the only behaviour that is correct both on a fresh engine and on this one. Recorded
 in §17 as a chase item.
 
 **The second consequence, which is a judging concern rather than a build one:** the other five
 keys remain. A judge connecting to the container sees six graphs, only one of which is MENGER.
 `GET /health` publishes `engine.graph` so the live service names its own key, and that is the
-whole of the mitigation. Deleting warroom fixtures is not this agent's call — they are the
+whole of the mitigation. Deleting warroom fixtures is not this agent's call - they are the
 evidence behind `[VERIFIED]`.
 
 ### 16.6 `CONTRACT.md` §2.4 and §2.5 disagree about the same edge
@@ -6507,19 +6507,19 @@ evidence behind `[VERIFIED]`.
 `"nl": 0.10536`.
 
 **They cannot both be right, and the second one is.** `nl` on a `SPLIT` edge is
-`−ln(trust)` — it **is** the vertex capacity price, it is what makes `path_weight` mean
+`−ln(trust)` - it **is** the vertex capacity price, it is what makes `path_weight` mean
 anything, and `0.10536 = −ln(0.90)` for `src_crm_export.trust = 0.90`, which §2.1's own source
 list prints. An `nl: null` on a `SPLIT` edge would mean the source's trust costs nothing,
 which would make `reliability` identical for every claim.
 
 **What MENGER does:** `app/seed.py` writes `nl = −ln(trust)` on every `SPLIT` edge, and
-`graph.slot_edges` returns `r.nl` as stored — so `GET /slots/{key}/graph` shows `0.10536` on
+`graph.slot_edges` returns `r.nl` as stored - so `GET /slots/{key}/graph` shows `0.10536` on
 that edge, matching §2.5 and contradicting §2.4. **The deviation is deliberate and is recorded
 here rather than silently reconciled**; §7.12's projection comment and §7.5's note both point
 at this entry.
 
 Where `nl` **is** legitimately `0.0` rather than `null`: `ORIGIN` edges (`ss → si`, free by
-construction) and `CITED` edges (`so → claim`, free — the citation is not a trust step).
+construction) and `CITED` edges (`so → claim`, free - the citation is not a trust step).
 `claim.create` hard-codes `nl: 0.0` on `CITED` for exactly this reason. `0.0` and `null` are
 different statements and MENGER never writes the second one, because a FalkorDB property set
 to `null` is a property that does not exist (§7.5).
@@ -6531,14 +6531,14 @@ to `null` is a property that does not exist (§7.5).
 (`AF-17`), so an operator can change `MENGER_LAMBDA_PER_HOUR`, restart, and replay a receipt
 written under the old value.
 
-That divergence is **not** recency decay. Recency decay is the expected, benign case — time
+That divergence is **not** recency decay. Recency decay is the expected, benign case - time
 passed, so `recency` is lower, and the receipt stores `lambda_per_hour` precisely so a reader
 can see which λ produced the original number. A λ **change** is a different thing: the
 function changed, not its input.
 
 **What MENGER does:** labels it `RECENCY_DECAY`, because the enum is frozen and the only other
-two values would both be false (`GRAPH_MUTATED` is a lie — the graph did not change;
-`ENGINE_DIFF` is a lie — the engine did not change). `app/docket.py` names this in its own
+two values would both be false (`GRAPH_MUTATED` is a lie - the graph did not change;
+`ENGINE_DIFF` is a lie - the engine did not change). `app/docket.py` names this in its own
 prose and points here.
 
 **Why this is the least-wrong option rather than the right one:** the receipt carries
@@ -6556,7 +6556,7 @@ brief, applied literally: *"If you need a fact you do not have, derive it from t
 mark it `NOT_CLAIMED`. A plausible invented number is a project-ending defect."* `NOT_CLAIMED`
 appears here as an answer, not as an apology.
 
-### 17.1 Latency and throughput — the whole category
+### 17.1 Latency and throughput - the whole category
 
 **No MENGER endpoint latency, throughput, payload size or percentile is claimed anywhere in
 this document.** No endpoint has been built, so there is nothing to measure. This includes,
@@ -6570,31 +6570,31 @@ explicitly:
 | `GET /receipts/{id}`, `POST /receipts/{id}/replay` | `NOT_CLAIMED` |
 | `GET /review`, `GET /health` | `NOT_CLAIMED` |
 | requests per second, concurrent capacity | `NOT_CLAIMED` |
-| `GRAPH.COPY` duration (the P3 counterfactual) | `NOT_CLAIMED` — `DS-10`, never probed |
+| `GRAPH.COPY` duration (the P3 counterfactual) | `NOT_CLAIMED` - `DS-10`, never probed |
 
 **What IS claimed, and the boundary is exact.** Four kinds of number appear in this document
 and none of them is an endpoint latency:
 
-1. **`[VERIFIED §3 / AF-7]` `41 ms cold / 11 ms warm`** — one `algo.maxFlow` call on 1402
+1. **`[VERIFIED §3 / AF-7]` `41 ms cold / 11 ms warm`** - one `algo.maxFlow` call on 1402
    nodes / 2400 edges. An engine measurement, upstream, on a graph 23× this corpus.
-2. **Per-statement engine timings from §3's probes** — e.g. `5.910507 ms` (P41),
+2. **Per-statement engine timings from §3's probes** - e.g. `5.910507 ms` (P41),
    `0.717277 ms` (P42), `1.637157 ms` (P44). These are FalkorDB's own `run_time_ms` on
    warroom fixtures, printed verbatim.
 3. **Read and write round-trip COUNTS** (§12.1, §14.4). Derived by counting the code, tagged
-   `[ASSUMED]`, and never multiplied by a per-statement figure to synthesise a total — that
+   `[ASSUMED]`, and never multiplied by a per-statement figure to synthesise a total - that
    multiplication is exactly the fabrication the brief forbids.
 4. **`duration_ms` in a receipt**, which is populated at execution time from
    `QueryResult.run_time_ms` (`[VERIFIED §3-P40]`) and from no constant.
 
-### 17.2 `GRAPH.COPY` — latency and semantics
+### 17.2 `GRAPH.COPY` - latency and semantics
 
 | Question | Status |
 |---|---|
 | how long a copy takes on this corpus | `NOT_CLAIMED` |
 | whether the copy is deep, shallow, lazy or copy-on-write | `[UNVERIFIED]` |
 | whether it is synchronous | `[UNVERIFIED]` |
-| whether it exists and is flagged `write` | `[VERIFIED §3-P28]` — it is, which is why it can never pass through `GRAPH.RO_QUERY` |
-| the client signature | `[VERIFIED §3-P40/P48]` — `copy(self, clone: str)` |
+| whether it exists and is flagged `write` | `[VERIFIED §3-P28]` - it is, which is why it can never pass through `GRAPH.RO_QUERY` |
+| the client signature | `[VERIFIED §3-P40/P48]` - `copy(self, clone: str)` |
 
 The existence and the signature are probed; **everything about its behaviour is not.** This is
 the single reason `app/counterfactual.py` is built to be deleted: one file, one route, two
@@ -6609,20 +6609,20 @@ graph, re-scores inside the fork, and discards it; its cost has not been measure
 | Question | Status | Why it is open, and what closing it would take |
 |---|---|---|
 | the root cause of the P38 inline-parameter failure | `NOT_CLAIMED` | P38 recorded that a statement with inline (non-`$param`) values behaved differently from its parameterised form. Every statement in MENGER is parameterised (`[VERIFIED §3-P39]`), so the behaviour is not on any code path here and the cause was not chased. **Chase only if a future edit inlines a value** |
-| whether `create_node_unique_constraint` needs a supporting index first | `[UNVERIFIED]` | one probe on a throwaway key — §15.3 |
+| whether `create_node_unique_constraint` needs a supporting index first | `[UNVERIFIED]` | one probe on a throwaway key - §15.3 |
 | whether constraint creation is synchronous | `[UNVERIFIED]` | same probe |
 | the error text on a constraint violation | `[UNVERIFIED]` | same probe |
-| whether `counter.next` is atomic under concurrency | `[ASSUMED]` | two concurrent calls on a throwaway key — §15.4, `LIM-4` |
-| the error the client raises deleting a graph key that does not exist | `[UNVERIFIED]` | `app/seed.py` treats any failure of the delete as benign, so the behaviour does not change the code — §16.5 |
-| whether the 1000 ms `TIMEOUT` surfaces as `ResponseError` or `RedisError` | `[UNVERIFIED]` | both are caught and both become `503 ENGINE_UNAVAILABLE`; only the message prefix differs — §14.2 |
-| whether the `falkordb` 1.8.0 client is safe under concurrent use | `[UNVERIFIED]` | not reachable at one submitter — §15.2 |
-| Starlette's path-parameter decoding of `%7C` in a slot key | `[ASSUMED]` | standard behaviour, unprobed. If it is wrong, `GET /slots/{key}` 404s on every contested slot — **the first thing to check if slot detail is empty** |
+| whether `counter.next` is atomic under concurrency | `[ASSUMED]` | two concurrent calls on a throwaway key - §15.4, `LIM-4` |
+| the error the client raises deleting a graph key that does not exist | `[UNVERIFIED]` | `app/seed.py` treats any failure of the delete as benign, so the behaviour does not change the code - §16.5 |
+| whether the 1000 ms `TIMEOUT` surfaces as `ResponseError` or `RedisError` | `[UNVERIFIED]` | both are caught and both become `503 ENGINE_UNAVAILABLE`; only the message prefix differs - §14.2 |
+| whether the `falkordb` 1.8.0 client is safe under concurrent use | `[UNVERIFIED]` | not reachable at one submitter - §15.2 |
+| Starlette's path-parameter decoding of `%7C` in a slot key | `[ASSUMED]` | standard behaviour, unprobed. If it is wrong, `GET /slots/{key}` 404s on every contested slot - **the first thing to check if slot detail is empty** |
 
 ### 17.4 Behaviours of MENGER's own code that no probe exercised
 
 | Question | Status | Consequence if the assumption is wrong |
 |---|---|---|
-| that the saturated edge set decomposes into exactly `maxFlow` walks **at flow ≥ 2** | `[ASSUMED]` | probed at flow 1 (P41) and flow 0 (P42) only. For an integral flow on unit capacities this is the flow-decomposition theorem; `decompose_flow`'s defensive exits mean a malformed set yields **fewer** paths and never an infinite loop, so `independence` (which comes from the engine, never from `len(paths)`) is unaffected — only the `witness` block would be short |
+| that the saturated edge set decomposes into exactly `maxFlow` walks **at flow ≥ 2** | `[ASSUMED]` | probed at flow 1 (P41) and flow 0 (P42) only. For an integral flow on unit capacities this is the flow-decomposition theorem; `decompose_flow`'s defensive exits mean a malformed set yields **fewer** paths and never an infinite loop, so `independence` (which comes from the engine, never from `len(paths)`) is unaffected - only the `witness` block would be short |
 | that `/replay` is deterministic **at statement level** | `[ASSUMED]` | no probe ran the same statement twice against an unchanged graph. `CONTRACT.md` §2.5 publishes `"deterministic": true`; this document does not restate it as `[VERIFIED]` |
 | that the seed reproduces §6.3's and §6.4's topologies exactly | `[ASSUMED]` | which is precisely what `T-1`/`T-2`/`T-3` exist to confirm at runtime rather than claim here (§13.2) |
 | that `0.90` for the echo trio is the most persuasive framing | `[ASSUMED]` | the arithmetic is `[VERIFIED]`; the rhetoric is a judgement (§6.3) |
@@ -6633,30 +6633,30 @@ graph, re-scores inside the fork, and discards it; its cost has not been measure
 
 Ordered by what the project loses if it is left open.
 
-1. **§16.2 — rule on whether `CONTRACT.md` §2.5's `cypher[]` is normative.** This is the only
+1. **§16.2 - rule on whether `CONTRACT.md` §2.5's `cypher[]` is normative.** This is the only
    open item that touches a *published* promise: the contract says the text is what `/replay`
    re-runs, and a probe says that text cannot execute. Either the example is amended in v1.1
-   or it is relabelled illustrative. **Highest priority — it is a correctness claim about the
+   or it is relabelled illustrative. **Highest priority - it is a correctness claim about the
    audit surface, in the frozen document.**
-2. **§16.1 — rule on `:DERIVED_FROM`.** A developer building from the contract alone builds a
+2. **§16.1 - rule on `:DERIVED_FROM`.** A developer building from the contract alone builds a
    graph whose independence numbers are wrong.
-3. **§14.3 — run the ε calibration.** If the review queue is empty at demo time, one third of
+3. **§14.3 - run the ε calibration.** If the review queue is empty at demo time, one third of
    the mechanism (`UNDECIDED`) has nothing to show.
-4. **§15.3 / §15.4 — the two one-session probes** (unique constraints, counter atomicity).
+4. **§15.3 / §15.4 - the two one-session probes** (unique constraints, counter atomicity).
    Both turn an `[ASSUMED]`/`[UNVERIFIED]` into a fact or into a known bug with a named fix.
-5. **§16.4a / §16.4c / §16.6 — decide whether the contract's worked examples are amended.**
+5. **§16.4a / §16.4c / §16.6 - decide whether the contract's worked examples are amended.**
    Not urgent for the build (the rules are implemented, not the examples) and worth doing
    before a judge derives a formula from them.
-6. **§14.7 — the stranded `QUEUED` claim.** A product gap with no endpoint to close it; needs
+6. **§14.7 - the stranded `QUEUED` claim.** A product gap with no endpoint to close it; needs
    a ruling on whether `/review` grows a fourth `reason` value.
 
 ---
 
-## 18. The tag census — this document auditing itself
+## 18. The tag census - this document auditing itself
 
 §0.1 states the law this section exists to check: *"Every technical claim in this file carries
 exactly one tag. A claim with no tag is a defect."* A law nobody counts is a slogan, so here is
-the count, the method that produced it, and — the part that matters — the places where the count
+the count, the method that produced it, and - the part that matters - the places where the count
 is **not** the same thing as compliance.
 
 ### 18.1 The method, so a grader can reproduce the numbers rather than trust them
@@ -6694,7 +6694,7 @@ grep -o '\[VERIFIED [^]]*\]' /tmp/body.md | grep -c  'AF-'               # cites
 # the probe ledger
 grep -c '^| \*\*P[0-9]' /tmp/body.md               # rows in §3
 
-# the banned wordings — run against the WHOLE file, because §18 discusses them
+# the banned wordings - run against the WHOLE file, because §18 discusses them
 grep -in 'stored procedure'     ARCHITECTURE.md
 grep -in 'detects conflict'     ARCHITECTURE.md
 grep -in 'verif[a-z]* truth'    ARCHITECTURE.md
@@ -6708,7 +6708,7 @@ Two notes on the method, because both affect how the numbers should be read.
 
 **`grep -o` counts occurrences, not claims.** A sentence that carries one tag and is referenced
 twice counts once; a table row carrying a tag in two cells counts twice. The census is therefore
-an **upper bound on tagged sentences and a lower bound on tagged claims** — a single `[VERIFIED
+an **upper bound on tagged sentences and a lower bound on tagged claims** - a single `[VERIFIED
 §3-P24]` at the head of a code block tags every line in that block. This is why §18.3 reports
 coverage structurally rather than as a percentage: a percentage computed from these numbers
 would be a fabricated denominator, and §0.3 forbids exactly that.
@@ -6719,8 +6719,8 @@ would be a fabricated denominator, and §0.3 forbids exactly that.
 
 | Defect | Where it was | Why the grep caught it |
 |---|---|---|
-| `([VERIFIED section 3-P34)` — closing paren instead of closing bracket | `§7.5`, inside the comment block that documents the loud/silent asymmetry | the raw count exceeded the well-formed count by one |
-| `` `[ASSUMED` — … `VERIFIED]` `` — a tag split across a prose clause | the `§7.2` and `§7.8` headings | the `[ASSUMED` opener matched, the `]` closer belonged to a different word |
+| `([VERIFIED section 3-P34)` - closing paren instead of closing bracket | `§7.5`, inside the comment block that documents the loud/silent asymmetry | the raw count exceeded the well-formed count by one |
+| `` `[ASSUMED` - … `VERIFIED]` `` - a tag split across a prose clause | the `§7.2` and `§7.8` headings | the `[ASSUMED` opener matched, the `]` closer belonged to a different word |
 | the same split form | the `§7.10` and `§7.12` headings | same |
 
 All five were cosmetic in the sense that a human reader understood them, and all five were
@@ -6730,7 +6730,7 @@ the whole reason to run the balance check rather than just the population count.
 
 ### 18.2 The census
 
-**Scope: §0 through §17 — this section excludes itself.** `ARCHITECTURE.md` is **6849 lines**
+**Scope: §0 through §17 - this section excludes itself.** `ARCHITECTURE.md` is **6849 lines**
 in total; the census runs over the first **6654**, which is everything above the `## 18.`
 heading (line 6655). That exclusion is not tidiness. §18 quotes tags and quotes banned wordings in order to
 discuss them, so including it would inflate every population with its own commentary and make
@@ -6739,12 +6739,12 @@ the one-liner at the top of that block, so the boundary is reproducible rather t
 
 | Tag | Occurrences | What it means in this file |
 |---|---|---|
-| `[VERIFIED]` (all forms) | **171** | a live probe backs the claim — a §3 row I ran, a `.law12-feasibility.json` entry, or a `PULSE.md` `AF-n` fact |
-| `[UNVERIFIED]` | **22** | the claim is a reading of documentation, a client source, or an error message — not a probe result |
+| `[VERIFIED]` (all forms) | **171** | a live probe backs the claim - a §3 row I ran, a `.law12-feasibility.json` entry, or a `PULSE.md` `AF-n` fact |
+| `[UNVERIFIED]` | **22** | the claim is a reading of documentation, a client source, or an error message - not a probe result |
 | `[ASSUMED]` | **56** | a design choice or a default with no measurement behind it; ε, λ, and the id counter's atomicity are the load-bearing ones |
 | `NOT_CLAIMED` | **23** occurrences across **22** lines | a number or behaviour a reader might expect and this file deliberately refuses to state |
 
-The `[VERIFIED]` population, split by what each tag actually cites — this is the number that
+The `[VERIFIED]` population, split by what each tag actually cites - this is the number that
 decides whether `[VERIFIED]` means anything here:
 
 | Form | Count | Reading |
@@ -6752,18 +6752,18 @@ decides whether `[VERIFIED]` means anything here:
 | cites a `§3` probe row (`[VERIFIED §3-P24]`, `[VERIFIED section 3-P11]`) | **141** | traceable to a verbatim command and a verbatim result in this file |
 | …of which also cite a `PULSE` fact (`[VERIFIED §3 / AF-7]`) | 7 | probe plus upstream fact agreeing |
 | cites a bare probe id (`[VERIFIED P37]`) | **6** | all six sit **inside code comments** in `§7.5`, where the `§3-` prefix was dropped for line width; same rows, same evidence |
-| bare `[VERIFIED]`, no citation | **24** | see the paragraph below — this is the population a sceptical grader should attack first |
+| bare `[VERIFIED]`, no citation | **24** | see the paragraph below - this is the population a sceptical grader should attack first |
 
 **On the 24 bare `[VERIFIED]` tags.** A bare tag is weaker than a cited one, so each one needs a
 reason to exist. They fall into three groups, and a grader can enumerate them with
 `grep -n '\[VERIFIED\]' ARCHITECTURE.md`:
 
-1. **Code-block headers** (`§7.3`, `§7.5`, `§7.6`) — the tag means *every statement in this block
+1. **Code-block headers** (`§7.3`, `§7.5`, `§7.6`) - the tag means *every statement in this block
    was checked clause by clause against a §3 row*, and the per-statement citations are in the
    block's own comments. Spraying the same citation onto a heading and then again on 200 lines
    below it would be noise.
 2. **Tags inside definitions of the tagging law itself** (`§0.1`, the banned-wordings table in
-   §2, §18) — these are the word in quotation marks, not a claim.
+   §2, §18) - these are the word in quotation marks, not a claim.
 3. **Four prose instances** (`§1.3` recommendation lines, `§6.3`'s arithmetic note, `§8`'s
    `AF-7` reference) where the citation is in the adjacent sentence rather than inside the
    brackets. **These four are the weakest tags in the file**, and they are listed here rather
@@ -6771,12 +6771,12 @@ reason to exist. They fall into three groups, and a grader can enumerate them wi
 
 The probe ledger behind all of it: **42 rows** in §3, numbered inside `P0`–`P48`, with the seven
 unused numbers and the reason for the gap stated in §3's own preamble. Citations run slightly
-ahead of rows because `P47` is cited as `P47a`, `P47b` and `P47c` — three statements recorded
+ahead of rows because `P47` is cited as `P47a`, `P47b` and `P47c` - three statements recorded
 as one row. I am not quoting a "distinct ids cited" figure, because every regex I tried for it
 also matched non-probe text (`P3` as the priority label, `P0` in prose), and a number I cannot
 produce cleanly is a number this file should not state.
 
-### 18.3 What the census does *not* prove — and the judge's attack
+### 18.3 What the census does *not* prove - and the judge's attack
 
 **The attack:** *"171 `[VERIFIED]` tags in a document whose author also wrote the probes is
 self-certification, not verification."*
@@ -6785,31 +6785,31 @@ It is a fair attack and it is partly correct. Here is the exact boundary.
 
 | What the census proves | What it does not prove |
 |---|---|
-| every tagged claim names its evidence class | that the claim is *true* — a correctly-cited probe can still have been the wrong probe |
+| every tagged claim names its evidence class | that the claim is *true* - a correctly-cited probe can still have been the wrong probe |
 | every `[VERIFIED]` tag resolves to a verbatim command-and-output pair in §3 or an upstream `AF-n` row | that the §3 commands were themselves well chosen; a probe that asks the wrong question returns a true answer to it |
-| no tag is malformed, as of the balance check in §18.1 | that no claim is **untagged** — see the limit below, which is the real one |
+| no tag is malformed, as of the balance check in §18.1 | that no claim is **untagged** - see the limit below, which is the real one |
 | the banned wordings appear only in the table that bans them | that the surrounding prose stays inside the admissibility boundary everywhere; that is a reading, not a grep |
 
 **The limit that matters, stated plainly: this census cannot find a missing tag.** `grep` counts
-tags that exist. An untagged sentence is invisible to every command in §18.1 — there is no
+tags that exist. An untagged sentence is invisible to every command in §18.1 - there is no
 regular expression for "this is a technical claim." So the number `171` is evidence of
 *discipline applied*, and it is **not** evidence of *coverage achieved*. Anyone who wants the
 second thing has to read the prose. §0.1's law is therefore enforced by writing, audited by
-grep, and **provable by neither** — which is why §16 and §17 exist as hand-written registers
+grep, and **provable by neither** - which is why §16 and §17 exist as hand-written registers
 rather than as a generated report.
 
 **On the banned wordings, since the grep is not clean and should not be.** Over §0–§17,
 `grep -in 'stored procedure'` returns **two** hits, `detects conflict` returns **one**,
 `verif[a-z]* truth` returns **one**, and `algo.dijkstra|algo.SCC` returns **one**. Over the
 whole file the same four greps return **5 / 4 / 2 / 3**, and the extra hits are all in §18
-itself — the table immediately below, which cannot explain a hit without quoting it. Every one
+itself - the table immediately below, which cannot explain a hit without quoting it. Every one
 of the five body hits is a **meta-mention**:
 
 | Hit | Line | Why it is not a violation |
 |---|---|---|
 | "stored procedure" ×1 | §2's banned-wordings table | the row that bans the phrase has to contain it |
 | "stored procedure" ×1 | `§3-P1`'s **Establishes** cell | the probe's finding is *"no user-defined-procedure surface exists → 'stored procedure' is unsayable"*. The phrase appears as the thing disproved |
-| "detects conflicts" | §2's table | same — the row that bans it |
+| "detects conflicts" | §2's table | same - the row that bans it |
 | "verifies truth" | §2's table | same |
 | `algo.dijkstra` / `algo.SCC` | `§3-P1`'s result cell | the probe exists to record their **absence**; `AF-1` is re-confirmed by naming them |
 
@@ -6817,17 +6817,17 @@ I am recording this rather than engineering the greps to zero, because a documen
 phrase and then cannot quote the phrase it bans is worse than one that explains the five hits.
 **A grader running the naive grep will see these numbers; they should see the reason beside
 them.** If the project prefers a clean grep, the fix is to split the banned-wordings table into
-a sibling file — a decision for the master chat, not for me.
+a sibling file - a decision for the master chat, not for me.
 
 ### 18.4 The three tags a human should chase first
 
-Not the longest list — the **ordered** one. §17.5 carries the full chase list; these are the
+Not the longest list - the **ordered** one. §17.5 carries the full chase list; these are the
 three where the tag itself is the risk.
 
 | # | Tag | Where | Why it is first |
 |---|---|---|---|
 | 1 | `[ASSUMED]` on ε = 0.05 | `§7.2`, `§14.3` | **every verdict in the product depends on it.** It is an unmeasured default, the calibration loop is specified in §14.3, and the one thing forbidden is nudging it to manufacture a demo. Until B2 runs, the ALLOW/BLOCK/UNDECIDED boundary is a guess that happens to be published honestly |
-| 2 | `[ASSUMED]` on the id counter's atomicity | `§7.8`, `§15.4` (`LIM-4`) | one probe closes it — two concurrent `counter.next` calls, check the two returned values differ. It is `[ASSUMED]` only because that probe would have been a **write**, and writes were out of scope for this document |
+| 2 | `[ASSUMED]` on the id counter's atomicity | `§7.8`, `§15.4` (`LIM-4`) | one probe closes it - two concurrent `counter.next` calls, check the two returned values differ. It is `[ASSUMED]` only because that probe would have been a **write**, and writes were out of scope for this document |
 | 3 | `[UNVERIFIED]` on the exception class a FalkorDB timeout arrives as | `§14.2` | both catch branches already map to `503 ENGINE_UNAVAILABLE`, so a wrong guess degrades the message and not the behaviour. It is on this list because `TIMEOUT 1000` ms is a *server* setting (`[VERIFIED §3-P0]`) and will fire in real use |
 
 ### 18.5 Closing statement, which is not a verdict
@@ -6837,8 +6837,8 @@ of every module with no elision, §4 carries the schema and all 18 indexes, §6 
 the boot assertions depend on, §12 and §13 trace the request and boot paths end to end, and §11
 maps every error in the frozen contract to its raise site.
 
-§16 records **nine** places where this file disagrees with `CONTRACT.md`, including one —
-§16.2 — where the contract's own published DOCKET Cypher **cannot execute against the engine
+§16 records **nine** places where this file disagrees with `CONTRACT.md`, including one -
+§16.2 - where the contract's own published DOCKET Cypher **cannot execute against the engine
 as written**. §17 records every number refused. Both sections flag; neither fixes, because
 `CONTRACT.md` is frozen at v1.0 and amendments route through the master chat.
 

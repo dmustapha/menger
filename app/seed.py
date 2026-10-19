@@ -24,6 +24,7 @@ Order of operations, and why it is this order:
 from __future__ import annotations
 
 import math
+import os
 import random
 import sys
 from datetime import datetime, timedelta, timezone
@@ -259,9 +260,22 @@ def _iso(dt: datetime) -> str:
 
 
 def _parse_seed_now() -> datetime:
-    return datetime.strptime(config.SEED_NOW, "%Y-%m-%dT%H:%M:%SZ").replace(
-        tzinfo=timezone.utc
-    )
+    """The corpus's reference instant, against which every fixture age is anchored.
+
+    Ages are RELATIVE: the near-tie incumbent is seeded at age 9.6h, the incoming claim
+    at age 0. The arbiter scores against real wall-clock (arbiter.py), so if this instant
+    is frozen in the past the incumbent's recency decays forever and the near-tie margin
+    eventually drifts out of the epsilon band — the set-piece expires. Anchoring to NOW
+    by default keeps every relative age (and so the designed margin) constant whenever a
+    judge seeds. CONTRACT.md's worked example (recency 0.9261 @ 9.6h) is preserved because
+    it depends only on the relative age, not on the absolute instant.
+
+    Set MENGER_SEED_NOW to the frozen literal to reproduce a fixed-timestamp corpus.
+    """
+    pinned = os.getenv("MENGER_SEED_NOW")
+    if pinned:
+        return datetime.strptime(pinned, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc)
 
 
 def _wipe() -> bool:

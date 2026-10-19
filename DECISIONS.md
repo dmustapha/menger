@@ -1,18 +1,18 @@
-# DECISIONS — MENGER · architectural decision records
+# DECISIONS - MENGER · architectural decision records
 
 > **What this file is.** One ADR per architectural decision that shapes MENGER. Every record
 > carries **Context**, **Decision**, **Consequences**, and an explicit **`Rejected`** section
 > naming the alternatives that lost and why they lost.
 >
 > **An ADR with no rejected alternative is not an ADR.** A decision with only one option on the
-> table was never a decision — it was a discovery, and discoveries belong in `INVARIANTS.md` as
+> table was never a decision - it was a discovery, and discoveries belong in `INVARIANTS.md` as
 > facts, not here as choices. Where a record looks forced (the engine told us; the owner ruled
 > it), the `Rejected` section still names what we would otherwise have done and what it would
 > have cost, because that is the part a judge cannot reconstruct from the code.
 >
 > **Tag law.** Every technical claim carries `[VERIFIED]`, `[UNVERIFIED]`, or `[ASSUMED]`.
 > `[VERIFIED]` means a live probe recorded in `.law12-feasibility.json` or a PULSE `AF-n` row
-> backs it — nothing weaker. Facts we do not have are written **`NOT_CLAIMED`**, which is an
+> backs it - nothing weaker. Facts we do not have are written **`NOT_CLAIMED`**, which is an
 > acceptable and expected answer here.
 >
 > Last updated: 2026-10-18 · owner: forge (agent D) · companion files: `INVARIANTS.md`
@@ -24,8 +24,8 @@
 
 | ADR | Decision | Status | Reversible? |
 |---|---|---|---|
-| [ADR-001](#adr-001--track-02-as-the-sole-declared-track) | Track 02 as the sole declared track | Accepted | No — submission field |
-| [ADR-002](#adr-002--arbitrate-contradictions-in-cypher-not-in-application-code) | Arbitrate contradictions in Cypher, not application code | Accepted | No — it is the thesis |
+| [ADR-001](#adr-001--track-02-as-the-sole-declared-track) | Track 02 as the sole declared track | Accepted | No - submission field |
+| [ADR-002](#adr-002--arbitrate-contradictions-in-cypher-not-in-application-code) | Arbitrate contradictions in Cypher, not application code | Accepted | No - it is the thesis |
 | [ADR-003](#adr-003--run-without-the-conductor-manual-chat-driving) | Run without the conductor; manual chat driving | Accepted | Yes |
 | [ADR-004](#adr-004--source-skills-from-installed-main-utils-from-the-fixp0-2b-worktree-push-held) | Skill sourcing split; push HELD | Accepted | Yes |
 | [ADR-005](#adr-005--reframe-the-winner-as-memory-admission-control-allow--block--undecided) | Reframe the winner as memory admission control | Accepted | No |
@@ -34,15 +34,15 @@
 | [ADR-008](#adr-008--run-design_forge-in-full-in-its-own-chat) | `design_forge` runs IN FULL in its own chat | Accepted | Yes |
 | [ADR-009](#adr-009--skip-five-phases-fold-four-structurally-not-for-time) | Skip five phases, fold four | Accepted | Yes |
 | [ADR-010](#adr-010--mandatory-cross-chat-orientation-ledger-first-every-chat) | Mandatory cross-chat orientation, LEDGER first | Accepted | Yes |
-| [ADR-011](#adr-011--python-not-typescript-because-graphro_query-is-the-containment-boundary) | Python, not TypeScript | Accepted | No — boundary depends on it |
-| [ADR-012](#adr-012--re-cut-the-mechanism-onto-sppaths--maxflow-after-the-probe-killed-algodijkstra-and-algoscc) | Re-cut onto `SPpaths` + `maxFlow` | Accepted | No — the alternatives do not exist |
-| [ADR-013](#adr-013--node-split-every-source-so-max-flow-counts-vertex-disjoint-paths) | Node-split every source | Accepted | No — P0 invariant |
+| [ADR-011](#adr-011--python-not-typescript-because-graphro_query-is-the-containment-boundary) | Python, not TypeScript | Accepted | No - boundary depends on it |
+| [ADR-012](#adr-012--re-cut-the-mechanism-onto-sppaths--maxflow-after-the-probe-killed-algodijkstra-and-algoscc) | Re-cut onto `SPpaths` + `maxFlow` | Accepted | No - the alternatives do not exist |
+| [ADR-013](#adr-013--node-split-every-source-so-max-flow-counts-vertex-disjoint-paths) | Node-split every source | Accepted | No - P0 invariant |
 | [ADR-014](#adr-014--freeze-contractmd-at-v10-before-the-plan-prose-was-finished) | Freeze `CONTRACT.md` before the plan prose | Accepted | Amend-only, via master chat |
-| [ADR-015](#adr-015--promote-the-boot-assertions-from-an-internal-check-to-a-public-api-surface) | Boot assertions as a public API surface | Accepted | No — fail-closed depends on it |
+| [ADR-015](#adr-015--promote-the-boot-assertions-from-an-internal-check-to-a-public-api-surface) | Boot assertions as a public API surface | Accepted | No - fail-closed depends on it |
 | [ADR-016](#adr-016--stateful-durable-tier-with-spendapproved-false) | Stateful durable tier, `spendApproved: false` | Accepted, **gated** | Yes |
-| [ADR-017](#adr-017--keep-the-graphcopy-counterfactual-stretch-only-and-deliberately-not-load-bearing) | `GRAPH.COPY` counterfactual stretch-only | Accepted | Yes — deletable |
+| [ADR-017](#adr-017--keep-the-graphcopy-counterfactual-stretch-only-and-deliberately-not-load-bearing) | `GRAPH.COPY` counterfactual stretch-only | Accepted | Yes - deletable |
 | [ADR-018](#adr-018--make-the-docket-receipt-mandatory-on-every-verdict-not-an-optional-audit-mode) | DOCKET receipt mandatory on every verdict | Accepted | No |
-| [ADR-019](#adr-019--review-is-read-only-in-v10-no-resolve-endpoint) | `/review` is read-only in v1.0 | Accepted | Yes — v1.1 |
+| [ADR-019](#adr-019--review-is-read-only-in-v10-no-resolve-endpoint) | `/review` is read-only in v1.0 | Accepted | Yes - v1.1 |
 | [ADR-020](#adr-020--surface-three-components--an-ordinal-flag-instead-of-one-confidence-number) | Three components + ordinal flag, never one confidence | Accepted | No |
 | [ADR-021](#adr-021--no-test-framework-executable-assertions-wired-into-the-boot-path) | No test framework; assertions in the boot path | Accepted | Yes |
 | [ADR-022](#adr-022--render-the-node-split-in-slotskeygraph-instead-of-hiding-it) | Render the node-split instead of hiding it | Accepted | Yes |
@@ -50,40 +50,40 @@
 **Decision provenance.** ADR-001 … ADR-010 carry the closed Decisions Log entries #1–#9 from
 `PULSE.md` (#1 splits into ADR-001 + ADR-002, because the track declaration and the
 compute-it-in-Cypher commitment have independent consequences and independent rejected sets).
-ADR-011 … ADR-022 write up decisions the record *shows* — in probe results, in the frozen
-contract, in `durability-tier.json` — but had never been written up as decisions.
+ADR-011 … ADR-022 write up decisions the record *shows* - in probe results, in the frozen
+contract, in `durability-tier.json` - but had never been written up as decisions.
 
 ---
 
-## ADR-001 — Track 02 as the sole declared track
+## ADR-001 - Track 02 as the sole declared track
 
 - **Status:** Accepted · **Date:** 2026-10-18 (pre-warroom) · **Decided by:** Dami (standing ruling R1)
 - **Basis:** `PULSE.md` Decisions Log #1; `LEDGER.md` §1 and §2 `[VERIFIED]` as a record of the ruling.
-- **Rejected:** Declare Track 01 + Track 02 · Track 01 alone · Leave the track undeclared / pick at submission — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Declare Track 01 + Track 02 · Track 01 alone · Leave the track undeclared / pick at submission - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 Graph Hacks (WeMakeDevs × FalkorDB) lets a submission declare a track. The competitive-density
 figure in the intel record is **17 sole-commit repositories in Track 02 against 71 in Track 01**
-`[UNVERIFIED]` — it is an intel count from `config.json` / `research/research-brief.md`, not
+`[UNVERIFIED]` - it is an intel count from `config.json` / `research/research-brief.md`, not
 something a probe can confirm, and it may have moved since it was taken. Track 02 is *Agent
 Memory and Coordination*, which is also the sponsor's own product narrative: a graph database
 pitched at agent memory.
 
-Declaring more than one track is permitted by most hackathons and is superficially attractive —
+Declaring more than one track is permitted by most hackathons and is superficially attractive -
 more categories, more chances. It also halves the apparent fit of the artifact to any one of
 them, and judging here is **artifact-only (AF-10)** `[VERIFIED]`: a judge reads the README and
 watches a ≤180s video with nobody in the room to explain which track the project is really for.
 
 ### Decision
 
-Declare **Track 02 — Agent Memory and Coordination** as the **sole** track. Say so in the README,
+Declare **Track 02 - Agent Memory and Coordination** as the **sole** track. Say so in the README,
 in the submission form, and nowhere ambiguously. Every artifact's first paragraph is written to
 Track 02's vocabulary: memory, admission, coordination between agents writing to one store.
 
 ### Consequences
 
-- The README's first line is locked and track-aligned (`warroom/WINNER-BRIEF.md`) — a judge
+- The README's first line is locked and track-aligned (`warroom/WINNER-BRIEF.md`) - a judge
   learns what this is inside one sentence.
 - We forfeit any Track 01 prize surface. That is accepted, not overlooked.
 - Vocabulary becomes a graded surface: "admission control", "refuses", "source independence" are
@@ -96,22 +96,22 @@ Track 02's vocabulary: memory, admission, coordination between agents writing to
 
 | Alternative | Why it lost |
 |---|---|
-| **Declare Track 01 + Track 02** | Doubles the surface, halves the fit. Artifact-only judging means a judge cannot be told "read it as Track 02" — the prose has to do it alone, and prose written for two tracks reads as written for neither. |
-| **Track 01 alone** | 71 sole-commit repos `[UNVERIFIED]` — the crowded field, and *not* the sponsor's own narrative. Winning there means out-executing four times as many entrants on ground FalkorDB cares about less. |
+| **Declare Track 01 + Track 02** | Doubles the surface, halves the fit. Artifact-only judging means a judge cannot be told "read it as Track 02" - the prose has to do it alone, and prose written for two tracks reads as written for neither. |
+| **Track 01 alone** | 71 sole-commit repos `[UNVERIFIED]` - the crowded field, and *not* the sponsor's own narrative. Winning there means out-executing four times as many entrants on ground FalkorDB cares about less. |
 | **Leave the track undeclared / pick at submission** | The track choice drives the README's first line, the demo script and the form prose. Deferring it means writing those three twice, at 19:00, against a hard 19:29 deadline. |
 
 ---
 
-## ADR-002 — Arbitrate contradictions in Cypher, not in application code
+## ADR-002 - Arbitrate contradictions in Cypher, not in application code
 
 - **Status:** Accepted · **Date:** 2026-10-18 (pre-warroom) · **Decided by:** Dami (R1)
 - **Basis:** `PULSE.md` Decisions Log #1 ("**computed in Cypher**"); `LEDGER.md` §1 `[VERIFIED]` as a record of the ruling.
-- **Rejected:** Score in Python over a fetched subgraph · Hybrid — engine for traversal, Python for the final blend · An LLM adjudicator ("ask a model which claim is right") · A graph algorithm we would have to write ourselves (custom max-flow in Cypher) — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Score in Python over a fetched subgraph · Hybrid - engine for traversal, Python for the final blend · An LLM adjudicator ("ask a model which claim is right") · A graph algorithm we would have to write ourselves (custom max-flow in Cypher) - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 When two agents write contradictory facts into one shared memory slot, something has to choose.
-The ruling fixes *what* the choice is made of — **corroboration-depth × recency × source-trust** —
+The ruling fixes *what* the choice is made of - **corroboration-depth × recency × source-trust** -
 and, separately and emphatically, fixes **where** it is computed: in Cypher, in the graph engine.
 
 The default engineering instinct is the opposite. Pull the subgraph into the application, loop
@@ -127,7 +127,7 @@ onto application loops:
 
 - `independence` ← `algo.maxFlow` over the node-split provenance DAG `[VERIFIED]` (AF-4, AF-6)
 - `reliability` ← `algo.SPpaths` with `weightProp` over `nl = -ln(trust)` edges `[VERIFIED]` (AF-3)
-- `recency` ← `exp(-lambda * age_hours)`, an arithmetic term over a stored timestamp `[ASSUMED]` — λ is an unmeasured default, see ADR-016's sibling note and `LIMITATIONS.md`
+- `recency` ← `exp(-lambda * age_hours)`, an arithmetic term over a stored timestamp `[ASSUMED]` - λ is an unmeasured default, see ADR-016's sibling note and `LIMITATIONS.md`
 
 The application composes, parameterises and records; it does not decide. The **substitution test**
 in `warroom/WINNER-BRIEF.md` is the acceptance criterion: swap FalkorDB for Postgres and the
@@ -135,7 +135,7 @@ product does not get slower, it **stops producing an output at all**.
 
 ### Consequences
 
-- FalkorDB is load-bearing in a way a judge can check by reading one query — which is the whole
+- FalkorDB is load-bearing in a way a judge can check by reading one query - which is the whole
   point of a graph-database hackathon. The separately-listed Cypher artifact is the submission's
   strongest single asset.
 - We inherit the engine's sharp edges as **product** risks, not implementation details: the
@@ -144,24 +144,24 @@ product does not get slower, it **stops producing an output at all**.
   exist (ADR-015) and why the key trap is an invariant (`INVARIANTS.md` INV-2).
 - Debuggability moves from a stack trace to a receipt. Mitigated by DOCKET (ADR-018): every
   verdict ships the verbatim Cypher it ran, replayable.
-- Algorithm absences become design events rather than inconveniences — see ADR-012.
+- Algorithm absences become design events rather than inconveniences - see ADR-012.
 
 ### Rejected
 
 | Alternative | Why it lost |
 |---|---|
 | **Score in Python over a fetched subgraph** | The substitution test fails: Postgres plus the same Python gives the same answer. The graph becomes a store, and the strongest claim in the submission evaporates. |
-| **Hybrid — engine for traversal, Python for the final blend** | Looks like a reasonable split and is where this quietly ends up if nobody rules. But the blend *is* the arbitration; moving it to Python moves the decision to Python. Rejected for the same reason as above, with the added cost of two places to look when a number is wrong. |
-| **An LLM adjudicator ("ask a model which claim is right")** | Unreplayable, uncheckable, and it would be deciding **veracity** — which MENGER explicitly never does (`INVARIANTS.md` INV-12, `LIMITATIONS.md` §1). A receipt you cannot re-execute is not a receipt. |
+| **Hybrid - engine for traversal, Python for the final blend** | Looks like a reasonable split and is where this quietly ends up if nobody rules. But the blend *is* the arbitration; moving it to Python moves the decision to Python. Rejected for the same reason as above, with the added cost of two places to look when a number is wrong. |
+| **An LLM adjudicator ("ask a model which claim is right")** | Unreplayable, uncheckable, and it would be deciding **veracity** - which MENGER explicitly never does (`INVARIANTS.md` INV-12, `LIMITATIONS.md` §1). A receipt you cannot re-execute is not a receipt. |
 | **A graph algorithm we would have to write ourselves (custom max-flow in Cypher)** | FalkorDB ships `algo.maxFlow` `[VERIFIED]` (AF-4). Hand-rolling it in a 6-hour box, against a theorem we are staking the headline on, is risk with no upside. |
 
 ---
 
-## ADR-003 — Run without the conductor; manual chat driving
+## ADR-003 - Run without the conductor; manual chat driving
 
 - **Status:** Accepted · **Date:** 2026-10-18 (pre-warroom) · **Decided by:** Dami (R2)
 - **Basis:** `PULSE.md` Decisions Log #2; `LEDGER.md` R2 (`autonomous_mode: false`, `run_profile: SPRINT`) `[VERIFIED]` as a record.
-- **Rejected:** Run `hackathon-conductor` in full · Conductor for the back half only (deploy → package → demo) · Full autonomy, `autonomous_mode: true` — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Run `hackathon-conductor` in full · Conductor for the back half only (deploy → package → demo) · Full autonomy, `autonomous_mode: true` - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -182,10 +182,10 @@ dispatched by the owner, with the owner reading the output before the next dispa
   This is the direct cause of ADR-010: three documents (`LEDGER.md`,
   `docs/ORCHESTRATION-PROTOCOL.md`, `PULSE.md`) become the enforcement the conductor would
   otherwise have been.
-- Phase handoff is a human read. Slower per hop, but every claim passes an owner's eye — which is
+- Phase handoff is a human read. Slower per hop, but every claim passes an owner's eye - which is
   precisely how forge's premature completion claim was caught (`SUBMISSION_STATUS.md` Honesty
   note, carried into `INVARIANTS.md` INV-23 and `LIMITATIONS.md`).
-- Gate enforcement becomes opt-in, and therefore skippable — and it *was* skipped once. The
+- Gate enforcement becomes opt-in, and therefore skippable - and it *was* skipped once. The
   counter-measure is the verify-before-claiming law (INV-23), not a re-instated conductor.
 - Parallelism has to be scheduled by hand (ADR-007, ADR-008).
 
@@ -199,11 +199,11 @@ dispatched by the owner, with the owner reading the output before the next dispa
 
 ---
 
-## ADR-004 — Source skills from installed main, `utils/` from the `fix/p0-2b` worktree; push HELD
+## ADR-004 - Source skills from installed main, `utils/` from the `fix/p0-2b` worktree; push HELD
 
 - **Status:** Accepted · **Date:** 2026-10-18 (pre-warroom) · **Decided by:** Dami (R3)
 - **Basis:** `PULSE.md` Decisions Log #3; `LEDGER.md` R3 and hard constraint #11 `[VERIFIED]` as a record.
-- **Rejected:** Merge `fix/p0-2b` into main first, then run cleanly off main · Run entirely off main (no worktree) · Run entirely off the worktree (including `SKILL.md`) · Push as we go, so `HANDOFF.md` gets its SHA — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Merge `fix/p0-2b` into main first, then run cleanly off main · Run entirely off main (no worktree) · Run entirely off the worktree (including `SKILL.md`) · Push as we go, so `HANDOFF.md` gets its SHA - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -223,7 +223,7 @@ are the owner's call alone.
 
 - The skill *contracts* (what each phase must produce) come from the stable copy; the *helpers*
   come from the fixed copy. Mixed sourcing, deliberately.
-- Every chat must state which version it sourced — an entry obligation now written into
+- Every chat must state which version it sourced - an entry obligation now written into
   `docs/ORCHESTRATION-PROTOCOL.md` (ADR-010).
 - `HANDOFF.md` cannot be completed: it needs a commit SHA and there is no commit
   (`SUBMISSION_STATUS.md` open blocker list). That RED is routed to `package` and is a
@@ -245,16 +245,16 @@ are the owner's call alone.
 
 ---
 
-## ADR-005 — Reframe the winner as memory admission control (ALLOW / BLOCK / UNDECIDED)
+## ADR-005 - Reframe the winner as memory admission control (ALLOW / BLOCK / UNDECIDED)
 
 - **Status:** Accepted · **Date:** 2026-10-18 (warroom `pool_checkpoint`) · **Decided by:** Dami
 - **Basis:** `PULSE.md` Decisions Log #4; `warroom/WINNER-BRIEF.md` `## Thesis` `[VERIFIED]` as a record of the ruling.
-- **Rejected:** Ship P2 as a truth oracle / "verifies which fact is true" · "Detects conflicts" framing · Binary ALLOW/BLOCK, no third verdict · A continuous confidence score instead of a verdict · Keep P4 / P6, or accept P7 — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Ship P2 as a truth oracle / "verifies which fact is true" · "Detects conflicts" framing · Binary ALLOW/BLOCK, no third verdict · A continuous confidence score instead of a verdict · Keep P4 / P6, or accept P7 - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
-The warroom pool carried seven candidates. P2 — contradiction arbitration over a shared agent
-memory graph — won on mechanism, but its natural pitch was a **truth oracle**: "the graph tells you
+The warroom pool carried seven candidates. P2 - contradiction arbitration over a shared agent
+memory graph - won on mechanism, but its natural pitch was a **truth oracle**: "the graph tells you
 which claim is true." That pitch has two fatal properties on an artifact-only judging surface.
 First, it is unsupportable: nothing in max-flow or shortest-path has access to the world. Second,
 it is the single easiest thing for a sceptical judge to dismantle in one question, with nobody in
@@ -278,7 +278,7 @@ margin  <  -epsilon   ->  BLOCK      status REFUSED    review_id null
 |margin| <= epsilon   ->  UNDECIDED  status QUEUED     review_id set, a (:Review) node is written
 ```
 
-`[VERIFIED]` as the frozen normative rule — `CONTRACT.md` §1 and the decision-rule block (it is
+`[VERIFIED]` as the frozen normative rule - `CONTRACT.md` §1 and the decision-rule block (it is
 contract text, not a measurement; the *values* of ε and λ are `[ASSUMED]` defaults, ADR-020 and
 `LIMITATIONS.md`).
 
@@ -291,7 +291,7 @@ MENGER decides **admissibility**, never veracity. The scope is written as an inv
   defence. "How do you know it's true?" → "We don't, and we never claim to. We decide what is
   admissible, on source independence."
 - **UNDECIDED is a first-class outcome, not an error.** It needs a queue, a `(:Review)` node, a
-  `review_id`, and a console surface — which is why `GET /review` is one of the eight frozen
+  `review_id`, and a console surface - which is why `GET /review` is one of the eight frozen
   endpoints and why the console has a review view.
 - ε becomes a published server constant, not a hidden threshold (`INVARIANTS.md` INV-9), and must
   be echoed on every decision. The console must not hardcode it (R-4 / DS-8).
@@ -306,18 +306,18 @@ MENGER decides **admissibility**, never veracity. The scope is written as an inv
 | Alternative | Why it lost |
 |---|---|
 | **Ship P2 as a truth oracle / "verifies which fact is true"** | Unsupportable overreach, and the fastest possible loss on an artifact-only surface. "truth" / "verifies truth" is now a **banned wording** (`INVARIANTS.md` INV-15). |
-| **"Detects conflicts" framing** | That is agentmesh's claim and vocabulary `[UNVERIFIED]` — intel's competitor read. Borrowing a competitor's sentence invites the comparison we lose, and it describes a weaker product: detection without a decision. Also banned. |
+| **"Detects conflicts" framing** | That is agentmesh's claim and vocabulary `[UNVERIFIED]` - intel's competitor read. Borrowing a competitor's sentence invites the comparison we lose, and it describes a weaker product: detection without a decision. Also banned. |
 | **Binary ALLOW/BLOCK, no third verdict** | Forces a verdict on near-ties, where the margin is inside the noise of three unmeasured components. A confident coin-flip is worse than an honest queue, and the queue is a *feature* a judge can see working. |
 | **A continuous confidence score instead of a verdict** | Pushes the decision onto the caller and re-introduces the cardinal-number reading the ordinal rule exists to prevent (ADR-020). An admission-control gate that does not admit or refuse is a scoring library. |
 | **Keep P4 / P6, or accept P7** | Scope. Four chats running concurrently against a 19:29 hard deadline; the committed surface (P2 + P5) is already the honest limit. Nothing committed gets cut (R6) is only credible if nothing uncommitted gets added. |
 
 ---
 
-## ADR-006 — Collapse `cross_exam` + `challenge` + `demo_scripts` into the risk register
+## ADR-006 - Collapse `cross_exam` + `challenge` + `demo_scripts` into the risk register
 
 - **Status:** Accepted · **Date:** 2026-10-18 (warroom closeout) · **Decided by:** master-chat
 - **Basis:** `PULSE.md` Decisions Log #5 `[VERIFIED]` as a record.
-- **Rejected:** Run `cross_exam` + `challenge` in full · Drop the adversarial content entirely · Defer all of it to `critique` — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Run `cross_exam` + `challenge` in full · Drop the adversarial content entirely · Defer all of it to `critique` - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -333,7 +333,7 @@ artifact-only judge brings.
 
 Collapse all three into one artifact: the **risk register in `warroom/WINNER-BRIEF.md`**
 (R-1 … R-8). Keep the adversarial content; drop the ceremony of producing it as three phases.
-The judge-attack pairing in `INVARIANTS.md` is the downstream continuation of this decision —
+The judge-attack pairing in `INVARIANTS.md` is the downstream continuation of this decision -
 every invariant carries the specific attack it exists to survive.
 
 ### Consequences
@@ -353,25 +353,25 @@ every invariant carries the specific attack it exists to survive.
 |---|---|
 | **Run `cross_exam` + `challenge` in full** | ~40 minutes spent re-opening a ruling the owner had closed, with no mandate to change it. "No chat re-opens this" (R1). |
 | **Drop the adversarial content entirely** | The attacks are the judge's script. Dropping them means meeting them for the first time in front of a reader we cannot answer. |
-| **Defer all of it to `critique`** | `critique` runs *after* forge, so forge's artifacts would have been written with no adversarial input at all — and forge's artifacts are the ones a judge reads. The register had to exist upstream of the writing. |
+| **Defer all of it to `critique`** | `critique` runs *after* forge, so forge's artifacts would have been written with no adversarial input at all - and forge's artifacts are the ones a judge reads. The register had to exist upstream of the writing. |
 
 ---
 
-## ADR-007 — Fund the console with parallelism, not with a scope cut
+## ADR-007 - Fund the console with parallelism, not with a scope cut
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** Dami (R6)
 - **Basis:** `PULSE.md` Decisions Log #6; `LEDGER.md` R6 `[VERIFIED]` as a record.
-- **Rejected:** Cut the console; ship the API alone · Build the engine first, console after, serially · Cut the P3 counterfactual to buy console time · Have one chat build both — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Cut the console; ship the API alone · Build the engine first, console after, serially · Cut the P3 counterfactual to buy console time · Have one chat build both - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 An earlier plan treated the console as the thing to cut if time got tight, and priced the P3
 stretch at ~60 minutes. Both were wrong on the record: the stretch is ~25 minutes `[ASSUMED]`
 (an estimate, not a measurement) because it reuses the resolver, and the console does not have to
-run serially after the engine — it runs off a **frozen contract** (ADR-014), so it needs the
+run serially after the engine - it runs off a **frozen contract** (ADR-014), so it needs the
 contract, not the code.
 
-UX is **16.7% of the grade** `[UNVERIFIED]` — a judging-weight figure from `config.json` /
+UX is **16.7% of the grade** `[UNVERIFIED]` - a judging-weight figure from `config.json` /
 `intel-state.json`, carried as-recorded. Cutting the console to buy engine time trades a sixth of
 the score for hours we can get another way.
 
@@ -388,7 +388,7 @@ same time, both consuming `CONTRACT.md` v1.0. **Nothing committed gets cut.**
   rather than tidy.
 - Integration is a real, scheduled step (16:45, real-Chrome proof) instead of an assumption that
   two independently built halves meet.
-- If the contract turns out wrong mid-build, the cost is doubled — both chats are already built
+- If the contract turns out wrong mid-build, the cost is doubled - both chats are already built
   against it. Mitigated by routing amendments through the master chat only and bumping to v1.1.
 
 ### Rejected
@@ -402,16 +402,16 @@ same time, both consuming `CONTRACT.md` v1.0. **Nothing committed gets cut.**
 
 ---
 
-## ADR-008 — Run `design_forge` IN FULL, in its own chat
+## ADR-008 - Run `design_forge` IN FULL, in its own chat
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** Dami (R5)
 - **Basis:** `PULSE.md` Decisions Log #7; `LEDGER.md` R5 `[VERIFIED]` as a record.
-- **Rejected:** Fold design into the build chat · Condensed `design_forge` (a short, prompt-level pass) · Design after the engine, serially · Ship an API-only submission with a curl transcript — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Fold design into the build chat · Condensed `design_forge` (a short, prompt-level pass) · Design after the engine, serially · Ship an API-only submission with a curl transcript - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 Under deadline pressure the standing temptation is to condense a design phase into a few prompts
-inside the build chat — "make it look good while you're in there". The branch rule is explicit
+inside the build chat - "make it look good while you're in there". The branch rule is explicit
 that `design_forge`, `deploy`, `demo` and `package` must dispatch their owning skill **in full**,
 and UX carries ~16.7% of the grade `[UNVERIFIED]`.
 
@@ -422,7 +422,7 @@ the frozen `CONTRACT.md`. Not condensed, not folded into build.
 
 ### Consequences
 
-- The console gets a real design pass — its own research, its own iterations — instead of
+- The console gets a real design pass - its own research, its own iterations - instead of
   CSS applied to whatever shape the API happened to take.
 - `design_forge` also inherits the two documents forge did not write: `ROUTE-ARCHITECTURE.md` and
   `USER-ONBOARDING.md`. They are nominally forge's, but writing them in forge would pre-empt an
@@ -438,17 +438,17 @@ the frozen `CONTRACT.md`. Not condensed, not folded into build.
 | Alternative | Why it lost |
 |---|---|
 | **Fold design into the build chat** | Violates the in-full branch rule, and in practice means styling rather than designing. ~16.7% of the grade `[UNVERIFIED]` handled as a build subtask. |
-| **Condensed `design_forge` (a short, prompt-level pass)** | "Fewer cycles, never fewer gates" — narrowing a dispatch shrinks the slice count, never the floor. A condensed design phase skips the floor. |
+| **Condensed `design_forge` (a short, prompt-level pass)** | "Fewer cycles, never fewer gates" - narrowing a dispatch shrinks the slice count, never the floor. A condensed design phase skips the floor. |
 | **Design after the engine, serially** | No wall clock for it (ADR-007). Also puts design downstream of implementation accidents, so the API's shape would dictate the UI's. |
 | **Ship an API-only submission with a curl transcript** | Rejected in ADR-007 and again here. |
 
 ---
 
-## ADR-009 — Skip five phases, fold four — structurally, not for time
+## ADR-009 - Skip five phases, fold four - structurally, not for time
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** master-chat
 - **Basis:** `PULSE.md` Decisions Log #8; `LEDGER.md` §3 `[VERIFIED]` as a record. AF-10 (artifact-only judging) `[VERIFIED]`.
-- **Rejected:** Run `stress_test` · Run `interrogate` / `demo_rehearsal` anyway · Run `livetest` as its own phase · Skip these but not say so — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Run `stress_test` · Run `interrogate` / `demo_rehearsal` anyway · Run `livetest` as its own phase · Skip these but not say so - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -464,7 +464,7 @@ explanation.
 - **FOLD** `debug` + `wire` → `build`; `livetest` → `deploy`.
 
 And record *which reason* applies. `interrogate` and `demo_rehearsal` are skipped
-**structurally**: judging is artifact-only (AF-10) `[VERIFIED]` — there is no live demo and no
+**structurally**: judging is artifact-only (AF-10) `[VERIFIED]` - there is no live demo and no
 judging call, so there is literally nothing for them to prepare. The other three have no surface
 in scope.
 
@@ -472,7 +472,7 @@ in scope.
 
 - The schedule fits inside the deadline without cutting a committed surface (R6 holds).
 - **No load claim is made anywhere.** `stress_test` did not run, so throughput, concurrency and
-  sustained-load numbers are `NOT_CLAIMED` — see `LIMITATIONS.md`. The only latency figures in
+  sustained-load numbers are `NOT_CLAIMED` - see `LIMITATIONS.md`. The only latency figures in
   existence are the upstream engine measurements 41ms cold / 11ms warm on 1402 nodes / 2400 edges
   `[VERIFIED]` (AF-7), which are *engine* numbers at demo scale, not MENGER endpoint numbers.
 - `debug` and `wire` folding into `build` means the build chat owns its own failure diagnosis.
@@ -491,11 +491,11 @@ in scope.
 
 ---
 
-## ADR-010 — Mandatory cross-chat orientation, `LEDGER.md` first, every chat
+## ADR-010 - Mandatory cross-chat orientation, `LEDGER.md` first, every chat
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** Dami (Decisions Log #9)
 - **Basis:** `PULSE.md` Decisions Log #9; `LEDGER.md` §4 and §6 `[VERIFIED]` as a record.
-- **Rejected:** Re-enable the conductor to get enforcement back · Give every chat the full document set · Trust each chat to orient itself from the repo · Inline the facts into each dispatch brief instead of a shared PULSE — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Re-enable the conductor to get enforcement back · Give every chat the full document set · Trust each chat to orient itself from the repo · Inline the facts into each dispatch brief instead of a shared PULSE - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -511,11 +511,11 @@ any work starts, and a chat that reads everything reads nothing carefully.
 
 Three documents become the enforcement:
 
-1. **`LEDGER.md` — read first, every chat, always.** ~900 words. Everything else is linked, not
+1. **`LEDGER.md` - read first, every chat, always.** ~900 words. Everything else is linked, not
    inlined. It tells a chat which document it actually needs.
-2. **`docs/ORCHESTRATION-PROTOCOL.md`** — how a chat runs, which version it sources (ADR-004),
+2. **`docs/ORCHESTRATION-PROTOCOL.md`** - how a chat runs, which version it sources (ADR-004),
    its entry and exit obligations.
-3. **`PULSE.md`** — **read-on-entry, append-on-exit**, mandatory for every skill chat. Active
+3. **`PULSE.md`** - **read-on-entry, append-on-exit**, mandatory for every skill chat. Active
    Facts `AF-1..AF-17` override everything, including the dispatch brief and the published
    FalkorDB documentation.
 
@@ -528,7 +528,7 @@ Three documents become the enforcement:
   documentation in the precedence chain, because the probes were run against the pinned engine and
   the docs were not.
 - Append-on-exit is a hard obligation. A chat that exits without appending has silently removed
-  its findings from everyone downstream — the exact failure the conductor's Tier-1 check existed
+  its findings from everyone downstream - the exact failure the conductor's Tier-1 check existed
   to prevent.
 - Corrections get a home. Three numbered forge `[CORRECTION]` entries live in `PULSE.md` and are
   the evidentiary basis for the verify-before-claiming law (`INVARIANTS.md` INV-23).
@@ -542,23 +542,23 @@ Three documents become the enforcement:
 | **Re-enable the conductor to get enforcement back** | Reverses ADR-003 and reintroduces phase-order enforcement that conflicts with the deliberate engine ‖ design parallelism (ADR-007). |
 | **Give every chat the full document set** | ~75k words of orientation per chat. On a same-day deadline that is most of the budget, and the signal-to-noise ratio guarantees skimming. |
 | **Trust each chat to orient itself from the repo** | Already demonstrably fails: forge's first gate run was self-selected to 12 hand-picked scripts out of a 272-function registry and missed `forge-routing-enforce.sh`, which held a hard `REFUSE-COMPLETE` `[VERIFIED]` as a record (`PULSE.md` forge `[CORRECTION]`). Self-selected scope is not scope. |
-| **Inline the facts into each dispatch brief instead of a shared PULSE** | Briefs are written once and go stale the moment a probe lands. A fact discovered in chat 3 would never reach chat 2's brief. PULSE is append-only for exactly this reason — and it is why PULSE outranks the brief. |
+| **Inline the facts into each dispatch brief instead of a shared PULSE** | Briefs are written once and go stale the moment a probe lands. A fact discovered in chat 3 would never reach chat 2's brief. PULSE is append-only for exactly this reason - and it is why PULSE outranks the brief. |
 
 ---
 
-## ADR-011 — Python, not TypeScript, because `GRAPH.RO_QUERY` is the containment boundary
+## ADR-011 - Python, not TypeScript, because `GRAPH.RO_QUERY` is the containment boundary
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge, post-probe) · **Decided by:** forced by the probe
-- **Basis:** AF-8 `[VERIFIED]` — live probe recorded in `.law12-feasibility.json`: `GRAPH.RO_QUERY` rejects `CREATE` and allows `MATCH`, enforced **server-side**. The TypeScript client does not expose `GRAPH.RO_QUERY` (FalkorDB issue #408) `[UNVERIFIED]` — an upstream issue reference, not something we probed.
-- **Rejected:** TypeScript end-to-end (one language, shared types with the console) · TypeScript + application-side Cypher validation (denylist / parser) · TypeScript + a thin Python read sidecar · Patch the TS client to add `RO_QUERY` · Drop `GRAPH.RO_QUERY` and rely on code review of the generated Cypher — each with its reason for losing in `### Rejected` below.
+- **Basis:** AF-8 `[VERIFIED]` - live probe recorded in `.law12-feasibility.json`: `GRAPH.RO_QUERY` rejects `CREATE` and allows `MATCH`, enforced **server-side**. The TypeScript client does not expose `GRAPH.RO_QUERY` (FalkorDB issue #408) `[UNVERIFIED]` - an upstream issue reference, not something we probed.
+- **Rejected:** TypeScript end-to-end (one language, shared types with the console) · TypeScript + application-side Cypher validation (denylist / parser) · TypeScript + a thin Python read sidecar · Patch the TS client to add `RO_QUERY` · Drop `GRAPH.RO_QUERY` and rely on code review of the generated Cypher - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 MENGER composes Cypher and runs it against a shared graph. The composed read path is the dangerous
 surface: if a read query can write, then the scoring path can mutate the memory it is scoring, and
-the whole admission-control claim collapses — a gate that can edit the graph is not a gate.
+the whole admission-control claim collapses - a gate that can edit the graph is not a gate.
 
-Two ways to stop that. Validate the generated Cypher in the application before sending it — a
+Two ways to stop that. Validate the generated Cypher in the application before sending it - a
 denylist, a parser, a prefix check. Or use a **transport that cannot write**: `GRAPH.RO_QUERY`,
 where the engine itself rejects writes.
 
@@ -577,7 +577,7 @@ without exception (`INVARIANTS.md` INV-6). The containment boundary is the engin
 - The read path is contained by something we did not write and cannot get subtly wrong. This is
   the strongest security claim in the submission and it costs us a language preference.
 - The console cannot talk to the graph directly in TypeScript. It talks to the eight frozen HTTP
-  endpoints — which is a cleaner boundary anyway, and is what let the console be built
+  endpoints - which is a cleaner boundary anyway, and is what let the console be built
   concurrently (ADR-007).
 - One language for the API, one for the console, and the seam between them is `CONTRACT.md`.
 - We inherit the Python client's ergonomics and whatever the pinned engine does, which is why the
@@ -589,19 +589,19 @@ without exception (`INVARIANTS.md` INV-6). The containment boundary is the engin
 
 | Alternative | Why it lost |
 |---|---|
-| **TypeScript end-to-end (one language, shared types with the console)** | The TS client does not expose `GRAPH.RO_QUERY` `[UNVERIFIED]` (issue #408). Taking it means giving up the server-side read-only boundary — the one thing that makes generated Cypher safe. Not a trade we were willing to make for ergonomics. |
+| **TypeScript end-to-end (one language, shared types with the console)** | The TS client does not expose `GRAPH.RO_QUERY` `[UNVERIFIED]` (issue #408). Taking it means giving up the server-side read-only boundary - the one thing that makes generated Cypher safe. Not a trade we were willing to make for ergonomics. |
 | **TypeScript + application-side Cypher validation (denylist / parser)** | Puts the security boundary in code we wrote under deadline. A denylist is a guess about an engine's grammar; the engine's own read-only mode is not. The failure mode is silent and total. |
-| **TypeScript + a thin Python read sidecar** | Keeps TS *and* the boundary, at the cost of two deployables, two dependency sets and an extra network hop inside the scoring path — on a 19:29 deadline, with a $8/mo tier (ADR-016). The hop also lands in the latency we cannot measure. |
+| **TypeScript + a thin Python read sidecar** | Keeps TS *and* the boundary, at the cost of two deployables, two dependency sets and an extra network hop inside the scoring path - on a 19:29 deadline, with a $8/mo tier (ADR-016). The hop also lands in the latency we cannot measure. |
 | **Patch the TS client to add `RO_QUERY`** | Upstream work, unreviewed, on the critical path of a submission, in a client we would then be the only users of. |
 | **Drop `GRAPH.RO_QUERY` and rely on code review of the generated Cypher** | The composed-read path is the thing being contained. Reviewing it by eye is how it gets through. |
 
 ---
 
-## ADR-012 — Re-cut the mechanism onto `SPpaths` + `maxFlow` after the probe killed `algo.dijkstra` and `algo.SCC`
+## ADR-012 - Re-cut the mechanism onto `SPpaths` + `maxFlow` after the probe killed `algo.dijkstra` and `algo.SCC`
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge, post-probe) · **Decided by:** forced by the probe
-- **Basis:** AF-1 `[VERIFIED]` — `algo.dijkstra` and `algo.SCC` **do not exist** in FalkorDB v4.22.1. The available set is AStar, BFS, HarmonicCentrality, MSF, SPpaths, SSpaths, WCC, betweenness, labelPropagation, maxFlow, pageRank `[VERIFIED]`. AF-3 `[VERIFIED]`: `algo.SPpaths` with `weightProp` returns `pathWeight 0.21072` on the control fixture. AF-4 `[VERIFIED]`: `algo.maxFlow` takes **exactly one** relationship type. AF-9 `[VERIFIED]`: engine pinned `falkordb/falkordb:v4.22.1`.
-- **Rejected:** Keep `algo.dijkstra` / `algo.SCC` in the design and shim them in application code · Switch engines to one that has Dijkstra and SCC · Upgrade past v4.22.1 hoping for a larger procedure set · Substitute `WCC` for `SCC` to keep a cycle-detection feature · Hand-roll Tarjan's algorithm in Cypher · Trust the published documentation and skip the probe — each with its reason for losing in `### Rejected` below.
+- **Basis:** AF-1 `[VERIFIED]` - `algo.dijkstra` and `algo.SCC` **do not exist** in FalkorDB v4.22.1. The available set is AStar, BFS, HarmonicCentrality, MSF, SPpaths, SSpaths, WCC, betweenness, labelPropagation, maxFlow, pageRank `[VERIFIED]`. AF-3 `[VERIFIED]`: `algo.SPpaths` with `weightProp` returns `pathWeight 0.21072` on the control fixture. AF-4 `[VERIFIED]`: `algo.maxFlow` takes **exactly one** relationship type. AF-9 `[VERIFIED]`: engine pinned `falkordb/falkordb:v4.22.1`.
+- **Rejected:** Keep `algo.dijkstra` / `algo.SCC` in the design and shim them in application code · Switch engines to one that has Dijkstra and SCC · Upgrade past v4.22.1 hoping for a larger procedure set · Substitute `WCC` for `SCC` to keep a cycle-detection feature · Hand-roll Tarjan's algorithm in Cypher · Trust the published documentation and skip the probe - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -613,7 +613,7 @@ The live probe against the pinned container returned: **neither procedure exists
 (AF-1)
 
 This is the single most valuable thing that happened in the whole project, and it happened
-**before any code was written** — which is also why it happened cheaply.
+**before any code was written** - which is also why it happened cheaply.
 
 ### Decision
 
@@ -652,14 +652,14 @@ RETURN maxFlow, nodes
 - A **new, worse trap** came with `SPpaths`: only the key `weightProp` works. `weightProperty`,
   `relationshipWeightProperty` and `costProperty` are accepted **silently** and return **hop
   count** `[VERIFIED]` (AF-3 / DS-2). There is no error. A wrong key yields a plausible wrong
-  number — reliability computed over hop count instead of trust, with every endpoint returning
+  number - reliability computed over hop count instead of trust, with every endpoint returning
   200. This is the project's most dangerous single line, and it is why ADR-015 exists.
 - `algo.maxFlow`'s one-relationship-type limit `[VERIFIED]` (AF-4) constrains the **schema**: the
   flow network must be expressible over a single edge type, `[:FLOW]`. The schema was designed
   around the procedure's signature, not the other way round.
 - Circular citations are not detected. Disclosed.
 - The documentation-derived capability map that produced the original error is recorded as
-  untrustworthy relative to a probe — the basis for the precedence rule that PULSE Active Facts
+  untrustworthy relative to a probe - the basis for the precedence rule that PULSE Active Facts
   outrank published vendor docs (ADR-010).
 - The probes are version-scoped. If the pin moves, they must be re-run. Written as an invariant
   (`INVARIANTS.md` INV-7).
@@ -668,20 +668,20 @@ RETURN maxFlow, nodes
 
 | Alternative | Why it lost |
 |---|---|
-| **Keep `algo.dijkstra` / `algo.SCC` in the design and shim them in application code** | They do not exist `[VERIFIED]` (AF-1), so the shim would be a Python implementation — which fails the substitution test (ADR-002) for the reliability component and puts the arbitration back in the application. |
+| **Keep `algo.dijkstra` / `algo.SCC` in the design and shim them in application code** | They do not exist `[VERIFIED]` (AF-1), so the shim would be a Python implementation - which fails the substitution test (ADR-002) for the reliability component and puts the arbitration back in the application. |
 | **Switch engines to one that has Dijkstra and SCC** | It is a FalkorDB hackathon. Also: the probe is evidence the *engine* is fine and our *map of it* was wrong. |
-| **Upgrade past v4.22.1 hoping for a larger procedure set** | GraphRAG-SDK is reported broken on 6.0.x `[UNVERIFIED]`, and an upgrade invalidates all seven probes — our entire `[VERIFIED]` basis — hours before a deadline. The pin is the conservative, evidence-preserving choice. |
-| **Substitute `WCC` for `SCC` to keep a cycle-detection feature** | `WCC` ignores direction; citation cycles are a directed property. Shipping `WCC` labelled as cycle detection is a wrong answer with a confident name — the exact failure mode of the `weightProp` trap, chosen on purpose. |
+| **Upgrade past v4.22.1 hoping for a larger procedure set** | GraphRAG-SDK is reported broken on 6.0.x `[UNVERIFIED]`, and an upgrade invalidates all seven probes - our entire `[VERIFIED]` basis - hours before a deadline. The pin is the conservative, evidence-preserving choice. |
+| **Substitute `WCC` for `SCC` to keep a cycle-detection feature** | `WCC` ignores direction; citation cycles are a directed property. Shipping `WCC` labelled as cycle detection is a wrong answer with a confident name - the exact failure mode of the `weightProp` trap, chosen on purpose. |
 | **Hand-roll Tarjan's algorithm in Cypher** | Hours, on a stretch feature, with no test framework (ADR-021), on a same-day deadline. |
 | **Trust the published documentation and skip the probe** | This is the counterfactual where MENGER ships a design built on two procedures that do not exist and discovers it at 18:00. Everything good in this ADR came from running the probe first. |
 
 ---
 
-## ADR-013 — Node-split every source so max-flow counts *vertex*-disjoint paths
+## ADR-013 - Node-split every source so max-flow counts *vertex*-disjoint paths
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge, post-probe) · **Decided by:** forced by the probe
-- **Basis:** AF-6 `[VERIFIED]` — live probe: the node-split graph yields **echo → 1**, **independent → 2**. DS-1 `[VERIFIED]`: node-split is non-negotiable. AF-4 `[VERIFIED]`: `algo.maxFlow` signature.
-- **Rejected:** Unit capacity on edges, no split (the original) · Node capacity as a property on `(:Source)` · Post-process in Python: fetch the paths, de-duplicate shared vertices · Claim edge-disjointness instead and call it "independent citation chains" · Keep the split but assert it only in a test — each with its reason for losing in `### Rejected` below.
+- **Basis:** AF-6 `[VERIFIED]` - live probe: the node-split graph yields **echo → 1**, **independent → 2**. DS-1 `[VERIFIED]`: node-split is non-negotiable. AF-4 `[VERIFIED]`: `algo.maxFlow` signature.
+- **Rejected:** Unit capacity on edges, no split (the original) · Node capacity as a property on `(:Source)` · Post-process in Python: fetch the paths, de-duplicate shared vertices · Claim edge-disjointness instead and call it "independent citation chains" · Keep the split but assert it only in a test - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -690,10 +690,10 @@ unit-capacity network equals the number of **vertex-disjoint** paths between the
 of vertex-disjoint origin→claim chains *is* source independence.
 
 The first implementation put unit capacity on the **edges** and ran `algo.maxFlow`. The probe
-showed that this counts **edge**-disjoint paths `[VERIFIED]` (AF-6, DS-1) — a different and, for
+showed that this counts **edge**-disjoint paths `[VERIFIED]` (AF-6, DS-1) - a different and, for
 this purpose, wrong quantity. Two citation chains that pass through **one shared source** are
-edge-disjoint but not vertex-disjoint. Under edge capacity, an **echo** — the same original source
-laundered through two intermediaries — scores as **independent**.
+edge-disjoint but not vertex-disjoint. Under edge capacity, an **echo** - the same original source
+laundered through two intermediaries - scores as **independent**.
 
 That is not a cosmetic inaccuracy. It is the product being exactly wrong on the one input it
 exists to catch.
@@ -724,12 +724,12 @@ rather than serve a wrong headline number.
 - The headline claim is now true of the computation, and the two fixtures that prove it are
   published on `GET /health` where a judge can read them.
 - Node count roughly doubles on the source population. Measured engine performance at demo scale
-  is 41ms cold / 11ms warm on 1402 nodes / 2400 edges `[VERIFIED]` (AF-7) — which is *post*-split
+  is 41ms cold / 11ms warm on 1402 nodes / 2400 edges `[VERIFIED]` (AF-7) - which is *post*-split
   scale, so the split's cost is already inside the only latency evidence we have. MENGER's own
   endpoint latency remains `NOT_CLAIMED`.
 - Every write path must maintain the invariant: no edge may ever attach directly to a bare
   `(:Source)`, bypassing the split. One such edge silently restores the edge-disjoint bug on that
-  path only — the worst kind of partial failure. This is `INVARIANTS.md` INV-1, the first
+  path only - the worst kind of partial failure. This is `INVARIANTS.md` INV-1, the first
   invariant in the file.
 - The split is **visible** in the console rather than hidden (ADR-022).
 - The schema is now shaped by the procedure's one-relationship-type limit (AF-4): the flow network
@@ -739,7 +739,7 @@ rather than serve a wrong headline number.
 
 | Alternative | Why it lost |
 |---|---|
-| **Unit capacity on edges, no split (the original)** | Counts edge-disjoint paths `[VERIFIED]` (AF-6). An echo through a shared source scores as independent — the product's core failure, shipped as its headline. |
+| **Unit capacity on edges, no split (the original)** | Counts edge-disjoint paths `[VERIFIED]` (AF-6). An echo through a shared source scores as independent - the product's core failure, shipped as its headline. |
 | **Node capacity as a property on `(:Source)`** | `algo.maxFlow` takes `capacityProperty` over **relationships** `[VERIFIED]` (AF-4). There is no vertex-capacity parameter. The split *is* how you express vertex capacity in a max-flow API that only knows about edges. |
 | **Post-process in Python: fetch the paths, de-duplicate shared vertices** | Fails the substitution test (ADR-002), and re-implements a solved theorem in application code. Also unbounded: path enumeration is not max-flow. |
 | **Claim edge-disjointness instead and call it "independent citation chains"** | A judge who knows graph theory reads this as the bug it is, and nobody is in the room to explain. We would be relabelling a wrong answer rather than fixing it. |
@@ -747,11 +747,11 @@ rather than serve a wrong headline number.
 
 ---
 
-## ADR-014 — Freeze `CONTRACT.md` at v1.0 before the plan prose was finished
+## ADR-014 - Freeze `CONTRACT.md` at v1.0 before the plan prose was finished
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge) · **Decided by:** forge, under ADR-007
 - **Basis:** `CONTRACT.md` §5 freeze record, 8 endpoints, claim state **NOT_CLAIMED** on every example number `[VERIFIED]` as frozen contract text.
-- **Rejected:** Finish `PLAN.md` first, derive the contract after · Leave the contract informal / in-flight, let the two chats negotiate · Freeze only the endpoint list, leave the payload shapes open · Let any chat amend the contract directly · Amend v1.0 in place to settle the λ discrepancy (L-1) — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Finish `PLAN.md` first, derive the contract after · Leave the contract informal / in-flight, let the two chats negotiate · Freeze only the endpoint list, leave the payload shapes open · Let any chat amend the contract directly · Amend v1.0 in place to settle the λ discrepancy (L-1) - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -774,7 +774,7 @@ console may and may not do. Freeze terms:
 - An agent that believes the contract is wrong writes the objection into **its own** document as a
   flagged risk and keeps building to v1.0.
 - Every example number in it is **illustrative**, and the claim state is **NOT_CLAIMED**
-  `[VERIFIED]` as frozen text — no endpoint had been built or probed when it was written, so no
+  `[VERIFIED]` as frozen text - no endpoint had been built or probed when it was written, so no
   figure in it is a measurement.
 
 ### Consequences
@@ -784,7 +784,7 @@ console may and may not do. Freeze terms:
 - The eight endpoints are closed: `POST /remember`, `GET /slots`, `GET /slots/{key}`,
   `GET /slots/{key}/graph`, `GET /receipts/{receipt_id}`, `POST /receipts/{receipt_id}/replay`,
   `GET /review`, `GET /health`.
-- A contract error is now expensive — both halves are already built on it. Accepted cost, bounded
+- A contract error is now expensive - both halves are already built on it. Accepted cost, bounded
   by the v1.1 amendment path.
 - Objections do not vanish; they accumulate as flagged risks in the objecting document. The
   contradictions ledger in `INVARIANTS.md` §4 carries one such live item: **L-1**, where
@@ -803,15 +803,15 @@ console may and may not do. Freeze terms:
 | **Leave the contract informal / in-flight, let the two chats negotiate** | Negotiation across two chats with no shared turn order is how both sides end up implementing their own half of a disagreement, discovered at 16:45. |
 | **Freeze only the endpoint list, leave the payload shapes open** | The payload shapes are what the console renders. An open shape means the console builds against a guess, which is the same failure one layer down. |
 | **Let any chat amend the contract directly** | Two writers, no lock, four hours. The master-chat-only path exists so an amendment is seen by both consumers before either builds on it. |
-| **Amend v1.0 in place to settle the λ discrepancy (L-1)** | The frozen file is being consumed live by two chats; a silent in-place edit is the exact event the freeze prevents. Both values are unmeasured, and `/health` is the operative source — so the discrepancy is recorded in `INVARIANTS.md` §4 as L-1 instead. |
+| **Amend v1.0 in place to settle the λ discrepancy (L-1)** | The frozen file is being consumed live by two chats; a silent in-place edit is the exact event the freeze prevents. Both values are unmeasured, and `/health` is the operative source - so the discrepancy is recorded in `INVARIANTS.md` §4 as L-1 instead. |
 
 ---
 
-## ADR-015 — Promote the boot assertions from an internal check to a public API surface
+## ADR-015 - Promote the boot assertions from an internal check to a public API surface
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge) · **Decided by:** forge
-- **Basis:** AF-16 `[VERIFIED]` — `GET /health` publishes `node_split_echo`=1, `node_split_independent`=2, `sp_path_weight`=0.21072, and returns **503 `BOOT_ASSERTION_FAILED`** on any mismatch. Underlying measurements: AF-6 `[VERIFIED]` (echo→1, independent→2), AF-3 `[VERIFIED]` (`pathWeight 0.21072`).
-- **Rejected:** Assert internally, log to stderr, serve anyway · Assert at build time only (a test, not a boot check) · Fail open: serve with a `degraded: true` flag · Keep the assertions but do not publish the values · Widen the `sp_path_weight` assertion to a tolerance band · Publish ε and λ in the console's config instead of on `/health` — each with its reason for losing in `### Rejected` below.
+- **Basis:** AF-16 `[VERIFIED]` - `GET /health` publishes `node_split_echo`=1, `node_split_independent`=2, `sp_path_weight`=0.21072, and returns **503 `BOOT_ASSERTION_FAILED`** on any mismatch. Underlying measurements: AF-6 `[VERIFIED]` (echo→1, independent→2), AF-3 `[VERIFIED]` (`pathWeight 0.21072`).
+- **Rejected:** Assert internally, log to stderr, serve anyway · Assert at build time only (a test, not a boot check) · Fail open: serve with a `degraded: true` flag · Keep the assertions but do not publish the values · Widen the `sp_path_weight` assertion to a tolerance band · Publish ε and λ in the console's config instead of on `/health` - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -825,7 +825,7 @@ wrong number:
    Reliability is computed over hop count instead of trust. No error.
 
 Nothing in the response distinguishes a correct verdict from either of these. And judging is
-artifact-only (AF-10) `[VERIFIED]` — a judge reads the artifacts and, if the service is up, maybe
+artifact-only (AF-10) `[VERIFIED]` - a judge reads the artifacts and, if the service is up, maybe
 pokes the endpoints. They cannot audit the resolver.
 
 An internal assertion that logs to stderr satisfies the engineer and is invisible to the judge.
@@ -837,14 +837,14 @@ Make the assertions a **public, load-bearing API surface**.
 - `GET /health` publishes all three asserted values: `node_split_echo` = 1,
   `node_split_independent` = 2, `sp_path_weight` = 0.21072 `[VERIFIED]` (AF-16, AF-6, AF-3).
 - On **any** mismatch the service returns **503 `BOOT_ASSERTION_FAILED`** and **refuses to serve**
-  `[VERIFIED]` (AF-16). **Fail closed.** The service does not serve a wrong headline number — not
+  `[VERIFIED]` (AF-16). **Fail closed.** The service does not serve a wrong headline number - not
   degraded, not with a warning banner. It stops.
 - `GET /health` also publishes **ε and λ**, which are **server** constants echoed on every
   decision; the console must never hardcode them `[VERIFIED]` as the frozen contract rule
   (AF-17 / DS-8 / R-4).
 - The assertion code lives in one module (`bootcheck.py`) imported by **both** the seed and the
   API, so the seed cannot produce a graph the API would reject.
-- Never widen a failing assertion to a range and never proceed with assertions disabled — that
+- Never widen a failing assertion to a range and never proceed with assertions disabled - that
   converts a loud correct failure into the silent wrong answer the assertion existed to catch.
   Written as `INVARIANTS.md` INV-8.
 
@@ -852,7 +852,7 @@ Make the assertions a **public, load-bearing API surface**.
 
 - The two silent failure modes become the loudest possible failure: total refusal to serve, with a
   named error code.
-- A judge can verify the mechanism in one request. `0.21072` is not a number we assert in prose —
+- A judge can verify the mechanism in one request. `0.21072` is not a number we assert in prose -
   it is a number the running service publishes, and the chain from
   `.law12-feasibility.json` → AF-3 → `/health` is checkable end to end.
 - A broken deploy presents as a down service rather than a working-looking one. On a 168h judging
@@ -869,22 +869,22 @@ Make the assertions a **public, load-bearing API surface**.
 |---|---|
 | **Assert internally, log to stderr, serve anyway** | Invisible to an artifact-only judge, and it serves wrong numbers while looking healthy. The two defects this guards against are precisely the ones with no external symptom. |
 | **Assert at build time only (a test, not a boot check)** | There is no test framework (ADR-021), and the seed is regenerated at deploy. A build-time check does not cover the graph that actually gets served. |
-| **Fail open: serve with a `degraded: true` flag** | Ships wrong `independence` values inside signed-looking DOCKET receipts. A receipt for a wrong verdict is worse than no service — it is a replayable artifact of the bug. |
+| **Fail open: serve with a `degraded: true` flag** | Ships wrong `independence` values inside signed-looking DOCKET receipts. A receipt for a wrong verdict is worse than no service - it is a replayable artifact of the bug. |
 | **Keep the assertions but do not publish the values** | Loses the single cheapest credibility win in the submission. Publishing them lets a stranger check the headline mechanism without reading any code. |
-| **Widen the `sp_path_weight` assertion to a tolerance band** | The value is exact on a fixed fixture `[VERIFIED]` (AF-3); a band exists only to let a failure through. The failure mode it would admit is exactly the hop-count degeneracy — `0.21072` becoming a small integer. |
+| **Widen the `sp_path_weight` assertion to a tolerance band** | The value is exact on a fixed fixture `[VERIFIED]` (AF-3); a band exists only to let a failure through. The failure mode it would admit is exactly the hop-count degeneracy - `0.21072` becoming a small integer. |
 | **Publish ε and λ in the console's config instead of on `/health`** | Two sources of truth for the decision band, and the console's copy would be the one a judge sees. Explicitly forbidden by the contract (R-4 / DS-8). |
 
 ---
 
-## ADR-016 — Stateful durable tier, with `spendApproved: false`
+## ADR-016 - Stateful durable tier, with `spendApproved: false`
 
 - **Status:** Accepted, **gated on owner approval** · **Date:** 2026-10-18 (forge) · **Decided by:** forge, deferring spend to Dami
 - **Basis:** `durability-tier.json` `[VERIFIED]` as a record of the decision: `persistenceClass: stateful`, 168h window, render starter + persistent disk, `ephemeralFs: false`, `sleepsOnIdle: false`, `costMonthlyUsd: 8`, **`spendApproved: false`**.
-- **Rejected:** Free tier, ephemeral filesystem · Free tier with spin-to-zero · Stateless: recompute receipts on demand from a seed re-run · Self-approve the $8 · Local-only, no deployment at all · A bigger tier for headroom — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Free tier, ephemeral filesystem · Free tier with spin-to-zero · Stateless: recompute receipts on demand from a seed re-run · Self-approve the $8 · Local-only, no deployment at all · A bigger tier for headroom - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
-Judging is artifact-only over a **168-hour window** `[ASSUMED]` — the window length is the
+Judging is artifact-only over a **168-hour window** `[ASSUMED]` - the window length is the
 recorded planning assumption, not a measured or quoted figure. A judge may open the live URL at
 any point in it, with nobody present.
 
@@ -902,7 +902,7 @@ Against that: real money, on an account that is not the agent's to spend.
 ### Decision
 
 Declare the tier **stateful**: a persistent disk, `ephemeralFs: false`, `sleepsOnIdle: false`, at
-**$8/month**. And set **`spendApproved: false`** — deliberately **not** self-approved.
+**$8/month**. And set **`spendApproved: false`** - deliberately **not** self-approved.
 `deploy` **BLOCKS** until the owner approves the spend. **That block is intended, not a defect.**
 
 ### Consequences
@@ -914,7 +914,7 @@ Declare the tier **stateful**: a persistent disk, `ephemeralFs: false`, `sleepsO
   This is on the critical path and is listed as an open blocker in `SUBMISSION_STATUS.md`. It is a
   human item, surfaced rather than quietly resolved.
 - The $8/mo is the owner's money and the owner's call. Writing `spendApproved: true` would be an
-  agent approving a spend on someone else's account — a different and worse failure than a missed
+  agent approving a spend on someone else's account - a different and worse failure than a missed
   deadline.
 - Latency on a starter tier is `NOT_CLAIMED`. `stress_test` was skipped (ADR-009) and no endpoint
   has been probed; the only measured figures are the engine's 41ms cold / 11ms warm at demo scale
@@ -926,18 +926,18 @@ Declare the tier **stateful**: a persistent disk, `ephemeralFs: false`, `sleepsO
 |---|---|
 | **Free tier, ephemeral filesystem** | Loses the graph on restart. Every receipt link in the README and the video dies. The product's headline capability becomes a 404 at the exact moment it is being graded. |
 | **Free tier with spin-to-zero** | A judge's visit is the cold path by construction. Cold start plus (on free tiers) an ephemeral disk is the worst case landing on the only case that matters. |
-| **Stateless: recompute receipts on demand from a seed re-run** | The seed is deterministic, so this is nearly tempting — but a *recomputed* receipt is not the recorded one. Replay (ADR-018) means re-executing the Cypher **the verdict actually ran**; regenerating it proves the generator, not the verdict. |
+| **Stateless: recompute receipts on demand from a seed re-run** | The seed is deterministic, so this is nearly tempting - but a *recomputed* receipt is not the recorded one. Replay (ADR-018) means re-executing the Cypher **the verdict actually ran**; regenerating it proves the generator, not the verdict. |
 | **Self-approve the $8** | Not the agent's money. The owner's approval gate exists precisely so this is not an agent's call, and routing around a spend gate is a trust failure that outlasts the hackathon. |
 | **Local-only, no deployment at all** | Artifact-only judging does not *require* a live URL, so this is survivable. But a live URL plus a published `/health` carrying the boot assertions (ADR-015) is the cheapest credibility a stranger can verify unaided. |
 | **A bigger tier for headroom** | More of the owner's money for headroom no measurement asks for. The demo-scale evidence (AF-7, 1402 nodes / 2400 edges) `[VERIFIED]` does not suggest the starter tier is the constraint. |
 
 ---
 
-## ADR-017 — Keep the `GRAPH.COPY` counterfactual stretch-only and deliberately NOT load-bearing
+## ADR-017 - Keep the `GRAPH.COPY` counterfactual stretch-only and deliberately NOT load-bearing
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** Dami (R4) + forge
-- **Basis:** `LEDGER.md` R4 `[VERIFIED]` as a record (P3 = stretch, gated at `verify_milestone`). DS-10 is recorded in `.law12-feasibility.json` with **`load_bearing: false`** and an **empty `ts`** — i.e. **not probed** `[VERIFIED]` as a record of its own absence. `GRAPH.COPY` latency: **`NOT_CLAIMED`**.
-- **Rejected:** Commit P3 as core scope · Cut P3 entirely to simplify · Build P3 into the resolver for elegance (one code path, counterfactual as a flag) · Probe `GRAPH.COPY` now to de-risk it · Estimate the clone latency from the 41ms / 11ms figures (AF-7) — each with its reason for losing in `### Rejected` below.
+- **Basis:** `LEDGER.md` R4 `[VERIFIED]` as a record (P3 = stretch, gated at `verify_milestone`). DS-10 is recorded in `.law12-feasibility.json` with **`load_bearing: false`** and an **empty `ts`** - i.e. **not probed** `[VERIFIED]` as a record of its own absence. `GRAPH.COPY` latency: **`NOT_CLAIMED`**.
+- **Rejected:** Commit P3 as core scope · Cut P3 entirely to simplify · Build P3 into the resolver for elegance (one code path, counterfactual as a flag) · Probe `GRAPH.COPY` now to de-risk it · Estimate the clone latency from the 41ms / 11ms figures (AF-7) - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -947,7 +947,7 @@ source**. A counterfactual, computed on a graph clone, in a graph database. It i
 that wins a category.
 
 It is also un-probed. Unlike the seven load-bearing facts, `GRAPH.COPY` has **no timestamp** in
-`.law12-feasibility.json` `[VERIFIED]` as a record — the entry exists with `load_bearing: false`
+`.law12-feasibility.json` `[VERIFIED]` as a record - the entry exists with `load_bearing: false`
 and an empty `ts`, which is the file saying out loud that we did not run it. Its latency at demo
 scale is `NOT_CLAIMED`. On a clone of a graph, under a $8/mo tier (ADR-016), against a 19:29
 deadline.
@@ -958,10 +958,10 @@ Keep P3 as a **stretch**, and architect it to be **deletable**:
 
 - **One file plus one route.** No committed surface imports it, and no committed surface's
   correctness depends on it.
-- It **reuses the existing resolver** rather than forking the scoring path — which is why it is
+- It **reuses the existing resolver** rather than forking the scoring path - which is why it is
   ~25 minutes `[ASSUMED]` rather than an hour (ADR-007).
 - **Go/no-go at 16:25**, at `verify_milestone` `[VERIFIED]` as the scheduled gate (`LEDGER.md` §3;
-  note the stretch-gate time is the one carried in `PULSE.md` DS-11 and `LEDGER.md` §3 —
+  note the stretch-gate time is the one carried in `PULSE.md` DS-11 and `LEDGER.md` §3 -
   `warroom/WINNER-BRIEF.md` says 14:45 and is **stale**, recorded as contradiction **L-2** in
   `INVARIANTS.md` §4).
 - **No artifact claims it works until it has been watched working.** No `GRAPH.COPY` latency
@@ -985,21 +985,21 @@ Keep P3 as a **stretch**, and architect it to be **deletable**:
 | **Commit P3 as core scope** | Un-probed `GRAPH.COPY`, unknown clone latency, $8/mo tier, 19:29 deadline. Committing it means the headline surface shares a fate with an unmeasured engine command. |
 | **Cut P3 entirely to simplify** | ~25 minutes `[ASSUMED]`, reuses the resolver, and it is the single most distinctive demo beat available. Cheap option value; the gate costs nothing to hold. |
 | **Build P3 into the resolver for elegance (one code path, counterfactual as a flag)** | This is the version where deleting it at 16:25 is a refactor instead of a file deletion. The whole value of the decision is that the no-go is free. |
-| **Probe `GRAPH.COPY` now to de-risk it** | Reasonable, and genuinely the better engineering call — but every probe minute at forge time competes with the seven load-bearing facts, and this one is explicitly not load-bearing. Deferred to the 16:25 gate, where the probe *is* the gate. |
+| **Probe `GRAPH.COPY` now to de-risk it** | Reasonable, and genuinely the better engineering call - but every probe minute at forge time competes with the seven load-bearing facts, and this one is explicitly not load-bearing. Deferred to the 16:25 gate, where the probe *is* the gate. |
 | **Estimate the clone latency from the 41ms / 11ms figures (AF-7)** | Fabrication. AF-7 measures query latency on a live graph, not a clone operation. A derived-looking number with no measurement under it is the project-ending defect class. `NOT_CLAIMED`. |
 
 ---
 
-## ADR-018 — Make the DOCKET receipt mandatory on every verdict, not an optional audit mode
+## ADR-018 - Make the DOCKET receipt mandatory on every verdict, not an optional audit mode
 
 - **Status:** Accepted · **Date:** 2026-10-18 (warroom `pool_checkpoint`) · **Decided by:** Dami (P5 MANDATORY)
 - **Basis:** `PULSE.md` Decisions Log #4 ("**P5 DOCKET receipts MANDATORY**") `[VERIFIED]` as a record. `CONTRACT.md` §2.5 / §2.6 define the receipt and the replay endpoint `[VERIFIED]` as frozen contract text.
-- **Rejected:** Receipts as an optional `?explain=true` mode · A human-readable explanation string instead of the Cypher · Log the Cypher server-side, no public receipt endpoint · Receipts for BLOCK only** (the contested case) · Regenerate the Cypher from current code at replay time — each with its reason for losing in `### Rejected` below.
+- **Rejected:** Receipts as an optional `?explain=true` mode · A human-readable explanation string instead of the Cypher · Log the Cypher server-side, no public receipt endpoint · Receipts for BLOCK only** (the contested case) · Regenerate the Cypher from current code at replay time - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 An admission-control gate that refuses a write owes an explanation. Without one, MENGER is a
-black box that says BLOCK, and the only available response is to trust it — which is exactly the
+black box that says BLOCK, and the only available response is to trust it - which is exactly the
 posture the project criticises in LLM adjudication (ADR-002's rejected set).
 
 Receipts are usually built as an optional audit mode: a flag, a debug endpoint, a verbose
@@ -1010,9 +1010,9 @@ subtly divergent from the real path by the second week.
 
 **Every verdict ships a DOCKET receipt. Mandatory, not a mode.** Two frozen endpoints:
 
-- `GET /receipts/{receipt_id}` — the receipt: the **exact Cypher** that ran, the **three
+- `GET /receipts/{receipt_id}` - the receipt: the **exact Cypher** that ran, the **three
   components** separately, the **winning provenance path**, and the **max-flow witness set**.
-- `POST /receipts/{receipt_id}/replay` — **re-execute the receipt's recorded Cypher verbatim** and
+- `POST /receipts/{receipt_id}/replay` - **re-execute the receipt's recorded Cypher verbatim** and
   report whether it reproduces.
 
 The receipt records the Cypher **as executed**, not a reconstruction. Replay re-runs that text. A
@@ -1023,14 +1023,14 @@ receipt whose Cypher is replayed proves **that verdict**.
 
 - MENGER's strongest differentiator is a thing a judge can click. On artifact-only judging, a
   replayable receipt is worth more than a paragraph claiming auditability.
-- Receipts must **persist** across the judging window — which is what forces the stateful tier
+- Receipts must **persist** across the judging window - which is what forces the stateful tier
   (ADR-016) and the owner's spend gate.
 - Storage grows with every verdict. At demo scale, irrelevant; stated because the trade is real.
 - The recorded Cypher is a **public surface**, so it must contain no secrets and must be
-  parameterised — all values bound, never interpolated (`INVARIANTS.md` INV-16, INV-17). A receipt
+  parameterised - all values bound, never interpolated (`INVARIANTS.md` INV-16, INV-17). A receipt
   that published an interpolated query would publish its inputs.
 - Replay creates an obligation the rest of the system must honour: the verbatim Cypher has to
-  remain executable. That is another reason all reads go through `GRAPH.RO_QUERY` (ADR-011) —
+  remain executable. That is another reason all reads go through `GRAPH.RO_QUERY` (ADR-011) -
   replaying a recorded query cannot mutate the graph it is replaying against.
 
 ### Rejected
@@ -1041,26 +1041,26 @@ receipt whose Cypher is replayed proves **that verdict**.
 | **A human-readable explanation string instead of the Cypher** | Prose cannot be replayed. "Blocked because source independence was lower" is a sentence; the query is evidence. |
 | **Log the Cypher server-side, no public receipt endpoint** | Invisible to a judge with no shell access, which is every judge (AF-10) `[VERIFIED]`. |
 | **Receipts for BLOCK only** (the contested case) | ALLOW is equally a decision, and the UNDECIDED band (ADR-005) is where the margin matters most. Selective receipts also invite the question of what the unreceipted path does differently. |
-| **Regenerate the Cypher from current code at replay time** | Proves the generator is stable, not that the verdict was sound. If the resolver changed between verdict and replay — which is the interesting case — this silently reports the new behaviour as the old verdict. |
+| **Regenerate the Cypher from current code at replay time** | Proves the generator is stable, not that the verdict was sound. If the resolver changed between verdict and replay - which is the interesting case - this silently reports the new behaviour as the old verdict. |
 
 ---
 
-## ADR-019 — `/review` is read-only in v1.0; no resolve endpoint
+## ADR-019 - `/review` is read-only in v1.0; no resolve endpoint
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge) · **Decided by:** forge, inside the frozen contract
-- **Basis:** `CONTRACT.md` §2.7 — "**v1.0 is read-only.** Resolving a review item is **NOT in this contract**"; `404 REVIEW_NOT_FOUND` is **reserved** `[VERIFIED]` as frozen contract text.
-- **Rejected:** `POST /review/{id}/resolve` with a human-chosen winner · Auto-resolve ties by a tiebreak (most recent wins, highest trust wins) · Hide UNDECIDED items entirely (no `/review` endpoint) · Expose resolve but make it a no-op stub — each with its reason for losing in `### Rejected` below.
+- **Basis:** `CONTRACT.md` §2.7 - "**v1.0 is read-only.** Resolving a review item is **NOT in this contract**"; `404 REVIEW_NOT_FOUND` is **reserved** `[VERIFIED]` as frozen contract text.
+- **Rejected:** `POST /review/{id}/resolve` with a human-chosen winner · Auto-resolve ties by a tiebreak (most recent wins, highest trust wins) · Hide UNDECIDED items entirely (no `/review` endpoint) · Expose resolve but make it a no-op stub - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 ADR-005 made UNDECIDED a first-class verdict, which creates a queue: a `(:Review)` node and a
-`review_id` per near-tie. A queue invites a resolve action — a human adjudicating the tie, writing
+`review_id` per near-tie. A queue invites a resolve action - a human adjudicating the tie, writing
 the winner, closing the item.
 
 Resolution is a **write** to the memory graph, performed by a human, on the basis of something
 MENGER does not have: knowledge of which claim is actually correct. That is **veracity**, and
 MENGER's scope boundary is admissibility (ADR-005, `INVARIANTS.md` INV-12). A resolve endpoint
-would be the one place the product quietly decides truth — and it would be the natural place for
+would be the one place the product quietly decides truth - and it would be the natural place for
 the scope to start leaking.
 
 It also needs identity, authorisation, an audit trail of who resolved what and why, and a receipt
@@ -1078,14 +1078,14 @@ contract text.
 
 - The queue is a **visible backlog**, not a worked one. That is the honest shape: MENGER surfaced
   a tie it is not entitled to break.
-- No identity, auth, or override-audit surface in v1.0 — a large amount of work and attack surface
+- No identity, auth, or override-audit surface in v1.0 - a large amount of work and attack surface
   that does not ship, and does not need to.
 - The console's review view is a display, filterable, with a margin per item. Deliberately
   narrower than it looks like it should be, which is a UX cost accepted on scope grounds.
 - A judge may ask "so what happens to UNDECIDED items?" The answer is in `LIMITATIONS.md`: they
   queue, visibly, and v1.0 does not resolve them, because resolving is a veracity judgement MENGER
   does not make.
-- Resolution is a clean v1.1 addition — it needs the identity and override-receipt surfaces first,
+- Resolution is a clean v1.1 addition - it needs the identity and override-receipt surfaces first,
   and those are honest prerequisites rather than missing features.
 
 ### Rejected
@@ -1095,15 +1095,15 @@ contract text.
 | **`POST /review/{id}/resolve` with a human-chosen winner** | A human write on the basis of veracity, inside a product scoped to admissibility. It is where the scope boundary leaks, and it needs identity + authorisation + an override audit trail that v1.0 does not have. |
 | **Auto-resolve ties by a tiebreak (most recent wins, highest trust wins)** | Destroys the point of the epsilon band. A tie inside the noise of three unmeasured components is being *reported* as a tie on purpose; auto-breaking it is the confident coin-flip ADR-005 rejected, with an extra rule to defend. |
 | **Hide UNDECIDED items entirely (no `/review` endpoint)** | Violates "nothing is silently lost" `[VERIFIED]` (`CONTRACT.md` §0 ground rule 4). An invisible queue is a dropped write. |
-| **Expose resolve but make it a no-op stub** | A route that looks actionable and does nothing is worse than an absent route — a judge clicking it learns the product is a mock-up. The reserved `404 REVIEW_NOT_FOUND` says the same thing honestly. |
+| **Expose resolve but make it a no-op stub** | A route that looks actionable and does nothing is worse than an absent route - a judge clicking it learns the product is a mock-up. The reserved `404 REVIEW_NOT_FOUND` says the same thing honestly. |
 
 ---
 
-## ADR-020 — Surface three components + an ordinal flag instead of one confidence number
+## ADR-020 - Surface three components + an ordinal flag instead of one confidence number
 
 - **Status:** Accepted · **Date:** 2026-10-18 · **Decided by:** Dami (R-4 / DS-8) + forge
 - **Basis:** `CONTRACT.md` §0 ground rule 2 and the `score_is_ordinal: true` field on every scored object `[VERIFIED]` as frozen contract text. ε = 0.05 and λ = 0.01/hour are **proposed, unmeasured defaults** `[ASSUMED]`.
-- **Rejected:** One 0–1 confidence number · Pre-blend into a single score and expose components only in the receipt · Expose the score with no `score_is_ordinal` flag and explain it in the docs · Calibrate the score into a real probability · Let the console pick ε** (a sensitivity slider) · Hardcode ε and λ in the console for speed — each with its reason for losing in `### Rejected` below.
+- **Rejected:** One 0–1 confidence number · Pre-blend into a single score and expose components only in the receipt · Expose the score with no `score_is_ordinal` flag and explain it in the docs · Calibrate the score into a real probability · Let the console pick ε** (a sensitivity slider) · Hardcode ε and λ in the console for speed - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -1115,7 +1115,7 @@ Every instinct downstream pushes the other way. A single 0–1 number renders as
 progress bar, a confidence badge. It is better UI. It is also a lie: there is no calibration
 behind it, no probability model, and the λ that shapes the recency term is an unmeasured default
 `[ASSUMED]`. A judge who reads "0.87 confidence" will reasonably ask what it is confidence *of*,
-and the honest answer is "nothing — it is a rank".
+and the honest answer is "nothing - it is a rank".
 
 ### Decision
 
@@ -1128,7 +1128,7 @@ and the honest answer is "nothing — it is a rank".
   `[VERIFIED]` as a frozen contract rule (`CONTRACT.md` §4).
 - **ε and λ are server constants**, published by `/health`, echoed on every decision; the console
   must not hardcode them `[VERIFIED]` as the frozen contract rule (AF-17 / DS-8 / R-4). Their
-  **values** — ε = 0.05, λ = 0.01/hour — are `[ASSUMED]`: proposed defaults, calibrated in build
+  **values** - ε = 0.05, λ = 0.01/hour - are `[ASSUMED]`: proposed defaults, calibrated in build
   slice B2, reported by `/health`. (See contradiction **L-1** in `INVARIANTS.md` §4 on λ.)
 
 ### Consequences
@@ -1137,7 +1137,7 @@ and the honest answer is "nothing — it is a rank".
 - Cross-slot magnitude comparisons are **meaningless** and `LIMITATIONS.md` says so outright:
   0.9 in one slot is not "better" than 0.6 in another. Only the within-slot margin against ε has
   meaning.
-- The UI is harder: three numbers plus a margin plus a band, instead of one bar. Accepted — and
+- The UI is harder: three numbers plus a margin plus a band, instead of one bar. Accepted - and
   it is also more informative, since a judge can see *which* component drove a BLOCK.
 - The three components become independently inspectable, which is what makes a DOCKET receipt
   (ADR-018) worth reading.
@@ -1150,29 +1150,29 @@ and the honest answer is "nothing — it is a rank".
 | **One 0–1 confidence number** | Uncalibrated, so it would be a fabricated semantic. Reads as a probability, invites "confidence of what?", and the answer is "nothing". Nicer UI; false claim. |
 | **Pre-blend into a single score and expose components only in the receipt** | The blend is where the information is destroyed; hiding the inputs behind the headline makes the common case the uninformative one. Explicitly forbidden (INV-11). |
 | **Expose the score with no `score_is_ordinal` flag and explain it in the docs** | Documentation does not travel with the JSON. The next consumer renders a percentage, correctly reading the data and not the prose. The flag is in-band on purpose. |
-| **Calibrate the score into a real probability** | Requires labelled ground truth about which claims were actually correct — i.e. **veracity**, which MENGER does not have and does not claim (INV-12). Also hours of work that does not exist. |
+| **Calibrate the score into a real probability** | Requires labelled ground truth about which claims were actually correct - i.e. **veracity**, which MENGER does not have and does not claim (INV-12). Also hours of work that does not exist. |
 | **Let the console pick ε** (a sensitivity slider) | Moves the decision boundary to the client, so two clients disagree about the same verdict and no receipt is checkable against a band. Forbidden by R-4 / DS-8. |
 | **Hardcode ε and λ in the console for speed** | Same failure, one step quieter: the published band and the rendered band drift, and the console becomes authoritative about a server constant. |
 
 ---
 
-## ADR-021 — No test framework; executable assertions wired into the boot path
+## ADR-021 - No test framework; executable assertions wired into the boot path
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge) · **Decided by:** forge
-- **Basis:** `PLAN.md` §6 — "No test framework. Under a 19:29 deadline the tests are **executable assertions wired into** [the boot path]"; the boot drill `T-1`..`T-4` and `drill.sh` steps 1–8 `[VERIFIED]` as a record of the plan. `bootcheck.py` is imported by both the seed and the API (`PLAN.md` C4) `[VERIFIED]` as a record.
-- **Rejected:** pytest suite with fixtures · pytest *and* boot assertions · Boot assertions but internal-only (no `/health` publication) · Manual smoke test before submitting · Skip the negative drills (assume the assertions work) — each with its reason for losing in `### Rejected` below.
+- **Basis:** `PLAN.md` §6 - "No test framework. Under a 19:29 deadline the tests are **executable assertions wired into** [the boot path]"; the boot drill `T-1`..`T-4` and `drill.sh` steps 1–8 `[VERIFIED]` as a record of the plan. `bootcheck.py` is imported by both the seed and the API (`PLAN.md` C4) `[VERIFIED]` as a record.
+- **Rejected:** pytest suite with fixtures · pytest *and* boot assertions · Boot assertions but internal-only (no `/health` publication) · Manual smoke test before submitting · Skip the negative drills (assume the assertions work) - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
 Standard practice is pytest: a suite, fixtures, a CI step, a coverage number. Against a 19:29
-hard deadline, a test suite costs setup time, and — more importantly — it protects the **build**
+hard deadline, a test suite costs setup time, and - more importantly - it protects the **build**
 machine. The graph a judge's request runs against is produced by a seed, at deploy time, on a
 different machine. A green suite on a laptop says nothing about that graph.
 
 And the two defects that matter (ADR-015) are **properties of the served graph**, not of the code:
 a node-split that got bypassed on one write path, a weight key that is wrong in the deployed
 resolver. Both can be true while every unit test passes, because a unit test can supply its own
-fixture — and a fixture that pre-supplies the value a check is supposed to derive leaves the
+fixture - and a fixture that pre-supplies the value a check is supposed to derive leaves the
 producer entirely unproven.
 
 ### Decision
@@ -1185,7 +1185,7 @@ producer entirely unproven.
 - The assertions run **on every boot of the deployed service**, against the graph it will actually
   serve, and publish their values on `GET /health` (ADR-015).
 - Adversarial cases are **drills, not unit tests**: the **echo attack** (two chains, one shared
-  source, must score 1) and the **hop-count forgery** — deliberately set `weightProperty` instead
+  source, must score 1) and the **hop-count forgery** - deliberately set `weightProperty` instead
   of `weightProp` and confirm `pathWeight` degenerates to an integer and `T-3` **FAILS**. That
   last one is the important one: it proves the assertion has **teeth** rather than being
   decorative. An assertion nobody has watched fail is an assumption.
@@ -1217,11 +1217,11 @@ producer entirely unproven.
 
 ---
 
-## ADR-022 — Render the node-split in `/slots/{key}/graph` instead of hiding it
+## ADR-022 - Render the node-split in `/slots/{key}/graph` instead of hiding it
 
 - **Status:** Accepted · **Date:** 2026-10-18 (forge) · **Decided by:** forge
-- **Basis:** `CONTRACT.md` §2.4 — the endpoint returns the node-split DAG with `SourceIn`/`SourceOut` nodes and `SuperSource`, and "**the split is visible on purpose**" `[VERIFIED]` as frozen contract text. AF-6 `[VERIFIED]`: the split is what produces echo→1 / independent→2.
-- **Rejected:** Collapse `SourceIn`/`SourceOut` into one node for display · Two views: a "simple" collapsed one and an "advanced" split one · Return the original (pre-split) graph from the endpoint · Explain the split in a README diagram and keep the live view clean — each with its reason for losing in `### Rejected` below.
+- **Basis:** `CONTRACT.md` §2.4 - the endpoint returns the node-split DAG with `SourceIn`/`SourceOut` nodes and `SuperSource`, and "**the split is visible on purpose**" `[VERIFIED]` as frozen contract text. AF-6 `[VERIFIED]`: the split is what produces echo→1 / independent→2.
+- **Rejected:** Collapse `SourceIn`/`SourceOut` into one node for display · Two views: a "simple" collapsed one and an "advanced" split one · Return the original (pre-split) graph from the endpoint · Explain the split in a README diagram and keep the live view clean - each with its reason for losing in `### Rejected` below.
 
 ### Context
 
@@ -1232,7 +1232,7 @@ the user see a clean provenance graph.
 
 But the split **is** the mechanism. It is the reason max-flow counts the vertex-disjoint quantity
 the headline claims, and it is the thing the two boot controls assert `[VERIFIED]` (AF-6).
-Collapsing it in the UI hides the one structure that makes the theorem apply — and the judging
+Collapsing it in the UI hides the one structure that makes the theorem apply - and the judging
 surface is artifact-only (AF-10) `[VERIFIED]`, so the graph view may be the main place a judge
 *sees* how MENGER works.
 
@@ -1241,7 +1241,7 @@ surface is artifact-only (AF-10) `[VERIFIED]`, so the graph view may be the main
 **Render the split.** `GET /slots/{key}/graph` returns the node-split DAG as it is computed over:
 `SuperSource`, `SourceIn`, `SourceOut`, `Claim`, with `[:FLOW]` edges and per-node `trust` and
 `source_id`. The `SourceIn`/`SourceOut` pairs are **visible on purpose** `[VERIFIED]` as frozen
-contract text — "the mechanism, not an implementation detail to hide". The console renders the
+contract text - "the mechanism, not an implementation detail to hide". The console renders the
 pair and the unit-capacity edge between them, because that edge is where independence is decided.
 
 ### Consequences
@@ -1249,7 +1249,7 @@ pair and the unit-capacity edge between them, because that edge is where indepen
 - A judge can *see* Menger's theorem being applied: the capacity-1 edge through each source, and
   the max-flow witness set threading through it. The mechanism becomes legible rather than
   asserted.
-- The echo case becomes visually obvious — two chains converging on **one** `SourceIn`→`SourceOut`
+- The echo case becomes visually obvious - two chains converging on **one** `SourceIn`→`SourceOut`
   pair, which is why the answer is 1 and not 2. That single picture is the project's best
   explanation of itself, and it needs no narrator.
 - The graph view carries more nodes and more explanatory burden. `design_forge` inherits a harder
@@ -1263,7 +1263,7 @@ pair and the unit-capacity edge between them, because that edge is where indepen
 | Alternative | Why it lost |
 |---|---|
 | **Collapse `SourceIn`/`SourceOut` into one node for display** | Hides the mechanism. A judge sees an ordinary provenance graph and has no visual reason to believe the independence count is anything but a hop count. The split's whole purpose is that it is the difference. |
-| **Two views: a "simple" collapsed one and an "advanced" split one** | The simple one becomes the default, so the default hides the mechanism — and the advanced view is a toggle a judge with ~180 seconds never finds. Also two renderers to build and keep honest. |
+| **Two views: a "simple" collapsed one and an "advanced" split one** | The simple one becomes the default, so the default hides the mechanism - and the advanced view is a toggle a judge with ~180 seconds never finds. Also two renderers to build and keep honest. |
 | **Return the original (pre-split) graph from the endpoint** | The visual would then differ from the graph the verdict was computed on. Two sources of truth about the same provenance, and the one a judge sees would be the one the engine did not use. |
 | **Explain the split in a README diagram and keep the live view clean** | A static diagram is unverifiable; a live graph is the product. The one place the mechanism can be *shown* rather than *claimed* is the running view. |
 
@@ -1271,14 +1271,14 @@ pair and the unit-capacity edge between them, because that edge is where indepen
 
 ## Claim state
 
-**22 ADRs. 22 `Rejected` sections — one per record, no exceptions.**
+**22 ADRs. 22 `Rejected` sections - one per record, no exceptions.**
 
 Nothing in this file is a measurement unless it is tagged `[VERIFIED]` and traceable to
 `.law12-feasibility.json` or a `PULSE.md` `AF-n` row. The only measured numbers that exist
 anywhere in this project are:
 
-- `0.21072` — `algo.SPpaths` `pathWeight` on the control fixture `[VERIFIED]` (AF-3)
-- `echo → 1`, `independent → 2` — node-split max-flow controls `[VERIFIED]` (AF-6)
+- `0.21072` - `algo.SPpaths` `pathWeight` on the control fixture `[VERIFIED]` (AF-3)
+- `echo → 1`, `independent → 2` - node-split max-flow controls `[VERIFIED]` (AF-6)
 - `41ms cold / 11ms warm` on 1402 nodes / 2400 edges `[VERIFIED]` (AF-7)
 
 **Every other number in this project is `NOT_CLAIMED`.** No MENGER endpoint had been built or
@@ -1288,7 +1288,7 @@ MENGER's own request latency, throughput and load behaviour are `NOT_CLAIMED`.
 
 Cross-source contradictions found while writing this file are recorded in `INVARIANTS.md` §4 as
 **L-1** (λ default: `CONTRACT.md` 0.0077 vs `PLAN.md`/brief 0.01), **L-2** (stretch-gate time:
-`WINNER-BRIEF.md` 14:45 — stale — vs `PULSE.md` DS-11 / `LEDGER.md` §3 16:25), and **L-3** (an
+`WINNER-BRIEF.md` 14:45 - stale - vs `PULSE.md` DS-11 / `LEDGER.md` §3 16:25), and **L-3** (an
 upstream `intel` gate: `config.json` asserts `roster_audit.discovered = true` but
 `research/roster-audit/strategy-density.md` does not exist). They are recorded, not silently
 resolved.

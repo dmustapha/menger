@@ -25,5 +25,5 @@ step "claims re-derivation — every headline number, from the engine"
 run bash scripts/verify-claims.sh all
 
 echo
-if [ "$fails" -eq 0 ]; then echo "verify OK — gate green (offline + integration; live tier excluded by design)"; exit 0; fi
-echo "verify FAILED — $fails step(s)" >&2; exit 1
+if [ "$fails" -eq 0 ]; then echo "verify OK: gate green (offline + integration; live tier excluded by design)"; exit 0; fi
+echo "verify FAILED: $fails step(s)" >&2; exit 1

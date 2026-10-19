@@ -90,7 +90,7 @@ all() {
   local weight
   weight=$(scalar "MATCH (s:SuperSource {nid:'ss'}), (c:Claim {nid:'clm_0001'}) CALL algo.SPpaths({sourceNode:s, targetNode:c, relTypes:['FLOW'], weightProp:'nl'}) YIELD pathWeight RETURN pathWeight")
   # 0.21072 within the seeded tolerance; compare to 5 decimal places.
-  check "CLM-3" "0.21072" "$(python3 -c "print(f'{float('$weight'):.5f}')")"
+  check "CLM-3" "0.21072" "$(python3 -c "print('%.5f' % float('$weight'))")"
 
   # --- CLM-4: the silent trap, reproduced ----------------------------------
   # The SAME statement with a misspelled weight key must return the hop count, with no error.

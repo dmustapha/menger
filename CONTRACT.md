@@ -1,4 +1,4 @@
-# CONTRACT — MENGER HTTP API · **FROZEN v1.0**
+# CONTRACT - MENGER HTTP API · **FROZEN v1.0**
 
 > **Status: FROZEN at 2026-10-18 ~14:05 WAT by `forge`.**
 > This is the single joint artifact between the **engine build chat** and the concurrent
@@ -19,15 +19,15 @@
 | 2 | **The score is ORDINAL, not cardinal.** | every `score` field is accompanied by `"score_is_ordinal": true` on its parent object; the console must never render it as a percentage, a confidence, or a probability |
 | 3 | **Verdict enum is exactly three values.** | `"ALLOW" \| "BLOCK" \| "UNDECIDED"` |
 | 4 | **Nothing is silently lost.** A BLOCKed write is *recorded*; an UNDECIDED write lands in the review queue. | `recorded: true` on every `/remember` response; `review_id` non-null on UNDECIDED |
-| 5 | **All reads go through `GRAPH.RO_QUERY`** (Python client only — the TS client lacks it, FalkorDB issue #408). This is the containment boundary for generated Cypher. | `receipt.engine.read_path == "GRAPH.RO_QUERY"`; every recorded Cypher statement carries its `read_command` |
+| 5 | **All reads go through `GRAPH.RO_QUERY`** (Python client only - the TS client lacks it, FalkorDB issue #408). This is the containment boundary for generated Cypher. | `receipt.engine.read_path == "GRAPH.RO_QUERY"`; every recorded Cypher statement carries its `read_command` |
 | 6 | **`independence` is an integer count of VERTEX-disjoint chains**, from `algo.maxFlow` over the **node-split** provenance DAG. *(DS-1 / AF-6)* | `components.independence` is an **integer**, not a float |
-| 7 | **`reliability` comes from `algo.SPpaths` with `weightProp` — the only key that works.** *(DS-2 / AF-3)* | `components.path_weight` is surfaced raw alongside `reliability` so the hop-count trap is visible in the receipt |
+| 7 | **`reliability` comes from `algo.SPpaths` with `weightProp` - the only key that works.** *(DS-2 / AF-3)* | `components.path_weight` is surfaced raw alongside `reliability` so the hop-count trap is visible in the receipt |
 | 8 | **Never the word "procedure."** | all prose fields say *"a single parameterised Cypher query"* |
 | 9 | **ε and λ are server constants, never hardcoded in the console.** | `GET /health` returns `epsilon` and `lambda`; `epsilon` also echoes on every decision |
 
 **Server:** Python (FastAPI + `falkordb` Python client). **Base URL:** `http://localhost:8000`
 **Content type:** `application/json` both directions. **Auth:** none (synthetic data, local/demo).
-**CORS:** `Access-Control-Allow-Origin: *` — the console runs on `:3000` and calls the API directly.
+**CORS:** `Access-Control-Allow-Origin: *` - the console runs on `:3000` and calls the API directly.
 
 ---
 
@@ -92,17 +92,17 @@
 | Method | Path | Purpose | Consumer |
 |---|---|---|---|
 | `POST` | `/remember` | **The write gate.** An agent submits a fact; the graph returns ALLOW / BLOCK / UNDECIDED + a receipt id. | console "submit a memory" panel; the demo's hero beat |
-| `GET` | `/slots` | Slot list — every contested subject+predicate with its current winner. | console landing / slot table |
-| `GET` | `/slots/{key}` | Slot detail — all contending claims, ranked, each with its three components. | console slot drill-down |
+| `GET` | `/slots` | Slot list - every contested subject+predicate with its current winner. | console landing / slot table |
+| `GET` | `/slots/{key}` | Slot detail - all contending claims, ranked, each with its three components. | console slot drill-down |
 | `GET` | `/slots/{key}/graph` | The slot's provenance subgraph as nodes+edges, for visualisation. | console graph view |
-| `GET` | `/receipts/{receipt_id}` | **The DOCKET receipt** — exact Cypher, three components, winning provenance path, max-flow witness set. | console receipt view |
+| `GET` | `/receipts/{receipt_id}` | **The DOCKET receipt** - exact Cypher, three components, winning provenance path, max-flow witness set. | console receipt view |
 | `POST` | `/receipts/{receipt_id}/replay` | Re-execute the receipt's recorded Cypher verbatim and report whether it reproduces. | console "replay this verdict" button |
-| `GET` | `/review` | The review queue — every UNDECIDED write. | console review queue |
+| `GET` | `/review` | The review queue - every UNDECIDED write. | console review queue |
 | `GET` | `/health` | Engine liveness **+ the boot assertions** (node-split controls, `weightProp` control) + ε and λ. | console status strip |
 
 ---
 
-### 2.1 `POST /remember` — the write gate
+### 2.1 `POST /remember` - the write gate
 
 **Request**
 ```jsonc
@@ -138,7 +138,7 @@ The slot is derived, never supplied: `slot_key = subject + "|" + predicate`.
 }
 ```
 
-**Decision rule (normative — the console may display it, must not re-derive it):**
+**Decision rule (normative - the console may display it, must not re-derive it):**
 ```
 margin = score(incoming) - score(best_incumbent)      // best_incumbent score = 0.0 if the slot is empty
 margin  >  +epsilon   ->  ALLOW      status ADMITTED   review_id null
@@ -156,7 +156,7 @@ curl -sS -X POST http://localhost:8000/remember -H 'content-type: application/js
   "object":"us-east-1","sources":["src_blog_echo_a","src_blog_echo_b"]}'
 ```
 ```jsonc
-// 200 — [EXAMPLE: shapes are frozen; the numeric values are illustrative, not measured]
+// 200 - [EXAMPLE: shapes are frozen; the numeric values are illustrative, not measured]
 {
   "verdict": "BLOCK", "slot_key": "customer:acme|primary_region",
   "claim_id": "clm_0061", "status": "REFUSED", "recorded": true,
@@ -181,11 +181,11 @@ curl -sS -X POST http://localhost:8000/remember -H 'content-type: application/js
   "receipt_id":"rcpt_0061","review_id":null
 }
 ```
-This is the hero beat: **two citations that look like corroboration score `independence: 1`** because they funnel through one shared origin and the node-split collapses them — the echo chamber is refused.
+This is the hero beat: **two citations that look like corroboration score `independence: 1`** because they funnel through one shared origin and the node-split collapses them - the echo chamber is refused.
 
 ---
 
-### 2.2 `GET /slots` — slot list
+### 2.2 `GET /slots` - slot list
 
 **Query params**
 | Name | Type | Default | Meaning |
@@ -225,7 +225,7 @@ This is the hero beat: **two citations that look like corroboration score `indep
 
 ---
 
-### 2.3 `GET /slots/{key}` — slot detail
+### 2.3 `GET /slots/{key}` - slot detail
 
 `{key}` is the **URL-encoded** `slot_key`. `customer:acme|primary_region` → `customer%3Aacme%7Cprimary_region`.
 
@@ -236,7 +236,7 @@ This is the hero beat: **two citations that look like corroboration score `indep
   "subject": "customer:acme", "predicate": "primary_region",
   "contested": true, "epsilon": 0.05, "lambda": 0.0077,
   "score_is_ordinal": true,
-  "claims":  [ /* ScoredClaim[] — ALL contending claims, each with its own components */ ],
+  "claims":  [ /* ScoredClaim[] - ALL contending claims, each with its own components */ ],
   "ranking": ["clm_0007", "clm_0061", "clm_0034"],   // claim_ids, best first. Ordinal only
   "top_margin": 0.9782,                              // score(ranking[0]) - score(ranking[1]); null if < 2 claims
   "last_receipt_id": "rcpt_0061",
@@ -253,10 +253,10 @@ This is the hero beat: **two citations that look like corroboration score `indep
 
 ---
 
-### 2.4 `GET /slots/{key}/graph` — provenance subgraph for visualisation
+### 2.4 `GET /slots/{key}/graph` - provenance subgraph for visualisation
 
 Returns the node-split provenance DAG that the max-flow runs over, so the console can
-render it. **The split is visible on purpose** — `SourceIn`/`SourceOut` pairs are the
+render it. **The split is visible on purpose** - `SourceIn`/`SourceOut` pairs are the
 mechanism, not an implementation detail to hide.
 
 **Response `200`**
@@ -286,7 +286,7 @@ for a split pair, the bare `claim_id` for a claim. **Errors:** `404 SLOT_NOT_FOU
 
 ---
 
-### 2.5 `GET /receipts/{receipt_id}` — the DOCKET receipt
+### 2.5 `GET /receipts/{receipt_id}` - the DOCKET receipt
 
 The credibility artifact. Everything a skeptic needs to re-derive the verdict by hand.
 
@@ -353,9 +353,9 @@ The credibility artifact. Everything a skeptic needs to re-derive the verdict by
   "replay": { "endpoint": "POST /receipts/rcpt_0061/replay", "deterministic": true }
 }
 ```
-`cypher[]` is the **verbatim parameterised text that was executed** — it is what `/replay`
+`cypher[]` is the **verbatim parameterised text that was executed** - it is what `/replay`
 re-runs and what the separately-listed Cypher artifact (DS-5) is generated from. One entry
-per statement, in execution order. Note `weightProp` — the only weight key that works
+per statement, in execution order. Note `weightProp` - the only weight key that works
 (AF-3); `weightProperty`/`relationshipWeightProperty`/`costProperty` silently return hop
 count with no error.
 
@@ -363,7 +363,7 @@ count with no error.
 
 ---
 
-### 2.6 `POST /receipts/{receipt_id}/replay` — replay by id
+### 2.6 `POST /receipts/{receipt_id}/replay` - replay by id
 
 Re-executes `receipt.cypher[]` verbatim via `GRAPH.RO_QUERY` against the live graph and
 reports whether the components reproduce. Request body: **none** (empty or `{}`).
@@ -394,7 +394,7 @@ fails to execute)* · `503 ENGINE_UNAVAILABLE`
 
 ---
 
-### 2.7 `GET /review` — the review queue
+### 2.7 `GET /review` - the review queue
 
 Every UNDECIDED write. This is the "nothing is silently lost" surface.
 
@@ -421,13 +421,13 @@ Every UNDECIDED write. This is the "nothing is silently lost" surface.
   ]
 }
 ```
-**v1.0 is read-only.** Resolving a review item is **NOT in this contract** — the console
+**v1.0 is read-only.** Resolving a review item is **NOT in this contract** - the console
 must not assume a mutation endpoint exists. If resolution is added it comes back through
 the master chat as a contract amendment.
 
 ---
 
-### 2.8 `GET /health` — liveness + the boot assertions
+### 2.8 `GET /health` - liveness + the boot assertions
 
 The console's status strip. Also the credibility proof: the boot assertions are the live
 evidence that the node-split is real and that the `weightProp` trap was not fallen into.
@@ -449,11 +449,11 @@ evidence that the node-split is real and that the `weightProp` trap was not fall
   }
 }
 ```
-**Response `503`** when any assertion fails — the service refuses to serve rather than
+**Response `503`** when any assertion fails - the service refuses to serve rather than
 serve a wrong headline number (R-1, R-3):
 ```jsonc
 { "error": { "code": "BOOT_ASSERTION_FAILED",
-             "message": "node_split_echo expected 1, got 2 — the node-split is not in effect",
+             "message": "node_split_echo expected 1, got 2 - the node-split is not in effect",
              "field": null,
              "detail": { "boot_checks": { "passed": false,
                "node_split_echo": { "expected": 1, "actual": 2, "pass": false } } } } }
@@ -463,12 +463,12 @@ build-determined and the console must read them, never hardcode them.
 
 ---
 
-## 3. Error codes — complete table
+## 3. Error codes - complete table
 
 | HTTP | `error.code` | When |
 |---|---|---|
 | `400` | `VALIDATION_ERROR` | malformed JSON, missing required field, wrong type, empty string |
-| `400` | `NO_SOURCES` | `sources` is absent or an empty array — a claim with no provenance cannot be scored |
+| `400` | `NO_SOURCES` | `sources` is absent or an empty array - a claim with no provenance cannot be scored |
 | `404` | `SLOT_NOT_FOUND` | `{key}` matches no `(:Slot)` |
 | `404` | `RECEIPT_NOT_FOUND` | `{receipt_id}` matches no receipt |
 | `404` | `REVIEW_NOT_FOUND` | reserved; `{review_id}` matches no `(:Review)` |
@@ -477,7 +477,7 @@ build-determined and the console must read them, never hardcode them.
 | `422` | `UNKNOWN_SOURCE` | one or more `sources` are not existing `(:Source {id})`; offenders in `detail.unknown` |
 | `429` | `RATE_LIMITED` | reserved for the deployed instance; `detail.retry_after_s` |
 | `503` | `ENGINE_UNAVAILABLE` | FalkorDB unreachable / command failed |
-| `503` | `BOOT_ASSERTION_FAILED` | a boot control did not reproduce — the service refuses to serve |
+| `503` | `BOOT_ASSERTION_FAILED` | a boot control did not reproduce - the service refuses to serve |
 
 Every error response is exactly the `Error` shape in §1. No endpoint returns a bare string.
 
@@ -491,8 +491,8 @@ the boot checks.
 
 **Must not:**
 - blend the three components into one displayed number, or render `score` as a percentage,
-  a confidence, or a probability — it is **ordinal** (R-4 / DS-8);
-- hardcode `epsilon`, `lambda`, or the corpus counts — read them from `/health`;
+  a confidence, or a probability - it is **ordinal** (R-4 / DS-8);
+- hardcode `epsilon`, `lambda`, or the corpus counts - read them from `/health`;
 - use the words **"procedure"**, **"detects conflicts"**, or **"truth"** in any copy
   (DS-3, DS-4, R-2, R-5). The words are **refused** and **admission control**;
 - assume any endpoint not listed in §2 exists.
@@ -508,4 +508,4 @@ the boot checks.
 | Frozen by | `forge` (fresh dispatch) |
 | Consumers | engine build chat (producer) · `design_forge` chat (consumer) |
 | Amendment path | master chat only; announce to both chats; bump to `1.1` |
-| Claim state | **NOT_CLAIMED** — no endpoint has been built or probed yet. Every numeric value in an example response is labelled illustrative. The only VERIFIED numbers carried in here are upstream: `independence` echo→1 / independent→2 (AF-6/VF-W2), `path_weight 0.21072` (AF-3/DS-2), `duration_ms` 41 cold / 11 warm (AF-7/VF-W3). |
+| Claim state | **NOT_CLAIMED** - no endpoint has been built or probed yet. Every numeric value in an example response is labelled illustrative. The only VERIFIED numbers carried in here are upstream: `independence` echo→1 / independent→2 (AF-6/VF-W2), `path_weight 0.21072` (AF-3/DS-2), `duration_ms` 41 cold / 11 warm (AF-7/VF-W3). |

@@ -16,7 +16,7 @@ documentation (`README.md`, `docs/CYPHER-QUERIES.md`, `submission/`) lands on to
 engine commit.
 
 **`327da93`** is the commit at which the engine evidence in
-[`evidence/claims.txt`](evidence/claims.txt) was recorded: *"MENGER — admission-control gate
+[`evidence/claims.txt`](evidence/claims.txt) was recorded: *"MENGER - admission-control gate
 on agent memory (Graph Hacks, FalkorDB)"*. Everything in `app/`, `tests/` and `scripts/` is
 unchanged from that commit, so the verification below re-derives identically at either
 revision. Commits after it are documentation and the submission bundle.
@@ -39,7 +39,7 @@ bash scripts/verify.sh
 Expected output, verbatim tail:
 
 ```
-verify OK — gate green (offline + integration; live tier excluded by design)
+verify OK - gate green (offline + integration; live tier excluded by design)
 ```
 
 `scripts/verify.sh` is the single release gate, reused byte-identical in local dev and CI.
@@ -56,7 +56,7 @@ It runs five steps:
 The claims tail ends with:
 
 ```
-verify-claims OK — every re-derived number matches CLAIMS.md
+verify-claims OK - every re-derived number matches CLAIMS.md
 evidence written to evidence/claims.txt
 ```
 

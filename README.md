@@ -11,7 +11,7 @@ verdict ships with a replayable receipt.
 | | |
 |---|---|
 | **Console** | https://menger-console.vercel.app |
-| **API** | https://api.leash.ink/menger — try `/menger/health` |
+| **API** | https://api.leash.ink/menger/health |
 
 Both are live against a real FalkorDB `v4.22.1` instance holding the seeded corpus. The `/proof`
 page re-reads `GET /health` on every page load rather than rendering a build-time snapshot, so if
@@ -20,6 +20,12 @@ the engine is down that page says so instead of showing stale numbers.
 The API is **co-located on a shared box behind a shared reverse proxy** with an unrelated project,
 which is why it answers under that hostname. The engine, the database and the code are MENGER's
 own. Local setup below reproduces everything without either URL.
+
+![MENGER console: the home view, scored against the live engine](docs/images/home.png)
+
+*The `/proof` page, reading boot controls live from the engine:*
+
+![MENGER /proof page showing boot controls passing against the live engine](docs/images/proof.png)
 
 ---
 
@@ -57,7 +63,7 @@ bash scripts/verify.sh
 Expected tail:
 
 ```
-verify OK — gate green (offline + integration; live tier excluded by design)
+verify OK: gate green (offline + integration; live tier excluded by design)
 ```
 
 `scripts/verify.sh` is the same file CI runs, byte-identical, so there is no gate drift. It
@@ -81,7 +87,7 @@ node split is doing its work.
 ## The graph data model
 
 One graph, `menger`, on `falkordb/falkordb:v4.22.1`. Live inventory of the seeded synthetic
-corpus: **586 nodes, 861 relationships**.
+corpus: **574 nodes, 954 relationships**.
 
 ### Nodes
 
@@ -219,14 +225,16 @@ anywhere on the scoring surface, and a vocabulary grep in the release gate keeps
 
 ## Complete local setup
 
-There is no hosted deployment. The rules accept a live URL **or** complete local setup
-instructions, and this is the latter. Everything below runs offline against a synthetic,
-in-repo corpus. No keys, no external API, no network calls.
+The project **is** hosted (see [Live](#live) above), and the rules accept a live URL **or**
+complete local setup instructions (this section is the latter), so a judge can reproduce
+everything without either URL. It all runs offline against a synthetic, in-repo corpus.
+No keys, no external API, no network calls.
 
 ### Requirements
 
 - Docker (or Colima)
-- Python 3.11+
+- Python 3.12 or 3.13 (CI pins 3.12). 3.11 misses a PEP 701 f-string in the verify gate;
+  3.14+ has no `pydantic-core` wheel yet, so stay on 3.12/3.13.
 - `redis-cli` for the raw-Cypher commands (ships inside the container, so
   `docker exec gh-falkor redis-cli ...` works without a host install)
 - Node 20+, only if you want the console
@@ -255,7 +263,7 @@ docker exec gh-falkor redis-cli MODULE LIST       # graph, ver 42201
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
-python3 -m app.seed
+python3 -m app.seed   # NOTE: this DELETES and rebuilds the target graph (default: menger)
 ```
 
 The seed is deterministic (`SEED_RNG = 20261018`, frozen reference instant
@@ -341,7 +349,7 @@ Every number with its recompute command: [`CLAIMS.md`](CLAIMS.md). The short ver
 receipts, the eight routes, the boot assertions. All re-derived by
 `bash scripts/verify.sh`.
 
-**Simplified.** The corpus is synthetic, 586 nodes, hand-built to exercise three set-pieces
+**Simplified.** The corpus is synthetic, 574 nodes, hand-built to exercise three set-pieces
 and two boot controls. Scores are ordinal. Id allocation is not probe-tested under
 concurrency. Epsilon and lambda are **unmeasured server constants**, not values calibrated
 against reality.
@@ -417,7 +425,8 @@ hackathon window and all design and coding work began after 2026-10-15.
 | Hackathon | Graph Hacks: Context for AI Agents (WeMakeDevs x FalkorDB) |
 | Track | **02: Agent Memory and Coordination** (sole) |
 | Repository | https://github.com/dmustapha/menger |
-| Live deployment | None. Complete local setup instructions above, which the rules permit. |
+| Live console | https://menger-console.vercel.app |
+| Live API | https://api.leash.ink/menger/health |
 | Graph database | FalkorDB `v4.22.1`, pinned, load-bearing |
 | Data | Synthetic, seeded, committed in-repo. No private, personal or restricted data. |
 | License | [MIT](LICENSE) |
