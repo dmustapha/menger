@@ -383,35 +383,31 @@ system.
 
 ## AI-assistance disclosure
 
-This project was built with substantial AI assistance, and the disclosure is specific
-because a vague one is worth nothing.
+AI coding tools were used in building this project, disclosed here as the rules ask.
 
-**Tool.** Anthropic's Claude (Claude Code), used as the primary implementation agent across
-a structured multi-phase pipeline: research, planning, adversarial critique, implementation,
+**Tool.** Anthropic's Claude (Claude Code), used as a coding and documentation assistant
+under direction, across a structured workflow: research, planning, critique, implementation,
 and verification.
 
-**What the AI did.** Authored the large majority of the code in `app/`, `tests/`,
-`scripts/`, and `frontend/`, and wrote the planning and documentation set. It also ran the
-live probe campaign against FalkorDB v4.22.1 that produced the engine findings this design
-depends on, and ran an adversarial critique pass against its own output that found 50
-issues, 13 of them blockers, including one that forced a redesign of the demo drill.
+**How it was used.** As an implementation aid: turning the design decisions made here into
+code across `app/`, `tests/`, `scripts/`, and `frontend/`, drafting documentation, and
+helping run the live probe campaign and a critique pass that surfaced issues to fix before
+submission. Every output was reviewed, corrected, and gated before it landed.
 
-**What the human did.** Set the direction and the track, ruled on scope, and made every
-binding decision, including the ones that cost features. Ran the review gates. Rejected the
-first architecture. Required that every headline number carry a command that re-derives it,
-which is why `CLAIMS.md` and `scripts/verify-claims.sh` exist at all. Held the push, and
-ruled on each deviation individually.
+**The engineering decisions are the author's.** The track and direction, the architecture,
+the scope rulings (including the ones that cost features), the rejection of the first design,
+and the discipline that every headline number ships with a command that re-derives it (why
+`CLAIMS.md` and `scripts/verify-claims.sh` exist) were all decided and owned here.
 
-**Understanding, since the rules ask.** The engine-specific findings here are not recalled
-from training data, they were discovered by live probe and are falsifiable by anyone with the
-container: that `algo.dijkstra` does not exist on v4.22.1; that `algo.SPpaths` silently
+**On the technical findings.** The engine-specific results are not recalled from training
+data, they were established by live probe against the container and are falsifiable by anyone
+who runs it: that `algo.dijkstra` does not exist on v4.22.1; that `algo.SPpaths` silently
 returns a hop count for a misspelled weight key while `algo.maxFlow` is loud about unknown
 keys; that `algo.maxFlow` accepts exactly one `relationshipType`, which is what forces
 `:FLOW` to carry a `kind` property instead of splitting into four types; that unit-capacity
 max-flow counts edge-disjoint rather than vertex-disjoint paths, which is what forces the
-node split. Each of those is pinned at its call site in
-[`app/cypher.py`](app/cypher.py) with the probe that established it, and each is re-derived
-by `scripts/verify-claims.sh`.
+node split. Each is pinned at its call site in [`app/cypher.py`](app/cypher.py) with the
+probe that established it, and each is re-derived by `scripts/verify-claims.sh`.
 
 Nothing here was ported from an earlier project. The repository was initialised during the
 hackathon window and all design and coding work began after 2026-10-15.

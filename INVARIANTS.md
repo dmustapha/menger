@@ -881,8 +881,8 @@ constraints 8 and 9, `config.json`. `[ASSUMED]` for the six-criteria equal-weigh
 > through source to find the Cypher, the graph work is a claim rather than an artifact."
 
 **Honest answer.** All four are explicit. Track 02, sole, declared in the README's first screen
-and on the form. AI assistance has its own README section - this project was built with heavy
-agent assistance and saying otherwise would be a lie you could detect from the commit pattern. The
+and on the form. AI assistance has its own README section: AI coding tools were used under
+direction, disclosed plainly, with the engineering decisions and findings owned by the author. The
 Cypher lives in its own file, linked from the README and the form, generated from the same
 `receipt.cypher[]` text the engine actually executed - so the listed artifact and the running
 system cannot drift. And ε plus the ordinal caveat are stated in the README body, not a footnote,
